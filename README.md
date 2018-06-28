@@ -1,5 +1,11 @@
 # tflori/hugga
 
+[![Build Status](https://travis-ci.org/tflori/hugga.svg?branch=master)](https://travis-ci.org/tflori/hugga)
+[![Coverage Status](https://coveralls.io/repos/github/tflori/hugga/badge.svg?branch=master)](https://coveralls.io/github/tflori/hugga?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/tflori/hugga/v/stable.svg)](https://packagist.org/packages/tflori/hugga) 
+[![Total Downloads](https://poser.pugx.org/tflori/hugga/downloads.svg)](https://packagist.org/packages/tflori/hugga) 
+[![License](https://poser.pugx.org/tflori/hugga/license.svg)](https://packagist.org/packages/tflori/hugga)
+
 PHP library for console applications. It supports formatting of messages and tables as well input handling with
 choices.
 
