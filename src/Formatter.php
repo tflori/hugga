@@ -78,7 +78,7 @@ class Formatter
     /**
      *
      * @param string $message
-     * @return mixed|string
+     * @return string
      */
     public function stripFormatting(string $message)
     {

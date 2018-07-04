@@ -155,4 +155,16 @@ class ConsoleTest extends TestCase
         rewind($this->stdout);
         self::assertSame($message . "\e[0m", fread($this->stdout, 4096));
     }
+
+    /** @test */
+    public function stripsFormattingWhenAnsiIsDisabled()
+    {
+        $message = 'foo bar';
+
+        $this->console->disableAnsi();
+        $this->console->write('${bold}' . $message);
+
+        rewind($this->stdout);
+        self::assertSame($message, fread($this->stdout, 4096));
+    }
 }

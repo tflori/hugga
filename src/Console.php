@@ -43,6 +43,9 @@ class Console
     /** @var bool|resource */
     protected $stderr = STDERR;
 
+    /** @var bool  */
+    protected $ansiEnabled = true;
+
     /**
      * Console constructor.
      *
@@ -69,7 +72,7 @@ class Console
             return;
         }
 
-        fwrite($this->stdout, $this->formatter->format($message));
+        fwrite($this->stdout, $this->format($message));
     }
 
     /**
@@ -156,6 +159,12 @@ class Console
         return $this;
     }
 
+    public function disableAnsi(bool $disabled = true)
+    {
+        $this->ansiEnabled = !$disabled;
+        return $this;
+    }
+
     /**
      * Set the resource for stdout
      *
@@ -226,6 +235,17 @@ class Console
         }
 
         $this->logger->log($weight, trim($this->formatter->stripFormatting($message)));
+    }
+
+    /**
+     * Format a message if ansi is enabled
+     *
+     * @param $message
+     * @return string
+     */
+    protected function format($message)
+    {
+        return $this->ansiEnabled ? $this->formatter->format($message) : $this->formatter->stripFormatting($message);
     }
 
     /**
