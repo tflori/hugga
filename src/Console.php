@@ -84,7 +84,7 @@ class Console
     public function writeError(string $message, int $weight = self::WEIGHT_HIGH): void
     {
         $this->log($weight, $message);
-        fwrite($this->stderr, $this->formatter->format($message));
+        fwrite($this->stderr, $this->format($message));
     }
 
     public function error(string $message, int $weight = self::WEIGHT_HIGH): void
