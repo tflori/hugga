@@ -76,6 +76,22 @@ class Console
     }
 
     /**
+     * @return string
+     */
+    public function waitLine()
+    {
+        return (string)fgets($this->stdin);
+    }
+
+    public function waitChars($length = 1)
+    {
+        system("stty -icanon");
+        $answer = (string)fread($this->stdin, $length);
+        system('stty sane');
+        return $answer;
+    }
+
+    /**
      * Write $message to stderr
      *
      * @param string $message
@@ -157,6 +173,11 @@ class Console
         $p = array_search($this->verbosity, self::VERBOSITY_ORDER);
         $this->verbosity = self::VERBOSITY_ORDER[$p + 1] ?? $this->verbosity;
         return $this;
+    }
+
+    public function getVerbosity(): int
+    {
+        return $this->verbosity;
     }
 
     public function disableAnsi(bool $disabled = true)
