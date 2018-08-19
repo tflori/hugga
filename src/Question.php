@@ -18,7 +18,7 @@ class Question
      * @param string $question
      * @param string $default
      */
-    public function __construct(string $question, string $default = null)
+    public function __construct(string $question = '', string $default = null)
     {
         $this->question = $question;
         $this->default = $default;

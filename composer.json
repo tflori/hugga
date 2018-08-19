@@ -2,6 +2,9 @@
     "name": "tflori/hugga",
     "description": "library for console applications with input and output handling",
     "license": "MIT",
+    "suggest": {
+        "ext-posix": "*"
+    },
     "require": {
         "php": "^7.1",
         "ext-mbstring": "*",

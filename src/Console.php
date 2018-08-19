@@ -85,9 +85,23 @@ class Console
 
     public function waitChars($length = 1)
     {
-        system("stty -icanon");
+        // Can not be tested
+        // @codeCoverageIgnoreStart
+        if (function_exists('posix_isatty') && posix_isatty($this->stdin)) {
+            system("stty -icanon");
+            $reset = true;
+        }
+        // @codeCoverageIgnoreEnd
+
         $answer = (string)fread($this->stdin, $length);
-        system('stty sane');
+
+        // Can not be tested
+        // @codeCoverageIgnoreStart
+        if (isset($reset)) {
+            system('stty sane');
+        }
+        // @codeCoverageIgnoreEnd
+
         return $answer;
     }
 
@@ -175,6 +189,10 @@ class Console
         return $this;
     }
 
+    /**
+     * @return int
+     * @codeCoverageIgnore  trivial
+     */
     public function getVerbosity(): int
     {
         return $this->verbosity;
