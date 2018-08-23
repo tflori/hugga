@@ -6,23 +6,24 @@ class ResourceHandler extends AbstractInputHandler
 {
     const BUFFER_SIZE = 4096;
 
-    public function readLine()
+    public function readLine(string $prompt = null): string
     {
         // reset the position to read new lines
         fseek($this->resource, ftell($this->resource));
-        return (string)fgets($this->resource);
+        return rtrim(fgets($this->resource));
     }
 
-    public function read(int $count)
+    public function read(int $count, string $prompt = null): string
     {
         // reset the position to read new lines
         fseek($this->resource, ftell($this->resource));
         return fread($this->resource, $count);
     }
 
-    public function readUntil(string $sequence)
+    public function readUntil(string $sequence, string $prompt = null): string
     {
         $currentPos = ftell($this->resource);
+        fseek($this->resource, $currentPos);
         $seqLen = strlen($sequence);
         $buffer = '';
         do {
@@ -37,7 +38,6 @@ class ResourceHandler extends AbstractInputHandler
         $str = substr($buffer, 0, $pos);
         $strLen = strlen($str);
         if ((strlen($buffer) - $seqLen) > $strLen) {
-            echo 'seeking to ' . ($currentPos + $strLen + $seqLen) . PHP_EOL;
             fseek($this->resource, $currentPos + $strLen + $seqLen);
         }
 
