@@ -33,6 +33,6 @@ class ResourceHandler extends AbstractOutputHandler
             } else {
                 $this->delete(strlen($tail));
             }
-        } while($i > 0);
+        } while ($i > 0);
     }
 }

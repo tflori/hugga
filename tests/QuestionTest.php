@@ -35,7 +35,7 @@ class QuestionTest extends TestCase
         $this->console->shouldReceive('waitLine')->with()
             ->once()->andReturn(PHP_EOL)->ordered();
 
-        $answer = (new Question('What is your name?' , 'John Doe'))->ask($this->console);
+        $answer = (new Question('What is your name?', 'John Doe'))->ask($this->console);
 
         self::assertSame('John Doe', $answer);
     }
