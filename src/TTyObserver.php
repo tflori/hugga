@@ -1,6 +1,6 @@
 <?php
 
-namespace Hugga\Input;
+namespace Hugga;
 
 class TTyObserver
 {
@@ -14,7 +14,7 @@ class TTyObserver
 
     public static function isCompatible($stdin)
     {
-        return is_executable('/bin/stty') && function_exists('posix_isatty') && posix_isatty($stdin);
+        return is_executable('/bin/stty') && stream_isatty($stdin);
     }
 
     public function __construct($stdin)

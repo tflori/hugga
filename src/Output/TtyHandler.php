@@ -4,6 +4,11 @@ namespace Hugga\Output;
 
 class TtyHandler extends AbstractOutputHandler
 {
+    public static function isCompatible($resource)
+    {
+        return parent::isCompatible($resource) && stream_isatty($resource);
+    }
+
     public function write(string $str)
     {
         fwrite($this->resource, $str);

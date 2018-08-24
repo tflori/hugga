@@ -27,7 +27,8 @@ class TestCase extends MockeryTestCase
         /** @var Formatter $formatter */
         $formatter = $this->formatter = m::mock(Formatter::class)->makePartial();
         /** @var Console|m\Mock $console */
-        $console = $this->console = m::mock(Console::class, [null, $formatter])->makePartial();
+        $console = $this->console = m::mock(Console::class)->makePartial();
+        $console->__construct(null, $formatter);
         $stdout = $this->stdout = fopen('/tmp/hugga-test.stdout', 'w+');
         $console->setStdout($stdout);
         $stdin = $this->stdin = fopen('/tmp/hugga-test.stdin', 'w+');

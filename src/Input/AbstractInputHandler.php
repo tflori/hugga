@@ -9,6 +9,11 @@ abstract class AbstractInputHandler implements InputInterface
     /** @var resource */
     protected $resource;
 
+    public static function isCompatible($resource)
+    {
+        return is_resource($resource);
+    }
+
     /**
      * @param resource $resource
      */

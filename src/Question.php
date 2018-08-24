@@ -27,7 +27,7 @@ class Question
     public function ask(Console $console)
     {
         $console->write($this->getQuestionText(), Console::WEIGHT_HIGH);
-        $answer = trim($console->waitLine());
+        $answer = trim($console->readLine());
         return $answer === '' ? $this->default : $answer;
     }
 

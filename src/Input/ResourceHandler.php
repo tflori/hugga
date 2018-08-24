@@ -13,7 +13,7 @@ class ResourceHandler extends AbstractInputHandler
         return rtrim(fgets($this->resource));
     }
 
-    public function read(int $count, string $prompt = null): string
+    public function read(int $count = 1, string $prompt = null): string
     {
         // reset the position to read new lines
         fseek($this->resource, ftell($this->resource));

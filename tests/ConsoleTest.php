@@ -175,9 +175,9 @@ class ConsoleTest extends TestCase
         fwrite($this->stdin, $line . 'Jane Doe' . PHP_EOL);
         rewind($this->stdin);
 
-        $answer = $this->console->waitLine();
+        $answer = $this->console->readLine();
 
-        self::assertSame($line, $answer);
+        self::assertSame(rtrim($line), $answer);
     }
 
     /** @test */
@@ -186,7 +186,7 @@ class ConsoleTest extends TestCase
         fwrite($this->stdin, 'foo bar');
         rewind($this->stdin);
 
-        $answer = $this->console->waitChars(3);
+        $answer = $this->console->read(3);
 
         self::assertSame('foo', $answer);
     }

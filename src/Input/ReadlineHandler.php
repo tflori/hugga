@@ -4,12 +4,17 @@ namespace Hugga\Input;
 
 class ReadlineHandler extends AbstractInputHandler
 {
+    public static function isCompatible($resource)
+    {
+        return parent::isCompatible($resource) && stream_isatty($resource) && STDIN === $resource;
+    }
+
     public function readLine(string $prompt = null): string
     {
         return readLine($prompt ?? " \e[D");
     }
 
-    public function read(int $count, string $prompt = null): string
+    public function read(int $count = 1, string $prompt = null): string
     {
         $str = $this->readConditional(function ($str) use ($count) {
             return strlen($str) >= $count;
