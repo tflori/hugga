@@ -2,6 +2,7 @@
 
 namespace Hugga\Test\Input;
 
+use Hugga\AbstractHandler;
 use Hugga\Input\ReadlineHandler;
 use Hugga\Test\TestCase;
 use Mockery as m;
@@ -34,7 +35,7 @@ class ReadlineHandlerTest extends TestCase
     /** @test */
     public function requiresStdin()
     {
-        if (!stream_isatty(STDIN)) {
+        if (!AbstractHandler::isTty(STDIN)) {
             $this->markTestSkipped('STDIN needs to be a tty for this test');
         }
 
