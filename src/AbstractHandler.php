@@ -27,6 +27,11 @@ abstract class AbstractHandler
         $this->resource = $resource;
     }
 
+    /**
+     * @param $resource
+     * @return bool|void
+     * @codeCoverageIgnore polyfill from https://github.com/symfony/polyfill/blob/master/src/Php72/Php72.php
+     */
     protected static function isTty($resource)
     {
         if (function_exists('stream_isatty')) {
