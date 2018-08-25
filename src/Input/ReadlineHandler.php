@@ -11,7 +11,7 @@ class ReadlineHandler extends AbstractInputHandler
 
     public function readLine(string $prompt = null): string
     {
-        return readLine($prompt ?? " \e[D");
+        return $this->phpReadline('', $prompt ?? " \e[D");
     }
 
     public function read(int $count = 1, string $prompt = null): string
@@ -33,20 +33,34 @@ class ReadlineHandler extends AbstractInputHandler
 
     protected function readConditional(callable $conditionMet, string $prompt = null): string
     {
-        $previous = '';
-        readline_callback_handler_install($prompt ?? " \e[D", function ($str) use (&$previous) {
+        $str = $previous = '';
+        $this->phpReadline('callback_handler_install', $prompt ?? " \e[D", function ($str) use (&$previous) {
             $previous .= $str . PHP_EOL;
         });
         do {
-            $r = array(STDIN);
+            $r = array($this->resource);
             $n = stream_select($r, $w, $e, null);
-            if ($n && in_array(STDIN, $r)) {
-                readline_callback_read_char();
-                $str = $previous . readline_info('line_buffer');
+            if ($n && in_array($this->resource, $r)) {
+                $this->phpReadline('callback_read_char');
+                $str = $previous . $this->phpReadline('info', 'line_buffer');
             }
         } while (!$conditionMet($str));
-        readline_callback_handler_remove();
+        $this->phpReadline('callback_handler_remove');
 
         return $str;
+    }
+
+    /**
+     * Calls phps readline_* methods
+     *
+     * @param string $method
+     * @param mixed ...$args
+     * @return mixed
+     * @codeCoverageIgnore we can not test this
+     */
+    protected function phpReadline(string $method, ...$args)
+    {
+        $method = 'readline' . (strlen($method) ? '_' . $method : '');
+        return call_user_func_array($method, $args);
     }
 }
