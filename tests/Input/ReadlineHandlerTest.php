@@ -28,15 +28,18 @@ class ReadlineHandlerTest extends TestCase
     /** @test */
     public function requiresATty()
     {
-        // that is the reason we can not test the next step: STDIN is not a tty in phpunit
-        self::assertFalse(ReadlineHandler::isCompatible(STDIN));
+        self::assertFalse(ReadlineHandler::isCompatible($this->stdin));
     }
 
     /** @test */
     public function requiresStdin()
     {
-        // this is just false because STDOUT is not a tty
+        if (!stream_isatty(STDIN)) {
+            $this->markTestSkipped('STDIN needs to be a tty for this test');
+        }
+
         self::assertFalse(ReadlineHandler::isCompatible(STDOUT));
+        self::assertTrue(ReadlineHandler::isCompatible(STDIN));
     }
 
     /** @test */
