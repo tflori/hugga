@@ -3,6 +3,8 @@
 namespace Hugga\Test;
 
 use Hugga\Console;
+use Hugga\Input\ResourceHandler as InputHandler;
+use Hugga\Output\ResourceHandler as OutputHandler;
 use Mockery as m;
 use Psr\Log\LoggerInterface;
 
@@ -189,5 +191,46 @@ class ConsoleTest extends TestCase
         $answer = $this->console->read(3);
 
         self::assertSame('foo', $answer);
+    }
+
+    /** @test */
+    public function readsUntilSequence()
+    {
+        fwrite($this->stdin, 'lorem ipsum dolor sit amet' . PHP_EOL . PHP_EOL);
+        rewind($this->stdin);
+
+        $answer = $this->console->readUntil(PHP_EOL . PHP_EOL);
+
+        self::assertSame('lorem ipsum dolor sit amet', $answer);
+    }
+
+    /** @test */
+    public function acceptsOutputInterfaceForStdout()
+    {
+        $outputHandler = new OutputHandler($this->stdout);
+
+        $this->console->setStdout($outputHandler);
+
+        self::assertSame($outputHandler, $this->console->getStdout());
+    }
+
+    /** @test */
+    public function acceptsInputInterfaceForStdin()
+    {
+        $inputHandler = new InputHandler($this->stdin);
+
+        $this->console->setStdin($inputHandler);
+
+        self::assertSame($inputHandler, $this->console->getStdin());
+    }
+
+    /** @test */
+    public function acceptsOutputInterfaceForStderr()
+    {
+        $outputHandler = new OutputHandler($this->stderr);
+
+        $this->console->setStderr($outputHandler);
+
+        self::assertSame($outputHandler, $this->console->getStderr());
     }
 }

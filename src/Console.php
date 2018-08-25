@@ -226,12 +226,18 @@ class Console
     {
         if ($stdout instanceof OutputInterface) {
             $this->stdout = $stdout;
+            return $this;
         }
 
         self::assertResource($stdout, __METHOD__);
         $this->stdout = TtyHandler::isCompatible($stdout)
             ? new TtyHandler($stdout) : new OutputHandler($stdout);
         return $this;
+    }
+
+    public function getStdout(): OutputInterface
+    {
+        return $this->stdout;
     }
 
     /**
@@ -244,12 +250,18 @@ class Console
     {
         if ($stdin instanceof InputInterface) {
             $this->stdin = $stdin;
+            return $this;
         }
 
         self::assertResource($stdin, __METHOD__);
         $this->stdin = ReadlineHandler::isCompatible($stdin)
             ? new ReadlineHandler($stdin) : new InputHandler($stdin);
         return $this;
+    }
+
+    public function getStdin(): InputInterface
+    {
+        return $this->stdin;
     }
 
     /**
@@ -262,12 +274,18 @@ class Console
     {
         if ($stderr instanceof OutputInterface) {
             $this->stderr = $stderr;
+            return $this;
         }
 
         self::assertResource($stderr, __METHOD__);
         $this->stderr = TtyHandler::isCompatible($stderr)
             ? new TtyHandler($stderr) : new OutputHandler($stderr);
         return $this;
+    }
+
+    public function getStderr(): OutputInterface
+    {
+        return $this->stderr;
     }
 
     /**

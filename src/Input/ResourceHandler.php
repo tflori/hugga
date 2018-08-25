@@ -15,15 +15,24 @@ class ResourceHandler extends AbstractInputHandler
 
     public function read(int $count = 1, string $prompt = null): string
     {
+        $currentPos = ftell($this->resource);
         // reset the position to read new lines
-        fseek($this->resource, ftell($this->resource));
-        return fread($this->resource, $count);
+        fseek($this->resource, $currentPos);
+
+        $buffer = fread($this->resource, 4 * $count);
+        $str = mb_substr($buffer, 0, $count);
+
+        fseek($this->resource, $currentPos + strlen($str));
+
+        return $str;
     }
 
     public function readUntil(string $sequence, string $prompt = null): string
     {
         $currentPos = ftell($this->resource);
+        // reset the position to read new lines
         fseek($this->resource, $currentPos);
+
         $seqLen = strlen($sequence);
         $buffer = '';
         do {
