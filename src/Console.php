@@ -3,8 +3,8 @@
 namespace Hugga;
 
 use Hugga\Input\ReadlineHandler;
-use Hugga\Input\ResourceHandler as InputHandler;
-use Hugga\Output\ResourceHandler as OutputHandler;
+use Hugga\Input\FileHandler as InputHandler;
+use Hugga\Output\FileHandler as OutputHandler;
 use Hugga\Output\TtyHandler;
 use Psr\Log\LoggerInterface;
 
@@ -38,13 +38,13 @@ class Console
     /** @var bool */
     protected $logMessages = false;
 
-    /** @var OutputInterface */
+    /** @var OutputHandlerInterface */
     protected $stdout;
 
-    /** @var InputInterface */
+    /** @var InputHandlerInterface */
     protected $stdin;
 
-    /** @var OutputInterface */
+    /** @var OutputHandlerInterface */
     protected $stderr;
 
     /** @var bool  */
@@ -219,12 +219,12 @@ class Console
     /**
      * Set the resource for stdout
      *
-     * @param resource|OutputInterface $stdout
+     * @param resource|OutputHandlerInterface $stdout
      * @return $this
      */
     public function setStdout($stdout)
     {
-        if ($stdout instanceof OutputInterface) {
+        if ($stdout instanceof OutputHandlerInterface) {
             $this->stdout = $stdout;
             return $this;
         }
@@ -235,7 +235,7 @@ class Console
         return $this;
     }
 
-    public function getStdout(): OutputInterface
+    public function getStdout(): OutputHandlerInterface
     {
         return $this->stdout;
     }
@@ -243,12 +243,12 @@ class Console
     /**
      * Set the resource for stdin
      *
-     * @param resource|InputInterface $stdin
+     * @param resource|InputHandlerInterface $stdin
      * @return $this
      */
     public function setStdin($stdin)
     {
-        if ($stdin instanceof InputInterface) {
+        if ($stdin instanceof InputHandlerInterface) {
             $this->stdin = $stdin;
             return $this;
         }
@@ -259,20 +259,30 @@ class Console
         return $this;
     }
 
-    public function getStdin(): InputInterface
+    public function getStdin(): InputHandlerInterface
     {
         return $this->stdin;
+    }
+
+    public function getInputObserver()
+    {
+        $resource = $this->stdin->getResource();
+        if (!InputObserver::isCompatible($resource)) {
+            throw new \LogicException('Stdin resource is not compatible for input observer');
+        }
+        // @codeCoverageIgnoreStart
+        return new InputObserver($resource);
     }
 
     /**
      * Set the resource for stderr
      *
-     * @param resource|OutputInterface $stderr
+     * @param resource|OutputHandlerInterface $stderr
      * @return $this
      */
     public function setStderr($stderr)
     {
-        if ($stderr instanceof OutputInterface) {
+        if ($stderr instanceof OutputHandlerInterface) {
             $this->stderr = $stderr;
             return $this;
         }
@@ -283,7 +293,7 @@ class Console
         return $this;
     }
 
-    public function getStderr(): OutputInterface
+    public function getStderr(): OutputHandlerInterface
     {
         return $this->stderr;
     }

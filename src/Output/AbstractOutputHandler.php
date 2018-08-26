@@ -3,9 +3,9 @@
 namespace Hugga\Output;
 
 use Hugga\AbstractHandler;
-use Hugga\OutputInterface;
+use Hugga\OutputHandlerInterface;
 
-abstract class AbstractOutputHandler extends AbstractHandler implements OutputInterface
+abstract class AbstractOutputHandler extends AbstractHandler implements OutputHandlerInterface
 {
     public static function isCompatible($resource)
     {

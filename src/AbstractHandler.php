@@ -28,6 +28,14 @@ abstract class AbstractHandler
     }
 
     /**
+     * @return resource
+     */
+    public function getResource()
+    {
+        return $this->resource;
+    }
+
+    /**
      * @param $resource
      * @return bool|void
      * @codeCoverageIgnore polyfill from https://github.com/symfony/polyfill/blob/master/src/Php72/Php72.php

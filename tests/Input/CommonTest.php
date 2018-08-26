@@ -2,7 +2,7 @@
 
 namespace Hugga\Test\Input;
 
-use Hugga\Input\ResourceHandler;
+use Hugga\Input\FileHandler;
 use Hugga\Test\TestCase;
 
 class CommonTest extends TestCase
@@ -13,6 +13,6 @@ class CommonTest extends TestCase
         self::expectException(\InvalidArgumentException::class);
         self::expectExceptionMessage('has to be of the type resource');
 
-        new ResourceHandler('php://memory');
+        new FileHandler('php://memory');
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Hugga\Input;
 
-class ResourceHandler extends AbstractInputHandler
+class FileHandler extends AbstractInputHandler
 {
     const BUFFER_SIZE = 4096;
 

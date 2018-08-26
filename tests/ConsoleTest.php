@@ -3,8 +3,8 @@
 namespace Hugga\Test;
 
 use Hugga\Console;
-use Hugga\Input\ResourceHandler as InputHandler;
-use Hugga\Output\ResourceHandler as OutputHandler;
+use Hugga\Input\FileHandler as InputHandler;
+use Hugga\Output\FileHandler as OutputHandler;
 use Mockery as m;
 use Psr\Log\LoggerInterface;
 
@@ -232,5 +232,13 @@ class ConsoleTest extends TestCase
         $this->console->setStderr($outputHandler);
 
         self::assertSame($outputHandler, $this->console->getStderr());
+    }
+
+    /** @test */
+    public function throwsWhenStdIsNotCompatible()
+    {
+        self::expectException(\LogicException::class);
+
+        $this->console->getInputObserver();
     }
 }

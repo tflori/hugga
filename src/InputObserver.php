@@ -2,7 +2,14 @@
 
 namespace Hugga;
 
-class TTyObserver
+/**
+ * Class InputObserver
+ *
+ * @package Hugga
+ * @author Thomas Flori <thflori@gmail.com>
+ * @codeCoverageIgnore not testable
+ */
+class InputObserver
 {
     protected $stdin;
 

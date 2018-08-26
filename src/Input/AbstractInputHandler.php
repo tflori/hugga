@@ -3,8 +3,8 @@
 namespace Hugga\Input;
 
 use Hugga\AbstractHandler;
-use Hugga\InputInterface;
+use Hugga\InputHandlerInterface;
 
-abstract class AbstractInputHandler extends AbstractHandler implements InputInterface
+abstract class AbstractInputHandler extends AbstractHandler implements InputHandlerInterface
 {
 }
