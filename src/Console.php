@@ -2,6 +2,10 @@
 
 namespace Hugga;
 
+use Hugga\Input\FileHandler as InputHandler;
+use Hugga\Input\ReadlineHandler;
+use Hugga\Output\FileHandler as OutputHandler;
+use Hugga\Output\TtyHandler;
 use Psr\Log\LoggerInterface;
 
 class Console
@@ -34,14 +38,14 @@ class Console
     /** @var bool */
     protected $logMessages = false;
 
-    /** @var bool|resource */
-    protected $stdout = STDOUT;
+    /** @var OutputHandlerInterface */
+    protected $stdout;
 
-    /** @var bool|resource */
-    protected $stdin = STDIN;
+    /** @var InputHandlerInterface */
+    protected $stdin;
 
-    /** @var bool|resource */
-    protected $stderr = STDERR;
+    /** @var OutputHandlerInterface */
+    protected $stderr;
 
     /** @var bool  */
     protected $ansiEnabled = true;
@@ -56,6 +60,36 @@ class Console
     {
         $this->logger = $logger;
         $this->formatter = $formatter ?? new Formatter();
+        $this->setStdout(STDOUT);
+        $this->setStdin(STDIN);
+        $this->setStderr(STDERR);
+    }
+
+    /**
+     * @param $resource
+     * @return bool
+     * @codeCoverageIgnore polyfill from https://github.com/symfony/polyfill/blob/master/src/Php72/Php72.php
+     */
+    public static function isTty($resource)
+    {
+        if (function_exists('stream_isatty')) {
+            return stream_isatty($resource);
+        }
+
+        if (!is_resource($resource)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Argument 1 passed to %s has to be of the type resource, %s given',
+                __METHOD__,
+                gettype($resource)
+            ));
+        }
+
+        if ('\\' === DIRECTORY_SEPARATOR) {
+            $stat = @fstat($resource);
+            // Check if formatted mode is S_IFCHR
+            return $stat ? 0020000 === ($stat['mode'] & 0170000) : false;
+        }
+        return function_exists('posix_isatty') && @posix_isatty($resource);
     }
 
     /**
@@ -72,37 +106,42 @@ class Console
             return;
         }
 
-        fwrite($this->stdout, $this->format($message));
+        $this->stdout->write($this->format($message));
     }
 
     /**
+     * Read a line from InputHandler
+     *
+     * @param string|null $prompt
      * @return string
      */
-    public function waitLine()
+    public function readLine(string $prompt = null): string
     {
-        return (string)fgets($this->stdin);
+        return $this->stdin->readLine($prompt);
     }
 
-    public function waitChars($length = 1)
+    /**
+     * Read one or more characters from InputHandler
+     *
+     * @param int $count
+     * @param string|null $prompt
+     * @return string
+     */
+    public function read(int $count = 1, string $prompt = null): string
     {
-        // Can not be tested
-        // @codeCoverageIgnoreStart
-        if (function_exists('posix_isatty') && posix_isatty($this->stdin)) {
-            system("stty -icanon");
-            $reset = true;
-        }
-        // @codeCoverageIgnoreEnd
+        return $this->stdin->read($count, $prompt);
+    }
 
-        $answer = (string)fread($this->stdin, $length);
-
-        // Can not be tested
-        // @codeCoverageIgnoreStart
-        if (isset($reset)) {
-            system('stty sane');
-        }
-        // @codeCoverageIgnoreEnd
-
-        return $answer;
+    /**
+     * Read until $sequence from InputHandler
+     *
+     * @param string $sequence
+     * @param string|null $prompt
+     * @return string
+     */
+    public function readUntil(string $sequence, string $prompt = null): string
+    {
+        return $this->stdin->readUntil($sequence, $prompt);
     }
 
     /**
@@ -114,7 +153,7 @@ class Console
     public function writeError(string $message, int $weight = self::WEIGHT_HIGH): void
     {
         $this->log($weight, $message);
-        fwrite($this->stderr, $this->format($message));
+        $this->stderr->write($this->format($message));
     }
 
     public function error(string $message, int $weight = self::WEIGHT_HIGH): void
@@ -207,40 +246,83 @@ class Console
     /**
      * Set the resource for stdout
      *
-     * @param resource $stdout
+     * @param resource|OutputHandlerInterface $stdout
      * @return $this
      */
     public function setStdout($stdout)
     {
+        if ($stdout instanceof OutputHandlerInterface) {
+            $this->stdout = $stdout;
+            return $this;
+        }
+
         self::assertResource($stdout, __METHOD__);
-        $this->stdout = $stdout;
+        $this->stdout = TtyHandler::isCompatible($stdout)
+            ? new TtyHandler($stdout) : new OutputHandler($stdout);
         return $this;
+    }
+
+    public function getStdout(): OutputHandlerInterface
+    {
+        return $this->stdout;
     }
 
     /**
      * Set the resource for stdin
      *
-     * @param resource $stdin
+     * @param resource|InputHandlerInterface $stdin
      * @return $this
      */
     public function setStdin($stdin)
     {
+        if ($stdin instanceof InputHandlerInterface) {
+            $this->stdin = $stdin;
+            return $this;
+        }
+
         self::assertResource($stdin, __METHOD__);
-        $this->stdin = $stdin;
+        $this->stdin = ReadlineHandler::isCompatible($stdin)
+            ? new ReadlineHandler($stdin) : new InputHandler($stdin);
         return $this;
+    }
+
+    public function getStdin(): InputHandlerInterface
+    {
+        return $this->stdin;
+    }
+
+    public function getInputObserver()
+    {
+        $resource = $this->stdin->getResource();
+        if (!InputObserver::isCompatible($resource)) {
+            throw new \LogicException('Stdin resource is not compatible for input observer');
+        }
+        // @codeCoverageIgnoreStart
+        return new InputObserver($resource);
     }
 
     /**
      * Set the resource for stderr
      *
-     * @param resource $stderr
+     * @param resource|OutputHandlerInterface $stderr
      * @return $this
      */
     public function setStderr($stderr)
     {
+        if ($stderr instanceof OutputHandlerInterface) {
+            $this->stderr = $stderr;
+            return $this;
+        }
+
         self::assertResource($stderr, __METHOD__);
-        $this->stderr = $stderr;
+        $this->stderr = TtyHandler::isCompatible($stderr)
+            ? new TtyHandler($stderr) : new OutputHandler($stderr);
         return $this;
+    }
+
+    public function getStderr(): OutputHandlerInterface
+    {
+        return $this->stderr;
     }
 
     /**

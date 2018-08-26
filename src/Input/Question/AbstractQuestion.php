@@ -1,35 +1,28 @@
 <?php
 
-namespace Hugga;
+namespace Hugga\Input\Question;
 
-class Question
+use Hugga\Console;
+
+abstract class AbstractQuestion
 {
     /** @var string */
     protected $question;
 
-    /** @var string */
+    /** @var mixed */
     protected $default;
 
-    /** @var bool */
-    protected $required = false;
-
     /**
-     * Question constructor.
      * @param string $question
      * @param string $default
      */
-    public function __construct(string $question = '', string $default = null)
+    public function __construct(string $question = '', $default = null)
     {
         $this->question = $question;
         $this->default = $default;
     }
 
-    public function ask(Console $console)
-    {
-        $console->write($this->getQuestionText(), Console::WEIGHT_HIGH);
-        $answer = trim($console->waitLine());
-        return $answer === '' ? $this->default : $answer;
-    }
+    abstract public function ask(Console $console);
 
     protected function getQuestionText(): string
     {

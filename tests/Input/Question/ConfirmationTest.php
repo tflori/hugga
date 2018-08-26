@@ -1,9 +1,9 @@
 <?php
 
-namespace Hugga\Test\Question;
+namespace Hugga\Test\Input\Question;
 
 use Hugga\Console;
-use Hugga\Question\Confirmation;
+use Hugga\Input\Question\Confirmation;
 use Hugga\Test\TestCase;
 
 class ConfirmationTest extends TestCase
@@ -11,7 +11,7 @@ class ConfirmationTest extends TestCase
     /** @test */
     public function returnsFalseByDefault()
     {
-        $this->console->shouldReceive('waitChars')->with()
+        $this->console->shouldReceive('read')->with()
             ->once()->andReturn(PHP_EOL);
 
         $answer = (new Confirmation('Confirm?'))->ask($this->console);
@@ -22,7 +22,7 @@ class ConfirmationTest extends TestCase
     /** @test */
     public function returnsDefault()
     {
-        $this->console->shouldReceive('waitChars')->with()
+        $this->console->shouldReceive('read')->with()
             ->once()->andReturn('x');
 
         $answer = (new Confirmation('Confirm?', true))->ask($this->console);
@@ -33,10 +33,10 @@ class ConfirmationTest extends TestCase
     /** @test */
     public function returnsTrue()
     {
-        $this->console->shouldReceive('waitChars')->with()
+        $this->console->shouldReceive('read')->with()
             ->once()->andReturn('y');
 
-        $answer = (new Confirmation('Confirm?', false))->ask($this->console);
+        $answer = (new \Hugga\Input\Question\Confirmation('Confirm?', false))->ask($this->console);
 
         self::assertTrue($answer);
     }
@@ -44,10 +44,10 @@ class ConfirmationTest extends TestCase
     /** @test */
     public function returnsFalse()
     {
-        $this->console->shouldReceive('waitChars')->with()
+        $this->console->shouldReceive('read')->with()
             ->once()->andReturn('n');
 
-        $answer = (new Confirmation('Confirm?', true))->ask($this->console);
+        $answer = (new \Hugga\Input\Question\Confirmation('Confirm?', true))->ask($this->console);
 
         self::assertFalse($answer);
     }
@@ -62,11 +62,11 @@ class ConfirmationTest extends TestCase
     public function changeCharacters($true, $false, $default, $char, $expected)
     {
         $this->console->shouldReceive('write')
-            ->with(sprintf('Question text [ %s / %s ] ', $true, $false), Console::WEIGHT_HIGH)
+            ->with(sprintf('Simple text [ %s / %s ] ', $true, $false), Console::WEIGHT_HIGH)
             ->once()->ordered();
-        $this->console->shouldReceive('waitChars')->with()
+        $this->console->shouldReceive('read')->with()
             ->once()->andReturn($char)->ordered();
-        $question = new Confirmation('Question text', $default);
+        $question = new \Hugga\Input\Question\Confirmation('Simple text', $default);
 
         $question->setCharacters($true, $false);
         $answer = $question->ask($this->console);
