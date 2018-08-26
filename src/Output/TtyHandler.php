@@ -2,11 +2,13 @@
 
 namespace Hugga\Output;
 
+use Hugga\Console;
+
 class TtyHandler extends AbstractOutputHandler
 {
     public static function isCompatible($resource)
     {
-        return parent::isCompatible($resource) && static::isTty($resource);
+        return parent::isCompatible($resource) && Console::isTty($resource);
     }
 
     public function write(string $str)

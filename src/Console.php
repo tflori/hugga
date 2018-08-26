@@ -2,8 +2,8 @@
 
 namespace Hugga;
 
-use Hugga\Input\ReadlineHandler;
 use Hugga\Input\FileHandler as InputHandler;
+use Hugga\Input\ReadlineHandler;
 use Hugga\Output\FileHandler as OutputHandler;
 use Hugga\Output\TtyHandler;
 use Psr\Log\LoggerInterface;
@@ -63,6 +63,33 @@ class Console
         $this->setStdout(STDOUT);
         $this->setStdin(STDIN);
         $this->setStderr(STDERR);
+    }
+
+    /**
+     * @param $resource
+     * @return bool
+     * @codeCoverageIgnore polyfill from https://github.com/symfony/polyfill/blob/master/src/Php72/Php72.php
+     */
+    public static function isTty($resource)
+    {
+        if (function_exists('stream_isatty')) {
+            return stream_isatty($resource);
+        }
+
+        if (!is_resource($resource)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Argument 1 passed to %s has to be of the type resource, %s given',
+                __METHOD__,
+                gettype($resource)
+            ));
+        }
+
+        if ('\\' === DIRECTORY_SEPARATOR) {
+            $stat = @fstat($resource);
+            // Check if formatted mode is S_IFCHR
+            return $stat ? 0020000 === ($stat['mode'] & 0170000) : false;
+        }
+        return function_exists('posix_isatty') && @posix_isatty($resource);
     }
 
     /**

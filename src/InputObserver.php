@@ -21,7 +21,7 @@ class InputObserver
 
     public static function isCompatible($stdin)
     {
-        return is_executable('/bin/stty') && stream_isatty($stdin);
+        return is_executable('/bin/stty') && Console::isTty($stdin);
     }
 
     public function __construct($stdin)

@@ -2,11 +2,13 @@
 
 namespace Hugga\Input;
 
+use Hugga\Console;
+
 class ReadlineHandler extends AbstractInputHandler
 {
     public static function isCompatible($resource)
     {
-        return parent::isCompatible($resource) && static::isTty($resource) && STDIN === $resource;
+        return parent::isCompatible($resource) && Console::isTty($resource) && STDIN === $resource;
     }
 
     public function readLine(string $prompt = null): string
