@@ -14,10 +14,9 @@ class TtyHandler extends AbstractOutputHandler
         fwrite($this->resource, $str);
     }
 
-    public function delete(int $chars)
+    public function delete(int $count)
     {
-        $left = chr(0x1b) . chr(0x5b) . chr(0x44);
-        fwrite($this->resource, str_repeat($left . ' ' . $left, $chars));
+        fwrite($this->resource, str_repeat("\e[D \e[D", $count));
     }
 
     public function deleteLine()

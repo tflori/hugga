@@ -29,11 +29,11 @@ class TestCase extends MockeryTestCase
         /** @var Console|m\Mock $console */
         $console = $this->console = m::mock(Console::class)->makePartial();
         $console->__construct(null, $formatter);
-        $stdout = $this->stdout = fopen('/tmp/hugga-test.stdout', 'w+');
+        $stdout = $this->stdout = fopen('php://memory', 'w+');
         $console->setStdout($stdout);
-        $stdin = $this->stdin = fopen('/tmp/hugga-test.stdin', 'w+');
+        $stdin = $this->stdin = fopen('php://temp', 'w+');
         $console->setStdin($stdin);
-        $stderr = $this->stderr = fopen('/tmp/hugga-test.stderr', 'w+');
+        $stderr = $this->stderr = fopen('php://memory', 'w+');
         $console->setStderr($stderr);
     }
 }
