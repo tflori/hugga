@@ -1,12 +1,11 @@
 <?php
 
-namespace Hugga\Question;
+namespace Hugga\Input\Question;
 
 use Hugga\Console;
-use Hugga\Question;
 
 /**
- * Confirmation Question
+ * Confirmation
  *
  * Supports changing the characters (currently only ascii supported).
  *
@@ -19,9 +18,9 @@ use Hugga\Question;
  * Ideas:
  *   - support utf8 characters
  *   - support
- * @package Hugga\Question
+ * @package Hugga\Input\Question\Simple
  */
-class Confirmation extends Question
+class Confirmation extends AbstractQuestion
 {
     /** @var string */
     protected $true = 'y';
@@ -29,10 +28,9 @@ class Confirmation extends Question
     /** @var string */
     protected $false = 'n';
 
-    public function __construct(string $question, bool $default = false)
+    public function __construct(string $question, $default = false)
     {
-        $this->question = $question;
-        $this->default = $default;
+        parent::__construct($question, $default);
     }
 
     /**

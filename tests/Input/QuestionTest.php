@@ -1,9 +1,10 @@
 <?php
 
-namespace Hugga\Test;
+namespace Hugga\Test\Input;
 
 use Hugga\Console;
-use Hugga\Question;
+use Hugga\Input\Question\Simple;
+use Hugga\Test\TestCase;
 
 class QuestionTest extends TestCase
 {
@@ -13,7 +14,7 @@ class QuestionTest extends TestCase
         $this->console->shouldReceive('readLine')->with()
             ->once()->andReturn('John Doe');
 
-        $answer = (new Question())->ask($this->console);
+        $answer = (new \Hugga\Input\Question\Simple())->ask($this->console);
 
         self::assertSame('John Doe', $answer);
     }
@@ -26,7 +27,7 @@ class QuestionTest extends TestCase
         $this->console->shouldReceive('readLine')->with()
             ->once()->andReturn('John Doe')->ordered();
 
-        (new Question('What is your name?'))->ask($this->console);
+        (new Simple('What is your name?'))->ask($this->console);
     }
 
     /** @test */
@@ -35,7 +36,7 @@ class QuestionTest extends TestCase
         $this->console->shouldReceive('readLine')->with()
             ->once()->andReturn('')->ordered();
 
-        $answer = (new Question('What is your name?', 'John Doe'))->ask($this->console);
+        $answer = (new \Hugga\Input\Question\Simple('What is your name?', 'John Doe'))->ask($this->console);
 
         self::assertSame('John Doe', $answer);
     }
@@ -48,6 +49,6 @@ class QuestionTest extends TestCase
         $this->console->shouldReceive('readLine')->with()
             ->once()->andReturn('')->ordered();
 
-        (new Question('What is your name?', 'John Doe'))->ask($this->console);
+        (new Simple('What is your name?', 'John Doe'))->ask($this->console);
     }
 }
