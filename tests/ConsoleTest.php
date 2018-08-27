@@ -4,6 +4,7 @@ namespace Hugga\Test;
 
 use Hugga\Console;
 use Hugga\Input\FileHandler as InputHandler;
+use Hugga\Input\Question\Simple;
 use Hugga\Output\FileHandler as OutputHandler;
 use Mockery as m;
 use Psr\Log\LoggerInterface;
@@ -240,5 +241,28 @@ class ConsoleTest extends TestCase
         self::expectException(\LogicException::class);
 
         $this->console->getInputObserver();
+    }
+
+    /** @test */
+    public function asksTheQuestion()
+    {
+        $question = m::mock(Simple::class);
+        $question->shouldReceive('ask')->with($this->console)
+            ->once()->andReturn('Answer');
+
+        $result = $this->console->ask($question);
+
+        self::assertSame('Answer', $result);
+    }
+
+    /** @test */
+    public function createsASimpleQuestionAndAsks()
+    {
+        fwrite($this->stdin, 'Answer' . PHP_EOL);
+        rewind($this->stdin);
+
+        $result = $this->console->ask('Whats up bro?');
+
+        self::assertSame('Answer', $result);
     }
 }

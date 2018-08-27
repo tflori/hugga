@@ -11,24 +11,40 @@ require_once __DIR__ . '/vendor/autoload.php';
 $console = new Console();
 
 // Formatted output
+$console->line('${bold;cyan}Formatting');
 $console->line('${red}This is a red text');
 $console->line('${fg:blue;bg:white}Blue text on white background');
 $console->line('${u}Underlined ${cyan} and teal');
 $console->line('${bold}Bold${r} and ${underline}underline${reset} can be written out too');
+// preformatted:
+$console->info('This is an information');
+$console->warn('This is a warning');
+$console->error('This is an error');
 
 // Color table
+$console->line(PHP_EOL . '${bold;cyan}Colors');
 $colors = [
-    'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'grey', 'light-red', 'light-green', 'light-yellow',
-    'light-blue', 'light-magenta', 'light-cyan', 'white'
+    'black', 'dark-grey', 'grey', 'white', 'red', 'light-red', 'green', 'light-green', 'yellow', 'light-yellow', 'blue',
+    'light-blue', 'magenta', 'light-magenta', 'cyan', 'light-cyan'
 ];
 $maxLen = max(array_map('strlen', $colors));
+//$console->line(sprintf(
+//    '%s %s',
+//    str_repeat(" ", $maxLen + 1),
+//    " " . implode("   ", str_replace('light', 'l', $colors)) . " "
+//));
 foreach ($colors as $fgColor) {
     $console->write(sprintf('${%s}%' . $maxLen . 's: ', $fgColor, $fgColor));
     foreach ($colors as $bgColor) {
-        $console->write(sprintf('${fg:%s;bg:%s}  %s  ${r}  ', $fgColor, $bgColor, $bgColor));
+        $console->write(sprintf('${fg:%s;bg:%s}  #42  ${r}  ', $fgColor, $bgColor));
     }
     $console->write(PHP_EOL);
 }
+
+// Questions
+$console->line(PHP_EOL . '${bold;cyan}Questions');
+$name = $console->ask('What is your name?');
+$console->info('Hello ' . $name . '!');
 
 //$console = new \Hugga\Console();
 //

@@ -2,9 +2,9 @@
 
 namespace Hugga\Input\Question;
 
-use Hugga\Console;
+use Hugga\QuestionInterface;
 
-abstract class AbstractQuestion
+abstract class AbstractQuestion implements QuestionInterface
 {
     /** @var string */
     protected $question;
@@ -21,8 +21,6 @@ abstract class AbstractQuestion
         $this->question = $question;
         $this->default = $default;
     }
-
-    abstract public function ask(Console $console);
 
     protected function getQuestionText(): string
     {

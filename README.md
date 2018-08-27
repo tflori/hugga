@@ -23,7 +23,7 @@ $ composer require tflori/hugga
 <?php
 
 $console = new Hugga\Console;
-$name = $console->aks('What is your name?');
+$name = $console->ask('What is your name?');
 $console->writeline('${fg:white;bg:white;bold}Nice to meet you ' . $name . '!');
 
 $console->line('You will see this', Hugga\Console::WEIGHT_NORMAL);

@@ -3,6 +3,7 @@
 namespace Hugga;
 
 use Hugga\Input\FileHandler as InputHandler;
+use Hugga\Input\Question\Simple;
 use Hugga\Input\ReadlineHandler;
 use Hugga\Output\FileHandler as OutputHandler;
 use Hugga\Output\TtyHandler;
@@ -202,6 +203,22 @@ class Console
     public function line(string $message, int $weight = self::WEIGHT_NORMAL): void
     {
         $this->write($message . PHP_EOL, $weight);
+    }
+
+    /**
+     * Ask a simple question or the given question.
+     *
+     * @param QuestionInterface|string $question
+     * @param mixed $default
+     * @return mixed
+     */
+    public function ask($question, $default = null)
+    {
+        if ($question instanceof QuestionInterface) {
+            return $question->ask($this);
+        }
+
+        return (new Simple($question, $default))->ask($this);
     }
 
     /**
