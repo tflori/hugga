@@ -212,7 +212,7 @@ class ConsoleTest extends TestCase
 
         $this->console->setStdout($outputHandler);
 
-        self::assertSame($outputHandler, $this->console->getStdout());
+        self::assertSame($outputHandler, $this->console->getOutput());
     }
 
     /** @test */
@@ -222,7 +222,7 @@ class ConsoleTest extends TestCase
 
         $this->console->setStdin($inputHandler);
 
-        self::assertSame($inputHandler, $this->console->getStdin());
+        self::assertSame($inputHandler, $this->console->getInput());
     }
 
     /** @test */

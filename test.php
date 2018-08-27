@@ -1,6 +1,7 @@
 <?php
 
 use Hugga\Console;
+use Hugga\Input\Question\Confirmation;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -43,8 +44,29 @@ foreach ($colors as $fgColor) {
 
 // Questions
 $console->line(PHP_EOL . '${bold;cyan}Questions');
-$name = $console->ask('What is your name?');
+$name = $console->ask('What is your name?', 'John Doe');
 $console->info('Hello ' . $name . '!');
+if ($console->ask(new Confirmation('Is this correct?'))) {
+    $console->info('Great!');
+} else {
+    $console->warn('Why you are lying to me?');
+}
+
+// Manual reading from input
+$console->line(PHP_EOL . '${bold;cyan}Input');
+$console->info('Write exit to continue; press up to restore previous line');
+$line = '';
+do {
+    if (!empty($line)) {
+        $console->warn('processing ' . $line);
+    }
+    $line = $console->readLine('$ ');
+    readline_add_history($line);
+} while (strtolower(trim($line)) != 'exit');
+$console->read(3, 'Enter 3 letters: ');
+$console->write(PHP_EOL);
+$console->info('Enter your message (end with dot in line for itself)');
+$console->readUntil(PHP_EOL . '.' . PHP_EOL, '');
 
 //$console = new \Hugga\Console();
 //

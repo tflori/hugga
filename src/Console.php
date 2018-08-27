@@ -279,7 +279,7 @@ class Console
         return $this;
     }
 
-    public function getStdout(): OutputHandlerInterface
+    public function getOutput(): OutputHandlerInterface
     {
         return $this->stdout;
     }
@@ -303,7 +303,7 @@ class Console
         return $this;
     }
 
-    public function getStdin(): InputHandlerInterface
+    public function getInput(): InputHandlerInterface
     {
         return $this->stdin;
     }
