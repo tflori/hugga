@@ -111,6 +111,26 @@ class Console
     }
 
     /**
+     * @param int|string $count
+     */
+    public function delete($count)
+    {
+        if (is_string($count)) {
+            $count = mb_strlen($count);
+        }
+
+        $this->stdout->delete($count);
+    }
+
+    /**
+     * @codeCoverageIgnore alias to ->getOutput()->deleteLine()
+     */
+    public function deleteLine()
+    {
+        $this->stdout->deleteLine();
+    }
+
+    /**
      * Read a line from InputHandler
      *
      * @param string|null $prompt

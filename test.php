@@ -29,11 +29,6 @@ $colors = [
     'light-blue', 'magenta', 'light-magenta', 'cyan', 'light-cyan'
 ];
 $maxLen = max(array_map('strlen', $colors));
-//$console->line(sprintf(
-//    '%s %s',
-//    str_repeat(" ", $maxLen + 1),
-//    " " . implode("   ", str_replace('light', 'l', $colors)) . " "
-//));
 foreach ($colors as $fgColor) {
     $console->write(sprintf('${%s}%' . $maxLen . 's: ', $fgColor, $fgColor));
     foreach ($colors as $bgColor) {
@@ -67,6 +62,46 @@ $console->read(3, 'Enter 3 letters: ');
 $console->write(PHP_EOL);
 $console->info('Enter your message (end with dot in line for itself)');
 $console->readUntil(PHP_EOL . '.' . PHP_EOL, '');
+
+// Deleting output
+$console->line(PHP_EOL . '${bold;cyan}Delete');
+$console->write('Importing xml file ... ${yellow}in progress');
+sleep(2);
+$console->delete('in progress'); // or 11
+$console->line('${green}done');
+
+// Progress bar (will be implemented)
+$console->line(PHP_EOL . '${bold;cyan}Progress bar');
+function getProgressLine($i, $max)
+{
+    $size = 30;
+    $perc = $i / $max;
+    $done = floor($perc * $size);
+    $line = ' [' . str_repeat('#', $done) . str_repeat('-', $size - $done) . '] ';
+    return $line . getProgressText($i, $max);
+}
+
+function getProgressText($i, $max)
+{
+    $perc = round($i / $max * 100, 2);
+    $l = strlen($max);
+    return sprintf('%\' 6.2f %%  ( %\' ' . $l . 'd / %d )', $perc, $i, $max);
+}
+
+$max = mt_rand(9000, 12000);
+$s = microtime(true);
+for ($i = 0; $i < $max; $i++) {
+    usleep(mt_rand(500, 2000));
+    if ($i === 0) {
+        $console->write(getProgressLine($i, $max));
+    } elseif ((microtime(true) - $s) > 0.1) {
+        $s = microtime(true);
+        $console->deleteLine();
+        $console->write(getProgressLine($i, $max));
+    }
+}
+$console->deleteLine();
+$console->write(getProgressLine($i, $max) . PHP_EOL);
 
 //$console = new \Hugga\Console();
 //
@@ -164,106 +199,3 @@ $console->readUntil(PHP_EOL . '.' . PHP_EOL, '');
 //$message = $console->readUntil(PHP_EOL . '.' . PHP_EOL);
 
 //var_dump($subject, $message);
-
-//$input = new \Hugga\Input\TtyHandler(STDIN);
-//do {
-//    $c = $input->readMultibyte(false);
-//    echo implode(' ', array_map('dechex', array_map('ord', str_split($c)))) . PHP_EOL;
-////    if (ord($c) === 127) {
-////        echo "\e[D \e[D";
-////    } else {
-////        echo $c;
-////    }
-//} while ($c != '.');
-
-//$input = new \Hugga\Input\ReadlineHandler(STDIN);
-//echo $input->readLine('$ ') . PHP_EOL;
-//echo $input->read(5, '$ ') . PHP_EOL;
-//echo $input->readUntil(PHP_EOL . '.' . PHP_EOL) . PHP_EOL;
-
-//function getProgressLine($i, $max)
-//{
-//    $size = 30;
-//    $perc = $i / $max;
-//    $done = floor($perc * $size);
-//    $line = ' [' . str_repeat('#', $done) . str_repeat('-', $size - $done) . '] ';
-//    return $line . getProgressText($i, $max);
-//}
-//
-//function getProgressText($i, $max)
-//{
-//    $perc = round($i / $max * 100, 2);
-//    $l = strlen($max);
-//    return sprintf('%\' 6.2f %%  ( %\' ' . $l . 'd / %d )', $perc, $i, $max);
-//}
-//
-//
-//$max = mt_rand(9000, 12000);
-//$th = new Hugga\Output\TtyHandler(STDOUT);
-//$s = microtime(true);
-//for ($i = 0; $i < $max; $i++) {
-//    usleep(1000);
-//    if ($i === 0) {
-//        $th->write(getProgressLine($i, $max));
-//    } elseif ((microtime(true) - $s) > 0.1) {
-//        $s = microtime(true);
-//        $th->deleteLine();
-//        $th->write(getProgressLine($i, $max));
-////    } else {
-////        $progressText = getProgressText($i, $max);
-////        $th->delete(strlen($progressText));
-////        $th->write($progressText);
-//    }
-//}
-//$th->deleteLine();
-//$th->write(getProgressLine($i, $max) . PHP_EOL);
-
-//function stty($options) {
-//    exec($cmd = "/bin/stty $options", $output, $el);
-//    $el && die("exec($cmd) failed");
-//    return implode(" ", $output);
-//}
-//
-//function getchar($echo = false) {
-//    $echo = $echo ? "" : "-echo";
-//
-//    # Get original settings
-//    $stty_settings = preg_replace("#.*; ?#s", "", stty("--all"));
-//
-//    # Set new ones
-//    stty("cbreak $echo");
-//
-//    # Get characters until a PERIOD is typed,
-//    # showing their hexidecimal ordinal values.
-//    printf("> ");
-//    do {
-//        $c = '';
-//        do {
-//            $c .= fgetc(STDIN);
-//            list($input, $output, $error) = [[STDIN], [], []];
-//        } while (stream_select($input, $output, $error, 0));
-//
-//        if (strlen($c) === 1 && ord($c) < 32) {
-//            // stop here ?
-//            if (ord($c) === 10) {
-//                printf("\n> ");
-//            } elseif (ord($c) === 27) {
-//                break;
-//            } else {
-//                echo ord($c) . ' ';
-//            }
-//        } elseif (strlen($c) > 1 && ord($c[0]) < 32) {
-//            // what to do ?
-//            array_map(function ($c) {
-//                echo dechex(ord($c)) . ' ';
-//            }, str_split($c));
-//        } else {
-//            echo '<' . $c . '> ';
-//        }
-//    } while (true);
-//
-//    # Return settings
-//    stty($stty_settings);
-//}
-//
-//getchar();

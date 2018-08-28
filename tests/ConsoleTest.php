@@ -265,4 +265,15 @@ class ConsoleTest extends TestCase
 
         self::assertSame('Answer', $result);
     }
+
+    /** @test */
+    public function deletesStrlenCharacters()
+    {
+        fwrite($this->stdout, 'foo bär');
+
+        $this->console->delete('bar');
+
+        rewind($this->stdout);
+        self::assertSame('foo ', fread($this->stdout, 4096));
+    }
 }
