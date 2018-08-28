@@ -65,7 +65,7 @@ class Confirmation extends AbstractQuestion
     protected function getQuestionText(): string
     {
         return sprintf(
-            '%s [ %s / %s ] ',
+            '%s [ %s / %s ]',
             $this->question,
             $this->default ? strtoupper($this->true) : $this->true,
             $this->default ? $this->false : strtoupper($this->false)

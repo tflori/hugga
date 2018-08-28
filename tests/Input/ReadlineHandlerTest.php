@@ -57,7 +57,7 @@ class ReadlineHandlerTest extends TestCase
     /** @test */
     public function usesEmptyPromptByDefault()
     {
-        $this->readline->shouldReceive('phpReadline')->with('', " \e[D")
+        $this->readline->shouldReceive('phpReadline')->with('', " ")
             ->once()->andReturn('foo bar');
 
         $this->readline->readLine();
@@ -115,7 +115,7 @@ class ReadlineHandlerTest extends TestCase
 
         // store the closure
         $this->readline->shouldReceive('phpReadline')
-            ->with('callback_handler_install', " \e[D", m::type(\Closure::class))
+            ->with('callback_handler_install', " ", m::type(\Closure::class))
             ->andReturnUsing(function ($m, $p, $c) use (&$closure, &$lineBuffer) {
                 $lineBuffer = '';
                 $closure = $c;

@@ -13,12 +13,7 @@ class ReadlineHandler extends AbstractInputHandler
 
     public function readLine(string $prompt = null): string
     {
-        if ($prompt === null) {
-            echo "\e[D";
-            $prompt = " ";
-        }
-
-        return $this->phpReadline('', $prompt);
+        return $this->phpReadline('', $prompt ?? ' ');
     }
 
     public function read(int $count = 1, string $prompt = null): string
@@ -40,13 +35,8 @@ class ReadlineHandler extends AbstractInputHandler
 
     protected function readConditional(callable $conditionMet, string $prompt = null): string
     {
-        if ($prompt === null) {
-            echo "\e[D";
-            $prompt = " ";
-        }
-
         $str = $previous = '';
-        $this->phpReadline('callback_handler_install', $prompt, function ($str) use (&$previous) {
+        $this->phpReadline('callback_handler_install', $prompt ?? ' ', function ($str) use (&$previous) {
             $previous .= $str . PHP_EOL;
         });
         do {

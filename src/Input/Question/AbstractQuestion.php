@@ -29,7 +29,7 @@ abstract class AbstractQuestion implements QuestionInterface
         }
 
         return sprintf(
-            $this->default ? '%s [%s] ' : '%s ',
+            $this->default ? '%s [%s]' : '%s',
             $this->question,
             $this->default
         );

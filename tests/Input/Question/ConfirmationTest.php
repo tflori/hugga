@@ -62,7 +62,7 @@ class ConfirmationTest extends TestCase
     public function changeCharacters($true, $false, $default, $char, $expected)
     {
         $this->console->shouldReceive('write')
-            ->with(sprintf('Simple text [ %s / %s ] ', $true, $false), Console::WEIGHT_HIGH)
+            ->with(sprintf('Simple text [ %s / %s ]', $true, $false), Console::WEIGHT_HIGH)
             ->once()->ordered();
         $this->console->shouldReceive('read')->with()
             ->once()->andReturn($char)->ordered();

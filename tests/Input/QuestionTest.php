@@ -22,7 +22,7 @@ class QuestionTest extends TestCase
     /** @test */
     public function outputsTheQuestion()
     {
-        $this->console->shouldReceive('write')->with('What is your name? ', Console::WEIGHT_HIGH)
+        $this->console->shouldReceive('write')->with('What is your name?', Console::WEIGHT_HIGH)
             ->once()->andReturnSelf();
         $this->console->shouldReceive('readLine')->with()
             ->once()->andReturn('John Doe')->ordered();
@@ -44,7 +44,7 @@ class QuestionTest extends TestCase
     /** @test */
     public function outputsTheDefault()
     {
-        $this->console->shouldReceive('write')->with('What is your name? [John Doe] ', Console::WEIGHT_HIGH)
+        $this->console->shouldReceive('write')->with('What is your name? [John Doe]', Console::WEIGHT_HIGH)
             ->once()->andReturnSelf();
         $this->console->shouldReceive('readLine')->with()
             ->once()->andReturn('')->ordered();
