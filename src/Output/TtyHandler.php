@@ -6,7 +6,7 @@ use Hugga\Console;
 
 class TtyHandler extends AbstractOutputHandler
 {
-    public static function isCompatible($resource)
+    public static function isCompatible($resource): bool
     {
         return parent::isCompatible($resource) && Console::isTty($resource);
     }

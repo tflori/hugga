@@ -16,7 +16,7 @@ class TtyHandlerTest extends TestCase
     /** @test */
     public function writesToResource()
     {
-        $handler = new TtyHandler($this->stdout);
+        $handler = new TtyHandler($this->console, $this->stdout);
 
         $handler->write('any string');
 
@@ -27,7 +27,7 @@ class TtyHandlerTest extends TestCase
     /** @test */
     public function outputsCursorMovement()
     {
-        $handler = new TtyHandler($this->stdout);
+        $handler = new TtyHandler($this->console, $this->stdout);
 
         $handler->delete(1);
 
@@ -38,7 +38,7 @@ class TtyHandlerTest extends TestCase
     /** @test */
     public function outputsCarriageReturnAndDeleteLine()
     {
-        $handler = new TtyHandler($this->stdout);
+        $handler = new TtyHandler($this->console, $this->stdout);
 
         $handler->deleteLine();
 

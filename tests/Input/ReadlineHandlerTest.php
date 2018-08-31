@@ -15,7 +15,7 @@ class ReadlineHandlerTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->readline = m::mock(ReadlineHandler::class, [$this->stdin])->makePartial();
+        $this->readline = m::mock(ReadlineHandler::class, [$this->console, $this->stdin])->makePartial();
         $this->readline->shouldAllowMockingProtectedMethods();
         $this->readline->shouldNotReceive('phpReadline')->byDefault();
     }

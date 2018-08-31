@@ -208,7 +208,7 @@ class ConsoleTest extends TestCase
     /** @test */
     public function acceptsOutputInterfaceForStdout()
     {
-        $outputHandler = new OutputHandler($this->stdout);
+        $outputHandler = new OutputHandler($this->console, $this->stdout);
 
         $this->console->setStdout($outputHandler);
 
@@ -218,7 +218,7 @@ class ConsoleTest extends TestCase
     /** @test */
     public function acceptsInputInterfaceForStdin()
     {
-        $inputHandler = new InputHandler($this->stdin);
+        $inputHandler = new InputHandler($this->console, $this->stdin);
 
         $this->console->setStdin($inputHandler);
 
@@ -228,7 +228,7 @@ class ConsoleTest extends TestCase
     /** @test */
     public function acceptsOutputInterfaceForStderr()
     {
-        $outputHandler = new OutputHandler($this->stderr);
+        $outputHandler = new OutputHandler($this->console, $this->stderr);
 
         $this->console->setStderr($outputHandler);
 

@@ -7,15 +7,19 @@ abstract class AbstractHandler
     /** @var resource */
     protected $resource;
 
-    public static function isCompatible($resource)
+    /** @var Console */
+    protected $console;
+
+    public static function isCompatible($resource): bool
     {
         return is_resource($resource);
     }
 
     /**
+     * @param Console $console
      * @param resource $resource
      */
-    public function __construct($resource)
+    public function __construct(Console $console, $resource)
     {
         if (!is_resource($resource)) {
             throw new \InvalidArgumentException(sprintf(
@@ -25,6 +29,7 @@ abstract class AbstractHandler
             ));
         }
         $this->resource = $resource;
+        $this->console = $console;
     }
 
     /**

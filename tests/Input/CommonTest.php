@@ -13,6 +13,6 @@ class CommonTest extends TestCase
         self::expectException(\InvalidArgumentException::class);
         self::expectExceptionMessage('has to be of the type resource');
 
-        new FileHandler('php://memory');
+        new FileHandler($this->console, 'php://memory');
     }
 }

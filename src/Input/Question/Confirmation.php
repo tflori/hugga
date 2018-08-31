@@ -53,7 +53,6 @@ class Confirmation extends AbstractQuestion
     {
         $console->write($this->getQuestionText(), Console::WEIGHT_HIGH);
         $answer = $console->read();
-        $answer === substr(PHP_EOL, 0, 1) || $console->line('');
         $answer = strtolower(trim($answer));
         if (empty($answer) || !in_array($answer, [$this->true, $this->false])) {
             return $this->default;

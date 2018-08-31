@@ -2,6 +2,7 @@
 
 namespace Hugga;
 
+use Hugga\Input\EditlineHandler;
 use Hugga\Input\FileHandler as InputHandler;
 use Hugga\Input\Question\Simple;
 use Hugga\Input\ReadlineHandler;
@@ -73,16 +74,16 @@ class Console
      */
     public static function isTty($resource)
     {
-        if (function_exists('stream_isatty')) {
-            return stream_isatty($resource);
-        }
-
         if (!is_resource($resource)) {
             throw new \InvalidArgumentException(sprintf(
                 'Argument 1 passed to %s has to be of the type resource, %s given',
                 __METHOD__,
                 gettype($resource)
             ));
+        }
+
+        if (function_exists('stream_isatty')) {
+            return stream_isatty($resource);
         }
 
         if ('\\' === DIRECTORY_SEPARATOR) {
@@ -295,7 +296,7 @@ class Console
 
         self::assertResource($stdout, __METHOD__);
         $this->stdout = TtyHandler::isCompatible($stdout)
-            ? new TtyHandler($stdout) : new OutputHandler($stdout);
+            ? new TtyHandler($this, $stdout) : new OutputHandler($this, $stdout);
         return $this;
     }
 
@@ -318,8 +319,13 @@ class Console
         }
 
         self::assertResource($stdin, __METHOD__);
-        $this->stdin = ReadlineHandler::isCompatible($stdin)
-            ? new ReadlineHandler($stdin) : new InputHandler($stdin);
+        foreach ([ReadlineHandler::class, EditlineHandler::class] as $handler) {
+            if ($handler::isCompatible($stdin)) {
+                $this->stdin = new $handler($this, $stdin);
+                return $this;
+            }
+        }
+        $this->stdin = new InputHandler($this, $stdin);
         return $this;
     }
 
@@ -353,7 +359,7 @@ class Console
 
         self::assertResource($stderr, __METHOD__);
         $this->stderr = TtyHandler::isCompatible($stderr)
-            ? new TtyHandler($stderr) : new OutputHandler($stderr);
+            ? new TtyHandler($this, $stderr) : new OutputHandler($this, $stderr);
         return $this;
     }
 

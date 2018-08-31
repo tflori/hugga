@@ -18,7 +18,7 @@ class ResourceHandlerTest extends TestCase
     {
         fwrite($this->stdin, 'foo' . PHP_EOL . 'bar' . PHP_EOL);
         rewind($this->stdin);
-        $handler = new InputHandler($this->stdin);
+        $handler = new InputHandler($this->console, $this->stdin);
 
         self::assertSame('foo', $handler->readLine());
         self::assertSame('bar', $handler->readLine());
@@ -29,7 +29,7 @@ class ResourceHandlerTest extends TestCase
     {
         fwrite($this->stdin, '✔✘');
         rewind($this->stdin);
-        $handler = new InputHandler($this->stdin);
+        $handler = new InputHandler($this->console, $this->stdin);
 
         self::assertSame('✔', $handler->read());
         self::assertSame('✘', $handler->read());
@@ -44,7 +44,7 @@ class ResourceHandlerTest extends TestCase
             'this remains in the file' . PHP_EOL
         );
         rewind($this->stdin);
-        $handler = new InputHandler($this->stdin);
+        $handler = new InputHandler($this->console, $this->stdin);
 
         self::assertSame('this could be a long text', $handler->readUntil(PHP_EOL . '.' . PHP_EOL));
         self::assertSame('this remains in the file', $handler->readLine());
@@ -55,7 +55,7 @@ class ResourceHandlerTest extends TestCase
     {
         fwrite($this->stdin, 'the requested end does not exist');
         rewind($this->stdin);
-        $handler = new InputHandler($this->stdin);
+        $handler = new InputHandler($this->console, $this->stdin);
 
         self::assertSame('the requested end does not exist', $handler->readUntil(PHP_EOL . PHP_EOL));
     }

@@ -22,7 +22,7 @@ class ResourceHandlerTest extends TestCase
     /** @test */
     public function writesToResource()
     {
-        $handler = new FileHandler($this->stdout);
+        $handler = new FileHandler($this->console, $this->stdout);
 
         $handler->write('any string');
 
@@ -33,7 +33,7 @@ class ResourceHandlerTest extends TestCase
     /** @test */
     public function deletesTheLastBytes()
     {
-        $handler = new FileHandler($this->stdout);
+        $handler = new FileHandler($this->console, $this->stdout);
         $handler->write('Calculating something ... ⚬');
 
         $handler->delete(1);
@@ -45,7 +45,7 @@ class ResourceHandlerTest extends TestCase
     /** @test */
     public function deletesTheCurrentLine()
     {
-        $handler = new FileHandler($this->stdout);
+        $handler = new FileHandler($this->console, $this->stdout);
         $handler->write('Text before the last line' . PHP_EOL . 'text to be removed...');
 
         $handler->deleteLine();
@@ -57,7 +57,7 @@ class ResourceHandlerTest extends TestCase
     /** @test */
     public function deletesInChunks()
     {
-        $handler = new FileHandler($this->stdout);
+        $handler = new FileHandler($this->console, $this->stdout);
         $handler->write('Text before the last line' . PHP_EOL . 'foo bar');
 
         $handler->deleteLine(3); // buffer size 3 -> 3 steps
@@ -69,7 +69,7 @@ class ResourceHandlerTest extends TestCase
     /** @test */
     public function deletesEverythingWithoutLinebreak()
     {
-        $handler = new FileHandler($this->stdout);
+        $handler = new FileHandler($this->console, $this->stdout);
         $handler->write('the first line of the file without line breaks');
 
         $handler->deleteLine();

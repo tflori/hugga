@@ -58,10 +58,13 @@ do {
     $line = $console->readLine('$ ');
     readline_add_history($line);
 } while (strtolower(trim($line)) != 'exit');
-$console->read(3, 'Enter 3 letters: ');
-$console->write(PHP_EOL);
+readline_clear_history();
+$console->write('Enter 3 letters:');
+$input = $console->read(3);
+$console->line(sprintf('You entered: "%s"', $input));
 $console->info('Enter your message (end with dot in line for itself)');
-$console->readUntil(PHP_EOL . '.' . PHP_EOL, '');
+$message = $console->readUntil(PHP_EOL . '.' . PHP_EOL, '');
+$console->line(sprintf('Message:' . PHP_EOL . '"""%s"""', $message));
 
 // Deleting output
 $console->line(PHP_EOL . '${bold;cyan}Delete');
@@ -88,7 +91,7 @@ function getProgressText($i, $max)
     return sprintf('%\' 6.2f %%  ( %\' ' . $l . 'd / %d )', $perc, $i, $max);
 }
 
-$max = mt_rand(9000, 12000);
+$max = mt_rand(3000, 4000);
 $s = microtime(true);
 for ($i = 0; $i < $max; $i++) {
     usleep(mt_rand(500, 2000));
@@ -182,15 +185,32 @@ $console->write(getProgressLine($i, $max) . PHP_EOL);
 //pcntl_signal(SIGTERM, 'signalHandler');
 
 //$listener = new Hugga\InputObserver(STDIN);
-//$listener->addHandler(function ($event) {
-//    echo implode(' ', array_map('dechex', array_map('ord', str_split($event->char)))) . PHP_EOL;
+//$buffer = '';
+//$listener->addHandler(function ($event) use (&$buffer, $console, $listener) {
+//    if (ord($event->char[0]) >= 32 || $event->char === "\n") {
+//        $console->write($event->char);
+//        $buffer .= $event->char;
+//        if (mb_strlen($buffer) >= 5) {
+//            $listener->stop();
+//            $console->write(PHP_EOL);
+//        }
+//    }
+////    echo implode(' ', array_map('dechex', array_map('ord', str_split($event->char)))) . PHP_EOL;
+//});
+//$listener->on("\x7f", function ($event) use (&$buffer, $console) {
+//    $event->stopPropagation = true;
+//    if (strlen($buffer) && mb_substr($buffer, -1) != "\n") {
+//        $console->delete(1);
+//        $buffer = mb_substr($buffer, 0, -1);
+//    }
 //});
 //$listener->on("\e", function ($event) use ($listener) {
 //    $event->stopPropagation = true;
 //    $listener->stop();
 //});
-//sleep(2);
 //$listener->start();
+//$input = $buffer;
+//var_dump($buffer);
 
 //$console = new \Hugga\Console();
 //var_dump($console->read(7));

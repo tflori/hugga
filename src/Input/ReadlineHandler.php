@@ -6,9 +6,12 @@ use Hugga\Console;
 
 class ReadlineHandler extends AbstractInputHandler
 {
-    public static function isCompatible($resource)
+    public static function isCompatible($resource): bool
     {
-        return parent::isCompatible($resource) && Console::isTty($resource) && STDIN === $resource;
+        if (parent::isCompatible($resource) && Console::isTty($resource) && STDIN === $resource) {
+            return !self::isEditline();
+        }
+        return false;
     }
 
     public function readLine(string $prompt = null): string
@@ -33,6 +36,16 @@ class ReadlineHandler extends AbstractInputHandler
         return substr($str, 0, -$seqLen);
     }
 
+    /**
+     * Check if readline uses editline library
+     *
+     * @return bool
+     */
+    protected static function isEditline()
+    {
+        return self::phpReadline('info', 'library_version') === 'EditLine wrapper';
+    }
+
     protected function readConditional(callable $conditionMet, string $prompt = null): string
     {
         $str = $previous = '';
@@ -49,6 +62,9 @@ class ReadlineHandler extends AbstractInputHandler
         } while (!$conditionMet($str));
         $this->phpReadline('callback_handler_remove');
 
+        if (substr($str, -strlen(PHP_EOL)) !== PHP_EOL) {
+            $this->console->write(PHP_EOL);
+        }
         return $str;
     }
 
@@ -60,7 +76,7 @@ class ReadlineHandler extends AbstractInputHandler
      * @return mixed
      * @codeCoverageIgnore we can not test this
      */
-    protected function phpReadline(string $method, ...$args)
+    protected static function phpReadline(string $method, ...$args)
     {
         $method = 'readline' . (strlen($method) ? '_' . $method : '');
         return call_user_func_array($method, $args);

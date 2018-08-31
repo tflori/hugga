@@ -34,8 +34,7 @@ class InputObserver
         $this->stop = false;
 
         // change tty settings
-        $sttySettings = preg_replace('#.*; ?#s', '', $this->ttySettings('--all'));
-        $this->ttySettings('cbreak -echo');
+        self::ttySettings('sane cbreak -echo');
 
         while (!$this->stop) {
             $c = '';
@@ -48,7 +47,7 @@ class InputObserver
         }
 
         // reset tty settings
-        $this->ttySettings($sttySettings);
+        self::ttySettings('sane');
 
         return;
     }
@@ -114,7 +113,7 @@ class InputObserver
         return $this;
     }
 
-    protected function ttySettings($options)
+    public static function ttySettings($options)
     {
         exec($cmd = "/bin/stty $options", $output, $returnValue);
         if ($returnValue) {

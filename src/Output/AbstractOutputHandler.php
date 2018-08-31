@@ -7,7 +7,7 @@ use Hugga\OutputHandlerInterface;
 
 abstract class AbstractOutputHandler extends AbstractHandler implements OutputHandlerInterface
 {
-    public static function isCompatible($resource)
+    public static function isCompatible($resource): bool
     {
         if (parent::isCompatible($resource)) {
             $mode = stream_get_meta_data($resource)['mode'];
