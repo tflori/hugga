@@ -25,4 +25,15 @@ class TtyHandler extends AbstractOutputHandler
     {
         fwrite($this->resource, "\e[1K\r");
     }
+
+    public function replace(string $new)
+    {
+        $lines = explode(PHP_EOL, $new);
+        $this->write(str_repeat("\e[A", count($lines) - 1));
+        foreach ($lines as $line) {
+            $this->deleteLine();
+            $this->console->write($line);
+            $this->write("\e[B");
+        }
+    }
 }
