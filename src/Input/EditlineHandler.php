@@ -20,6 +20,7 @@ class EditlineHandler extends ReadlineHandler
         $buffer = '';
         // read using input observer
         $observer = $this->console->getInputObserver();
+
         $observer->addHandler(function ($event) use (&$buffer, $observer, $conditionMet) {
             if (ord($event->char[0]) >= 32 || $event->char === "\n") {
                 $this->console->write($event->char);
@@ -29,6 +30,7 @@ class EditlineHandler extends ReadlineHandler
                 }
             }
         });
+
         $observer->on("\x7f", function ($event) use (&$buffer) {
             $event->stopPropagation = true;
             if (strlen($buffer) && mb_substr($buffer, -1) != "\n") {
@@ -36,6 +38,7 @@ class EditlineHandler extends ReadlineHandler
                 $buffer = mb_substr($buffer, 0, -1);
             }
         });
+
         $observer->start();
 
         if (substr($buffer, -strlen(PHP_EOL)) !== PHP_EOL) {
