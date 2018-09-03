@@ -2,7 +2,7 @@
 
 namespace Hugga;
 
-interface InputHandlerInterface
+interface InputInterface
 {
     public function readLine(string $prompt = null): string;
 

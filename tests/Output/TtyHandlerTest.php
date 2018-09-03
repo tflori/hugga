@@ -2,7 +2,7 @@
 
 namespace Hugga\Test\Output;
 
-use Hugga\Output\TtyHandler;
+use Hugga\Output\Tty;
 use Hugga\Test\TestCase;
 
 class TtyHandlerTest extends TestCase
@@ -10,13 +10,13 @@ class TtyHandlerTest extends TestCase
     /** @test */
     public function requiresATty()
     {
-        self::assertFalse(TtyHandler::isCompatible($this->stdout));
+        self::assertFalse(Tty::isCompatible($this->stdout));
     }
 
     /** @test */
     public function writesToResource()
     {
-        $handler = new TtyHandler($this->console, $this->stdout);
+        $handler = new Tty($this->console, $this->stdout);
 
         $handler->write('any string');
 
@@ -27,7 +27,7 @@ class TtyHandlerTest extends TestCase
     /** @test */
     public function outputsCursorMovement()
     {
-        $handler = new TtyHandler($this->console, $this->stdout);
+        $handler = new Tty($this->console, $this->stdout);
 
         $handler->delete(1);
 
@@ -38,7 +38,7 @@ class TtyHandlerTest extends TestCase
     /** @test */
     public function outputsCarriageReturnAndDeleteLine()
     {
-        $handler = new TtyHandler($this->console, $this->stdout);
+        $handler = new Tty($this->console, $this->stdout);
 
         $handler->deleteLine();
 

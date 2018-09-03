@@ -2,7 +2,7 @@
 
 namespace Hugga;
 
-interface OutputHandlerInterface
+interface OutputInterface
 {
     public function write(string $str);
 

@@ -1,15 +1,17 @@
 <?php
 
-namespace Hugga;
+namespace Hugga\Input;
+
+use Hugga\Console;
 
 /**
- * Class InputObserver
+ * Class Observer
  *
  * @package Hugga
  * @author Thomas Flori <thflori@gmail.com>
  * @codeCoverageIgnore not testable
  */
-class InputObserver
+class Observer
 {
     protected $stdin;
 
@@ -34,6 +36,7 @@ class InputObserver
         $this->stop = false;
 
         // change tty settings
+        $sttySettings = preg_replace('#.*; ?#s', '', $this->ttySettings('--all'));
         self::ttySettings('sane cbreak -echo');
 
         while (!$this->stop) {
@@ -47,7 +50,7 @@ class InputObserver
         }
 
         // reset tty settings
-        self::ttySettings('sane');
+        self::ttySettings($sttySettings);
 
         return;
     }

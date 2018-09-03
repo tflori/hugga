@@ -2,7 +2,7 @@
 
 namespace Hugga\Test\Input;
 
-use Hugga\Input\FileHandler as InputHandler;
+use Hugga\Input\File as InputHandler;
 use Hugga\Test\TestCase;
 
 class ResourceHandlerTest extends TestCase

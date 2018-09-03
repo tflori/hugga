@@ -3,8 +3,9 @@
 namespace Hugga\Input;
 
 use Hugga\Console;
+use Hugga\InteractiveInputInterface;
 
-class ReadlineHandler extends AbstractInputHandler
+class Readline extends AbstractInput implements InteractiveInputInterface
 {
     public static function isCompatible($resource): bool
     {

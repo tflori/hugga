@@ -4,11 +4,11 @@ namespace Hugga\Input;
 
 use Hugga\Console;
 
-class EditlineHandler extends ReadlineHandler
+class Editline extends Readline
 {
     public static function isCompatible($resource): bool
     {
-        if (AbstractInputHandler::isCompatible($resource) && Console::isTty($resource) && STDIN === $resource) {
+        if (AbstractInput::isCompatible($resource) && Console::isTty($resource) && STDIN === $resource) {
             return self::isEditline();
         }
         return false;

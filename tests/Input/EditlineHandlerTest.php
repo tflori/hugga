@@ -3,47 +3,47 @@
 namespace Hugga\Test\Input;
 
 use Hugga\Console;
-use Hugga\Input\EditlineHandler;
-use Hugga\InputObserver;
+use Hugga\Input\Editline;
+use Hugga\Input\Observer;
 use Hugga\Test\TestCase;
 use Mockery as m;
 
 class EditlineHandlerTest extends TestCase
 {
-    /** @var EditlineHandler|m\Mock */
+    /** @var Editline|m\Mock */
     protected $editline;
 
-    /** @var InputObserver|m\Mock */
+    /** @var \Hugga\Input\Observer|m\Mock */
     protected $inputObserver;
 
     protected function setUp()
     {
         parent::setUp();
 
-        $this->editline = m::mock(EditlineHandler::class, [$this->console, $this->stdin])->makePartial();
+        $this->editline = m::mock(Editline::class, [$this->console, $this->stdin])->makePartial();
         $this->editline->shouldAllowMockingProtectedMethods();
         $this->editline->shouldNotReceive('phpReadline')->byDefault();
 
-        $this->inputObserver = m::mock(InputObserver::class, [$this->stdin])->makePartial();
+        $this->inputObserver = m::mock(Observer::class, [$this->stdin])->makePartial();
         $this->inputObserver->shouldReceive('start')->byDefault();
         $this->console->shouldReceive('getInputObserver')->andReturn($this->inputObserver)->byDefault();
     }
     /** @test */
     public function requiresAResource()
     {
-        self::assertFalse(EditlineHandler::isCompatible('php://memory'));
+        self::assertFalse(Editline::isCompatible('php://memory'));
     }
 
     /** @test */
     public function requiresATty()
     {
-        self::assertFalse(EditlineHandler::isCompatible($this->stdin));
+        self::assertFalse(Editline::isCompatible($this->stdin));
     }
 
     /** @test */
     public function requiresStdin()
     {
-        self::assertFalse(EditlineHandler::isCompatible(STDOUT));
+        self::assertFalse(Editline::isCompatible(STDOUT));
     }
 
     /** @test */
@@ -55,7 +55,7 @@ class EditlineHandlerTest extends TestCase
 
         $expected = readline_info('library_version') === 'EditLine wrapper';
 
-        self::assertSame($expected, EditlineHandler::isCompatible(STDIN));
+        self::assertSame($expected, Editline::isCompatible(STDIN));
     }
 
     /** @test */

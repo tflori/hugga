@@ -3,19 +3,19 @@
 namespace Hugga\Test\Input;
 
 use Hugga\Console;
-use Hugga\Input\ReadlineHandler;
+use Hugga\Input\Readline;
 use Hugga\Test\TestCase;
 use Mockery as m;
 
 class ReadlineHandlerTest extends TestCase
 {
-    /** @var ReadlineHandler|m\Mock */
+    /** @var Readline|m\Mock */
     protected $readline;
 
     protected function setUp()
     {
         parent::setUp();
-        $this->readline = m::mock(ReadlineHandler::class, [$this->console, $this->stdin])->makePartial();
+        $this->readline = m::mock(Readline::class, [$this->console, $this->stdin])->makePartial();
         $this->readline->shouldAllowMockingProtectedMethods();
         $this->readline->shouldNotReceive('phpReadline')->byDefault();
     }
@@ -23,13 +23,13 @@ class ReadlineHandlerTest extends TestCase
     /** @test */
     public function requiresAResource()
     {
-        self::assertFalse(ReadlineHandler::isCompatible('php://memory'));
+        self::assertFalse(Readline::isCompatible('php://memory'));
     }
 
     /** @test */
     public function requiresATty()
     {
-        self::assertFalse(ReadlineHandler::isCompatible($this->stdin));
+        self::assertFalse(Readline::isCompatible($this->stdin));
     }
 
     /** @test */
@@ -39,8 +39,8 @@ class ReadlineHandlerTest extends TestCase
             $this->markTestSkipped('STDIN needs to be a tty for this test');
         }
 
-        self::assertFalse(ReadlineHandler::isCompatible(STDOUT));
-        self::assertTrue(ReadlineHandler::isCompatible(STDIN));
+        self::assertFalse(Readline::isCompatible(STDOUT));
+        self::assertTrue(Readline::isCompatible(STDIN));
     }
 
     /** @test */

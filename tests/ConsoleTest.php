@@ -3,9 +3,9 @@
 namespace Hugga\Test;
 
 use Hugga\Console;
-use Hugga\Input\FileHandler as InputHandler;
+use Hugga\Input\File as InputHandler;
 use Hugga\Input\Question\Simple;
-use Hugga\Output\FileHandler as OutputHandler;
+use Hugga\Output\File as OutputHandler;
 use Mockery as m;
 use Psr\Log\LoggerInterface;
 
@@ -249,6 +249,8 @@ class ConsoleTest extends TestCase
         $question = m::mock(Simple::class);
         $question->shouldReceive('ask')->with($this->console)
             ->once()->andReturn('Answer');
+        $this->console->shouldReceive('isInteractive')->with()
+            ->once()->andReturn(true);
 
         $result = $this->console->ask($question);
 
@@ -258,6 +260,8 @@ class ConsoleTest extends TestCase
     /** @test */
     public function createsASimpleQuestionAndAsks()
     {
+        $this->console->shouldReceive('isInteractive')->with()
+            ->once()->andReturn(true);
         fwrite($this->stdin, 'Answer' . PHP_EOL);
         rewind($this->stdin);
 

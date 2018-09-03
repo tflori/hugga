@@ -2,12 +2,13 @@
 
 namespace Hugga;
 
-use Hugga\Input\EditlineHandler;
-use Hugga\Input\FileHandler as InputHandler;
+use Hugga\Input\Editline;
+use Hugga\Input\File as InputHandler;
+use Hugga\Input\Observer;
 use Hugga\Input\Question\Simple;
-use Hugga\Input\ReadlineHandler;
-use Hugga\Output\FileHandler as OutputHandler;
-use Hugga\Output\TtyHandler;
+use Hugga\Input\Readline;
+use Hugga\Output\File as OutputHandler;
+use Hugga\Output\Tty;
 use Psr\Log\LoggerInterface;
 
 class Console
@@ -40,13 +41,13 @@ class Console
     /** @var bool */
     protected $logMessages = false;
 
-    /** @var OutputHandlerInterface */
+    /** @var OutputInterface */
     protected $stdout;
 
-    /** @var InputHandlerInterface */
+    /** @var InputInterface */
     protected $stdin;
 
-    /** @var OutputHandlerInterface */
+    /** @var OutputInterface */
     protected $stderr;
 
     /** @var bool  */
@@ -235,11 +236,12 @@ class Console
      */
     public function ask($question, $default = null)
     {
+        $interactive = $this->isInteractive();
         if ($question instanceof QuestionInterface) {
-            return $question->ask($this);
+            return $interactive ? $question->ask($this) : $question->getDefault();
         }
 
-        return (new Simple($question, $default))->ask($this);
+        return $interactive ? (new Simple($question, $default))->ask($this) : $default;
     }
 
     /**
@@ -284,23 +286,23 @@ class Console
     /**
      * Set the resource for stdout
      *
-     * @param resource|OutputHandlerInterface $stdout
+     * @param resource|OutputInterface $stdout
      * @return $this
      */
     public function setStdout($stdout)
     {
-        if ($stdout instanceof OutputHandlerInterface) {
+        if ($stdout instanceof OutputInterface) {
             $this->stdout = $stdout;
             return $this;
         }
 
         self::assertResource($stdout, __METHOD__);
-        $this->stdout = TtyHandler::isCompatible($stdout)
-            ? new TtyHandler($this, $stdout) : new OutputHandler($this, $stdout);
+        $this->stdout = Tty::isCompatible($stdout)
+            ? new Tty($this, $stdout) : new OutputHandler($this, $stdout);
         return $this;
     }
 
-    public function getOutput(): OutputHandlerInterface
+    public function getOutput(): OutputInterface
     {
         return $this->stdout;
     }
@@ -308,18 +310,18 @@ class Console
     /**
      * Set the resource for stdin
      *
-     * @param resource|InputHandlerInterface $stdin
+     * @param resource|InputInterface $stdin
      * @return $this
      */
     public function setStdin($stdin)
     {
-        if ($stdin instanceof InputHandlerInterface) {
+        if ($stdin instanceof InputInterface) {
             $this->stdin = $stdin;
             return $this;
         }
 
         self::assertResource($stdin, __METHOD__);
-        foreach ([ReadlineHandler::class, EditlineHandler::class] as $handler) {
+        foreach ([Readline::class, Editline::class] as $handler) {
             if ($handler::isCompatible($stdin)) {
                 $this->stdin = new $handler($this, $stdin);
                 return $this;
@@ -329,7 +331,7 @@ class Console
         return $this;
     }
 
-    public function getInput(): InputHandlerInterface
+    public function getInput(): InputInterface
     {
         return $this->stdin;
     }
@@ -337,35 +339,52 @@ class Console
     public function getInputObserver()
     {
         $resource = $this->stdin->getResource();
-        if (!InputObserver::isCompatible($resource)) {
+        if (!Observer::isCompatible($resource)) {
             throw new \LogicException('Stdin resource is not compatible for input observer');
         }
         // @codeCoverageIgnoreStart
-        return new InputObserver($resource);
+        return new Observer($resource);
     }
 
     /**
      * Set the resource for stderr
      *
-     * @param resource|OutputHandlerInterface $stderr
+     * @param resource|OutputInterface $stderr
      * @return $this
      */
     public function setStderr($stderr)
     {
-        if ($stderr instanceof OutputHandlerInterface) {
+        if ($stderr instanceof OutputInterface) {
             $this->stderr = $stderr;
             return $this;
         }
 
         self::assertResource($stderr, __METHOD__);
-        $this->stderr = TtyHandler::isCompatible($stderr)
-            ? new TtyHandler($this, $stderr) : new OutputHandler($this, $stderr);
+        $this->stderr = Tty::isCompatible($stderr)
+            ? new Tty($this, $stderr) : new OutputHandler($this, $stderr);
         return $this;
     }
 
-    public function getStderr(): OutputHandlerInterface
+    public function getStderr(): OutputInterface
     {
         return $this->stderr;
+    }
+
+    /**
+     * Format a message if ansi is enabled
+     *
+     * @param $message
+     * @return string
+     */
+    public function format($message)
+    {
+        return $this->ansiEnabled ? $this->formatter->format($message) : $this->formatter->stripFormatting($message);
+    }
+
+    public function isInteractive()
+    {
+        return $this->stdout instanceof InteractiveOutputInterface &&
+               $this->stdin instanceof InteractiveInputInterface;
     }
 
     /**
@@ -399,17 +418,6 @@ class Console
         }
 
         $this->logger->log($weight, trim($this->formatter->stripFormatting($message)));
-    }
-
-    /**
-     * Format a message if ansi is enabled
-     *
-     * @param $message
-     * @return string
-     */
-    protected function format($message)
-    {
-        return $this->ansiEnabled ? $this->formatter->format($message) : $this->formatter->stripFormatting($message);
     }
 
     /**

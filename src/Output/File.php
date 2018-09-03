@@ -2,7 +2,7 @@
 
 namespace Hugga\Output;
 
-class FileHandler extends AbstractOutputHandler
+class File extends AbstractOutput
 {
     const BUFFER_SIZE = 4096;
 

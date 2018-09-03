@@ -2,7 +2,7 @@
 
 namespace Hugga;
 
-abstract class AbstractHandler
+abstract class AbstractInputOutput
 {
     /** @var resource */
     protected $resource;

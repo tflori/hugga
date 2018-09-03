@@ -3,8 +3,9 @@
 namespace Hugga\Output;
 
 use Hugga\Console;
+use Hugga\InteractiveOutputInterface;
 
-class TtyHandler extends AbstractOutputHandler
+class Tty extends AbstractOutput implements InteractiveOutputInterface
 {
     public static function isCompatible($resource): bool
     {
@@ -29,11 +30,11 @@ class TtyHandler extends AbstractOutputHandler
     public function replace(string $new)
     {
         $lines = explode(PHP_EOL, $new);
-        $this->write(str_repeat("\e[A", count($lines) - 1));
+        $this->write(str_repeat("\e[A", count($lines)));
         foreach ($lines as $line) {
-            $this->deleteLine();
-            $this->console->write($line);
             $this->write("\e[B");
+            $this->deleteLine();
+            $this->write($line);
         }
     }
 }

@@ -22,6 +22,11 @@ abstract class AbstractQuestion implements QuestionInterface
         $this->default = $default;
     }
 
+    public function getDefault()
+    {
+        return $this->default;
+    }
+
     protected function getQuestionText(): string
     {
         if (empty($this->question)) {

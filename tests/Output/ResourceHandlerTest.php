@@ -2,7 +2,7 @@
 
 namespace Hugga\Test\Output;
 
-use Hugga\Output\FileHandler;
+use Hugga\Output\File;
 use Hugga\Test\TestCase;
 
 class ResourceHandlerTest extends TestCase
@@ -10,19 +10,19 @@ class ResourceHandlerTest extends TestCase
     /** @test */
     public function doesNotRequireATty()
     {
-        self::assertTrue(FileHandler::isCompatible($this->stdout));
+        self::assertTrue(File::isCompatible($this->stdout));
     }
 
     /** @test */
     public function requiresWriteableResource()
     {
-        self::assertFalse(FileHandler::isCompatible(fopen('php://memory', 'r')));
+        self::assertFalse(File::isCompatible(fopen('php://memory', 'r')));
     }
 
     /** @test */
     public function writesToResource()
     {
-        $handler = new FileHandler($this->console, $this->stdout);
+        $handler = new File($this->console, $this->stdout);
 
         $handler->write('any string');
 
@@ -33,7 +33,7 @@ class ResourceHandlerTest extends TestCase
     /** @test */
     public function deletesTheLastBytes()
     {
-        $handler = new FileHandler($this->console, $this->stdout);
+        $handler = new File($this->console, $this->stdout);
         $handler->write('Calculating something ... ⚬');
 
         $handler->delete(1);
@@ -45,7 +45,7 @@ class ResourceHandlerTest extends TestCase
     /** @test */
     public function deletesTheCurrentLine()
     {
-        $handler = new FileHandler($this->console, $this->stdout);
+        $handler = new File($this->console, $this->stdout);
         $handler->write('Text before the last line' . PHP_EOL . 'text to be removed...');
 
         $handler->deleteLine();
@@ -57,7 +57,7 @@ class ResourceHandlerTest extends TestCase
     /** @test */
     public function deletesInChunks()
     {
-        $handler = new FileHandler($this->console, $this->stdout);
+        $handler = new File($this->console, $this->stdout);
         $handler->write('Text before the last line' . PHP_EOL . 'foo bar');
 
         $handler->deleteLine(3); // buffer size 3 -> 3 steps
@@ -69,7 +69,7 @@ class ResourceHandlerTest extends TestCase
     /** @test */
     public function deletesEverythingWithoutLinebreak()
     {
-        $handler = new FileHandler($this->console, $this->stdout);
+        $handler = new File($this->console, $this->stdout);
         $handler->write('the first line of the file without line breaks');
 
         $handler->deleteLine();
