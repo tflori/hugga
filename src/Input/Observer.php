@@ -36,7 +36,7 @@ class Observer
         $this->stop = false;
 
         // change tty settings
-        $sttySettings = preg_replace('#.*; ?#s', '', $this->ttySettings('--all'));
+        $sttySettings = preg_replace('#.*; ?#s', '', $this->ttySettings('-a'));
         self::ttySettings('sane cbreak -echo');
 
         while (!$this->stop) {

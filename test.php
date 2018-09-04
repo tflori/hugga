@@ -38,111 +38,111 @@ foreach ($colors as $fgColor) {
 }
 
 // Questions
-//$console->line(PHP_EOL . '${bold;cyan}Questions');
-//$name = $console->ask('What is your name?', 'John Doe');
-//$console->info('Hello ' . $name . '!');
-//if ($console->ask(new Confirmation('Is this correct?'))) {
-//    $console->info('Great!');
-//} else {
-//    $console->warn('Why you are lying to me?');
-//}
-
-// Manual reading from input
-//$console->line(PHP_EOL . '${bold;cyan}Input');
-//$console->info('Write exit to continue; press up to restore previous line');
-//$line = '';
-//do {
-//    if (!empty($line)) {
-//        $console->warn('processing ' . $line);
-//    }
-//    $line = $console->readLine('$ ');
-//    readline_add_history($line);
-//} while (strtolower(trim($line)) != 'exit');
-//readline_clear_history();
-//$console->write('Enter 3 letters:');
-//$input = $console->read(3);
-//$console->line(sprintf('You entered: "%s"', $input));
-//$console->info('Enter your message (end with dot in line for itself)');
-//$message = $console->readUntil(PHP_EOL . '.' . PHP_EOL, '');
-//$console->line(sprintf('Message:' . PHP_EOL . '"""%s"""', $message));
-
-// Deleting output
-//$console->line(PHP_EOL . '${bold;cyan}Delete');
-//$console->write('Importing xml file ... ${yellow}in progress');
-//sleep(2);
-//$console->delete('in progress'); // or 11
-//$console->line('${green}done');
-
-// Progress bar (will be implemented)
-//$console->line(PHP_EOL . '${bold;cyan}Progress bar');
-//function getProgressLine($i, $max)
-//{
-//    $size = 30;
-//    $perc = $i / $max;
-//    $done = floor($perc * $size);
-//    $line = ' [' . str_repeat('#', $done) . str_repeat('-', $size - $done) . '] ';
-//    return $line . getProgressText($i, $max);
-//}
-//
-//function getProgressText($i, $max)
-//{
-//    $perc = round($i / $max * 100, 2);
-//    $l = strlen($max);
-//    return sprintf('%\' 6.2f %%  ( %\' ' . $l . 'd / %d )', $perc, $i, $max);
-//}
-//
-//$max = mt_rand(3000, 4000);
-//$s = microtime(true);
-//for ($i = 0; $i < $max; $i++) {
-//    usleep(mt_rand(500, 2000));
-//    if ($i === 0) {
-//        $console->write(getProgressLine($i, $max));
-//    } elseif ((microtime(true) - $s) > 0.1) {
-//        $s = microtime(true);
-//        $console->deleteLine();
-//        $console->write(getProgressLine($i, $max));
-//    }
-//}
-//$console->deleteLine();
-//$console->write(getProgressLine($i, $max) . PHP_EOL);
-
-
-
-
-
-
-
-
-
-
-
-
-function getChoices($active)
-{
-    $output = '';
-    $lines = ['A) Thomas', 'B) Karina', 'C) keiner'];
-    foreach ($lines as $i => $line) {
-        $output .= $active === $i ? '${invert}' . $line : $line;
-        $output .= '${r}' . PHP_EOL;
-    }
-    return $output;
+$console->line(PHP_EOL . '${bold;cyan}Questions');
+$name = $console->ask('What is your name?', 'John Doe');
+$console->info('Hello ' . $name . '!');
+if ($console->ask(new Confirmation('Is this correct?'))) {
+    $console->info('Great!');
+} else {
+    $console->warn('Why you are lying to me?');
 }
 
-$observer = $console->getInputObserver();
-$observer->on("\e", function () use ($observer) {
-    $observer->stop();
-});
-$observer->on("\e[B", function () use (&$active, $console) {
-    $active = min(2, $active + 1);
-    $console->getOutput()->replace($console->format(getChoices($active)));
-});
-$observer->on("\e[A", function () use (&$active, $console) {
-    $active = max(0, $active - 1);
-    $console->getOutput()->replace($console->format(getChoices($active)));
-});
-$active = 0;
-$console->write(getChoices($active));
-$observer->start();
+// Manual reading from input
+$console->line(PHP_EOL . '${bold;cyan}Input');
+$console->info('Write exit to continue; press up to restore previous line');
+$line = '';
+do {
+    if (!empty($line)) {
+        $console->warn('processing ' . $line);
+    }
+    $line = $console->readLine('$ ');
+    readline_add_history($line);
+} while (strtolower(trim($line)) != 'exit');
+readline_clear_history();
+$console->write('Enter 3 letters:');
+$input = $console->read(3);
+$console->line(sprintf('You entered: "%s"', $input));
+$console->info('Enter your message (end with dot in line for itself)');
+$message = $console->readUntil(PHP_EOL . '.' . PHP_EOL, '');
+$console->line(sprintf('Message:' . PHP_EOL . '"""%s"""', $message));
+
+// Deleting output
+$console->line(PHP_EOL . '${bold;cyan}Delete');
+$console->write('Importing xml file ... ${yellow}in progress');
+sleep(2);
+$console->delete('in progress'); // or 11
+$console->line('${green}done');
+
+// Progress bar (will be implemented)
+$console->line(PHP_EOL . '${bold;cyan}Progress bar');
+function getProgressLine($i, $max)
+{
+    $size = 30;
+    $perc = $i / $max;
+    $done = floor($perc * $size);
+    $line = ' [' . str_repeat('#', $done) . str_repeat('-', $size - $done) . '] ';
+    return $line . getProgressText($i, $max);
+}
+
+function getProgressText($i, $max)
+{
+    $perc = round($i / $max * 100, 2);
+    $l = strlen($max);
+    return sprintf('%\' 6.2f %%  ( %\' ' . $l . 'd / %d )', $perc, $i, $max);
+}
+
+$max = mt_rand(3000, 4000);
+$s = microtime(true);
+for ($i = 0; $i < $max; $i++) {
+    usleep(mt_rand(500, 2000));
+    if ($i === 0) {
+        $console->write(getProgressLine($i, $max));
+    } elseif ((microtime(true) - $s) > 0.1) {
+        $s = microtime(true);
+        $console->deleteLine();
+        $console->write(getProgressLine($i, $max));
+    }
+}
+$console->deleteLine();
+$console->write(getProgressLine($i, $max) . PHP_EOL);
+
+
+
+
+
+
+
+
+
+
+
+
+//function getChoices($active)
+//{
+//    $output = '';
+//    $lines = ['A) Thomas', 'B) Karina', 'C) keiner'];
+//    foreach ($lines as $i => $line) {
+//        $output .= $active === $i ? '${invert}' . $line : $line;
+//        $output .= '${r}' . PHP_EOL;
+//    }
+//    return $output;
+//}
+//
+//$observer = $console->getInputObserver();
+//$observer->on("\e", function () use ($observer) {
+//    $observer->stop();
+//});
+//$observer->on("\e[B", function () use (&$active, $console) {
+//    $active = min(2, $active + 1);
+//    $console->getOutput()->replace($console->format(getChoices($active)));
+//});
+//$observer->on("\e[A", function () use (&$active, $console) {
+//    $active = max(0, $active - 1);
+//    $console->getOutput()->replace($console->format(getChoices($active)));
+//});
+//$active = 0;
+//$console->write(getChoices($active));
+//$observer->start();
 
 
 //$console = new \Hugga\Console();
