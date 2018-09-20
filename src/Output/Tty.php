@@ -19,14 +19,17 @@ class Tty extends AbstractOutput implements InteractiveOutputInterface
 
     public function delete(int $count)
     {
-        fwrite($this->resource, str_repeat("\e[D \e[D", $count));
+        $this->write(str_repeat("\e[D \e[D", $count));
     }
 
     public function deleteLine()
     {
-        fwrite($this->resource, "\e[1K\r");
+        $this->write("\e[2K\r");
     }
 
+    /** {@inheritdoc}
+     * @codeCoverageIgnore we can not test this with phpunit
+     */
     public function replace(string $new)
     {
         $lines = explode(PHP_EOL, $new);
@@ -35,6 +38,18 @@ class Tty extends AbstractOutput implements InteractiveOutputInterface
             $this->write("\e[B");
             $this->deleteLine();
             $this->write($line);
+        }
+    }
+
+    /** {@inheritdoc}
+     * @codeCoverageIgnore we can not test this with phpunit
+     */
+    public function deleteLines(int $count)
+    {
+        $this->deleteLine();
+        for ($i = 1; $i < $count; $i++) {
+            $this->write("\e[A");
+            $this->deleteLine();
         }
     }
 }
