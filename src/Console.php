@@ -53,6 +53,9 @@ class Console
     /** @var bool  */
     protected $ansiEnabled = true;
 
+    /** @var DrawingInterface[] */
+    protected $drawings = [];
+
     /**
      * Console constructor.
      *
@@ -109,7 +112,63 @@ class Console
             return;
         }
 
+        $this->cleanDrawings();
         $this->stdout->write($this->format($message));
+        $this->drawDrawings();
+    }
+
+    /**
+     * Redraw all registered drawings
+     *
+     * Call this method if your drawing got updated.
+     */
+    public function redraw()
+    {
+        $this->cleanDrawings();
+        $this->drawDrawings();
+    }
+
+    /**
+     * Register $drawing
+     *
+     * Returns false when drawing was already added.
+     *
+     * @param DrawingInterface $drawing
+     * @return bool
+     */
+    public function addDrawing(DrawingInterface $drawing): bool
+    {
+        if (in_array($drawing, $this->drawings, true)) {
+            return false;
+        }
+
+        $this->cleanDrawings();
+        $this->drawings[] = $drawing;
+        $this->drawDrawings();
+        return true;
+    }
+
+    /**
+     * Remove $drawing
+     *
+     * When the output is not interactive the drawing will now be added to the output.
+     *
+     * Returns false when the drawing was not registered.
+     *
+     * @param DrawingInterface $drawing
+     * @return bool
+     */
+    public function removeDrawing(DrawingInterface $drawing): bool
+    {
+        if (!in_array($drawing, $this->drawings, true)) {
+            return false;
+        }
+
+        $this->cleanDrawings();
+        $this->stdout->write($this->format(rtrim($drawing->getText()) . PHP_EOL));
+        array_splice($this->drawings, array_search($drawing, $this->drawings, true), 1);
+        $this->drawDrawings();
+        return true;
     }
 
     /**
@@ -176,7 +235,9 @@ class Console
     public function writeError(string $message, int $weight = self::WEIGHT_HIGH): void
     {
         $this->log($weight, $message);
+        $this->cleanDrawings();
         $this->stderr->write($this->format($message));
+        $this->drawDrawings();
     }
 
     public function error(string $message, int $weight = self::WEIGHT_HIGH): void
@@ -344,6 +405,7 @@ class Console
         }
         // @codeCoverageIgnoreStart
         return new Observer($resource);
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -403,6 +465,34 @@ class Console
                 gettype($resource)
             ));
         }
+    }
+
+    /**
+     * Clean registered drawings from current output
+     */
+    protected function cleanDrawings()
+    {
+        if (!$this->stdout instanceof InteractiveOutputInterface || empty($this->drawings)) {
+            return;
+        }
+
+        $this->stdout->deleteLines(substr_count(implode(PHP_EOL, array_map(function (DrawingInterface $drawing) {
+            return rtrim($drawing->getText());
+        }, $this->drawings)), PHP_EOL) + 1);
+    }
+
+    /**
+     * Draw registered drawings to output
+     */
+    protected function drawDrawings()
+    {
+        if (!$this->stdout instanceof InteractiveOutputInterface || empty($this->drawings)) {
+            return;
+        }
+
+        $this->stdout->write($this->format(implode(PHP_EOL, array_map(function (DrawingInterface $drawing) {
+            return rtrim($drawing->getText());
+        }, $this->drawings))));
     }
 
     /**

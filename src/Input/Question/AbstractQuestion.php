@@ -22,6 +22,10 @@ abstract class AbstractQuestion implements QuestionInterface
         $this->default = $default;
     }
 
+    /**
+     * @return mixed
+     * @codeCoverageIgnore getter
+     */
     public function getDefault()
     {
         return $this->default;
