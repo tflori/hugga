@@ -238,11 +238,11 @@ class ConsoleTest extends TestCase
     }
 
     /** @test */
-    public function throwsWhenStdIsNotCompatible()
+    public function returnsNullWhenInputIsNotCompatible()
     {
-        self::expectException(\LogicException::class);
+        $result = $this->console->getInputObserver();
 
-        $this->console->getInputObserver();
+        self::assertNull($result);
     }
 
     /** @test */

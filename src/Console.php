@@ -397,14 +397,20 @@ class Console
         return $this->stdin;
     }
 
-    public function getInputObserver()
+    /**
+     * Creates an input observer if compatible
+     *
+     * Returns null if input is not compatible.
+     *
+     * @return ?Observer
+     */
+    public function getInputObserver(): ?Observer
     {
-        $resource = $this->stdin->getResource();
-        if (!Observer::isCompatible($resource)) {
-            throw new \LogicException('Stdin resource is not compatible for input observer');
+        if (!Observer::isCompatible($this->stdin)) {
+            return null;
         }
         // @codeCoverageIgnoreStart
-        return new Observer($resource);
+        return new Observer($this->stdin);
         // @codeCoverageIgnoreEnd
     }
 
