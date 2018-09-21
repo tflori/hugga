@@ -10,4 +10,11 @@ interface InteractiveOutputInterface extends OutputInterface
      * @param string $new
      */
     public function replace(string $new);
+
+    /**
+     * Deletes rows and moves cursor to first row
+     *
+     * @param int $count
+     */
+    public function deleteLines(int $count);
 }

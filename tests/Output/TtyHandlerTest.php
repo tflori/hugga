@@ -43,6 +43,6 @@ class TtyHandlerTest extends TestCase
         $handler->deleteLine();
 
         rewind($this->stdout);
-        self::assertSame("\e[1K\r", fread($this->stdout, 4096));
+        self::assertSame("\e[2K\r", fread($this->stdout, 4096));
     }
 }

@@ -23,7 +23,8 @@ class Observer
 
     public static function isCompatible($stdin)
     {
-        return is_executable('/bin/stty') && Console::isTty($stdin);
+        exec('which stty', $dummy, $returnVar);
+        return $returnVar === 0 && Console::isTty($stdin);
     }
 
     public function __construct($stdin)
@@ -118,7 +119,7 @@ class Observer
 
     public static function ttySettings($options)
     {
-        exec($cmd = "/bin/stty $options", $output, $returnValue);
+        exec($cmd = "stty $options", $output, $returnValue);
         if ($returnValue) {
             throw new \Exception('Failed to change tty settings');
         }

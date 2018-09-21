@@ -5,6 +5,8 @@ namespace Hugga\Test;
 use Hugga\Console;
 use Hugga\Input\File as InputHandler;
 use Hugga\Input\Question\Simple;
+use Hugga\InteractiveInputInterface;
+use Hugga\InteractiveOutputInterface;
 use Hugga\Output\File as OutputHandler;
 use Mockery as m;
 use Psr\Log\LoggerInterface;
@@ -279,5 +281,15 @@ class ConsoleTest extends TestCase
 
         rewind($this->stdout);
         self::assertSame('foo ', fread($this->stdout, 4096));
+    }
+
+    /** @test */
+    public function isInteractiveWhenStdinAndStdoutAre()
+    {
+        self::assertFalse($this->console->isInteractive());
+        $this->console->setStdin(m::mock(InteractiveInputInterface::class));
+        self::assertFalse($this->console->isInteractive());
+        $this->console->setStdout(m::mock(InteractiveOutputInterface::class));
+        self::assertTrue($this->console->isInteractive());
     }
 }
