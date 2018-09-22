@@ -12,15 +12,22 @@ class Choice extends AbstractQuestion implements DrawingInterface
     protected $choices;
 
     /** @var bool */
-    protected $returnKey = false;
+    protected $useCursor = true;
 
     /** @var bool */
-    protected $useCursor = true;
+    protected $returnKey = false;
+
+    /** @var int */
+    protected $maxKeyLen = 1;
 
     /** @var mixed */
     protected $selected;
 
-    protected $maxKeyLen = 1;
+    /** @var int[] */
+    protected $showedSlice = [0, 10];
+
+    /** @var int */
+    protected $maxVisible = 10;
 
     public function __construct(array $choices, string $question = '', $default = null)
     {
@@ -50,14 +57,55 @@ class Choice extends AbstractQuestion implements DrawingInterface
             }
         }
 
-        return $this->returnKey ? $key : $this->choices[$key];
+        return $this->returnKey ? $key : $this->choices[$key] ?? null;
     }
 
     public function startInteractiveMode(Console $console)
     {
-        $console->addDrawing($this);
+        // configure observer
         $observer = $console->getInputObserver();
         $values = array_keys($this->choices);
+
+        // cursor up
+        $observer->on("\e[A", function () use ($values, $console) {
+            $pos = array_search($this->selected, $values);
+            if ($pos > 0) {
+                $this->selected = $values[$pos - 1];
+                $this->updateSlice();
+                $console->redraw();
+            }
+        });
+
+        // cursor down
+        $observer->on("\e[B", function () use ($values, $console) {
+            $pos = array_search($this->selected, $values);
+            if ($pos < count($values) - 1) {
+                $this->selected = $values[$pos + 1];
+                $this->updateSlice();
+                $console->redraw();
+            }
+        });
+
+        // confirm selection with enter
+        $observer->on("\n", function () use ($observer) {
+            $observer->stop();
+        });
+
+        // cancel selection with escape
+        $observer->on("\e", function () use ($observer) {
+            // reset the selected value
+            if (!$this->default) {
+                $this->selected = null;
+            } elseif ($this->returnKey) {
+                $this->default;
+            } else {
+                $this->selected = array_search($this->default, $this->choices);
+            }
+
+            $observer->stop();
+        });
+
+        // set selection to default value
         if (!$this->default) {
             $this->selected = reset($values);
         } elseif ($this->returnKey) {
@@ -65,37 +113,32 @@ class Choice extends AbstractQuestion implements DrawingInterface
         } else {
             $this->selected = array_search($this->default, $this->choices);
         }
+        $this->updateSlice();
 
-        // cursor up
-        $observer->on("\e[A", function ($event) use ($values, $console) {
-            $pos = array_search($this->selected, $values);
-            if ($pos > 0) {
-                $this->selected = $values[$pos - 1];
-                $console->redraw();
-            }
-        });
-        // cursor down
-        $observer->on("\e[B", function ($event) use ($values, $console) {
-            $pos = array_search($this->selected, $values);
-            if ($pos < count($values) - 1) {
-                $this->selected = $values[$pos + 1];
-                $console->redraw();
-            }
-        });
 
-        $observer->on("\n", function () use ($observer) {
-            $observer->stop();
-        });
-
+            // run it
+        $console->addDrawing($this);
         $observer->start();
+        $selected = $this->selected;
+        $this->selected = -1;
         $console->removeDrawing($this);
-        return $this->selected;
+        return $selected;
+    }
+
+    protected function updateSlice()
+    {
+        $values = array_keys($this->choices);
+        $pos = array_search($this->selected, $values);
+        $this->showedSlice = [
+            min(count($values) - $this->maxVisible, max(0, $pos - floor($this->maxVisible / 2))),
+            $this->maxVisible
+        ];
     }
 
     public function getText(): string
     {
         $text = $this->question ? $this->question . PHP_EOL : '';
-        $text .= $this->formatChoices($this->choices);
+        $text .= $this->formatChoices(array_slice($this->choices, ...$this->showedSlice));
         return $text;
     }
 
