@@ -5,6 +5,7 @@ namespace Hugga\Input\Question;
 use Hugga\Console;
 use Hugga\DrawingInterface;
 use Hugga\Input\Observer;
+use Hugga\InteractiveOutputInterface;
 
 class Choice extends AbstractQuestion implements DrawingInterface
 {
@@ -23,8 +24,8 @@ class Choice extends AbstractQuestion implements DrawingInterface
     /** @var mixed */
     protected $selected;
 
-    /** @var int[] */
-    protected $showedSlice = [0, 10];
+    /** @var int */
+    protected $offset = 0;
 
     /** @var int */
     protected $maxVisible = 10;
@@ -39,7 +40,10 @@ class Choice extends AbstractQuestion implements DrawingInterface
 
     public function ask(Console $console)
     {
-        if ($this->useCursor && Observer::isCompatible($console->getInput())) {
+        if ($this->useCursor && $console->isInteractive() && Observer::isCompatible($console->getInput())) {
+            /** @var InteractiveOutputInterface $output */
+            $output = $console->getOutput();
+            $this->maxVisible = $output->getSize()[0] - 2;
             $key = $this->startInteractiveMode($console);
         } else {
             $console->line($this->question, Console::WEIGHT_HIGH);
@@ -68,22 +72,27 @@ class Choice extends AbstractQuestion implements DrawingInterface
 
         // cursor up
         $observer->on("\e[A", function () use ($values, $console) {
-            $pos = array_search($this->selected, $values);
-            if ($pos > 0) {
-                $this->selected = $values[$pos - 1];
-                $this->updateSlice();
-                $console->redraw();
-            }
+            $this->changePos($values, $console, -1);
         });
-
         // cursor down
         $observer->on("\e[B", function () use ($values, $console) {
-            $pos = array_search($this->selected, $values);
-            if ($pos < count($values) - 1) {
-                $this->selected = $values[$pos + 1];
-                $this->updateSlice();
-                $console->redraw();
-            }
+            $this->changePos($values, $console, +1);
+        });
+        // page up
+        $observer->on("\e[5~", function () use ($values, $console) {
+            $this->changePos($values, $console, -$this->maxVisible/2);
+        });
+        // page down
+        $observer->on("\e[6~", function () use ($values, $console) {
+            $this->changePos($values, $console, +$this->maxVisible/2);
+        });
+        // home
+        $observer->on("\e[H", function () use ($values, $console) {
+            $this->changePos($values, $console, -count($values));
+        });
+        // end
+        $observer->on("\e[F", function () use ($values, $console) {
+            $this->changePos($values, $console, +count($values));
         });
 
         // confirm selection with enter
@@ -125,20 +134,34 @@ class Choice extends AbstractQuestion implements DrawingInterface
         return $selected;
     }
 
+    protected function changePos(array $values, Console $console, int $change)
+    {
+        $pos = array_search($this->selected, $values);
+        $newPos = min(count($values)-1, max(0, $pos + $change));
+        if ($pos != $newPos) {
+            $this->selected = $values[$newPos];
+            $this->updateSlice();
+            $console->redraw();
+        }
+    }
+
     protected function updateSlice()
     {
         $values = array_keys($this->choices);
         $pos = array_search($this->selected, $values);
-        $this->showedSlice = [
-            min(count($values) - $this->maxVisible, max(0, $pos - floor($this->maxVisible / 2))),
-            $this->maxVisible
-        ];
+        $this->offset = min(count($values) - $this->maxVisible, max(0, $pos - floor($this->maxVisible / 2)));
     }
 
     public function getText(): string
     {
         $text = $this->question ? $this->question . PHP_EOL : '';
-        $text .= $this->formatChoices(array_slice($this->choices, ...$this->showedSlice));
+        $slice = array_slice($this->choices, $this->offset, $this->maxVisible, true);
+        $text .= $this->formatChoices($slice);
+        if (count($this->choices) > $this->maxVisible) {
+            $text .= PHP_EOL .
+                     'Showing ' . $this->offset . ' - ' . ($this->offset + $this->maxVisible) .
+                     ' out of ' . count($this->choices);
+        }
         return $text;
     }
 
@@ -155,7 +178,7 @@ class Choice extends AbstractQuestion implements DrawingInterface
     {
         $choice = sprintf('% ' . ($this->maxKeyLen + 2) . 's %s', '[' . $value . ']', $text);
 
-        if ($this->selected && $this->selected === $value ||
+        if ($this->selected !== null && $this->selected === $value ||
             !$this->selected && $this->returnKey && $this->default === $value ||
             !$this->selected && !$this->returnKey && $this->default === $text) {
             $choice = '${invert}' . $choice . '${r}';

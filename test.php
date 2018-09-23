@@ -111,21 +111,18 @@ $console->error('This is an error');
 // Choices
 $console->line(PHP_EOL . '${bold;cyan}Choices');
 $chosen = $console->ask(new Choice(
-    [
-        'Aragorn',
-        'Barbarianna',
-        'Chewbacca',
-        'DeVito',
-        'E.T.',
-        'Frodo',
-        'Groot',
-        'Hooch',
-        'Indiana',
-        'Joker',
-        'Kevin',
-    ],
+    ['Abbott', 'Abernathy', 'Abshire', 'Adams', 'Altenwerth', 'Anderson', 'Ankunding', 'Armstrong', 'Auer',
+      'Aufderhar', 'Bahringer', 'Bailey', 'Balistreri', 'Barrows', 'Bartell', 'Bartoletti', 'Barton', 'Bashirian',
+      'Batz', 'Bauch', 'Baumbach', 'Bayer', 'Beahan', 'Beatty', 'Bechtelar', 'Becker', 'Bednar', 'Beer', 'Beier',
+      'Berge', 'Bergnaum', 'Bergstrom', 'Bernhard', 'Bernier', 'Bins', 'Blanda', 'Blick', 'Block', 'Bode', 'Boehm',
+      'Bogan', 'Bogisich', 'Borer', 'Bosco', 'Botsford', 'Boyer', 'Boyle', 'Bradtke', 'Brakus', 'Braun', 'Breitenberg',
+      'Brekke', 'Brown', 'Bruen', 'Buckridge', 'Carroll', 'Carter', 'Cartwright', 'Casper', 'Cassin', 'Champlin',
+      'Christiansen', 'Cole', 'Collier', 'Collins', 'Conn', 'Connelly', 'Conroy', 'Considine', 'Corkery', 'Cormier',
+      'Corwin', 'Cremin', 'Crist', 'Crona', 'Cronin', 'Crooks', 'Cruickshank', 'Cummerata', 'Cummings', 'Dach',
+      'D\'Amore', 'Daniel', 'Dare', 'Daugherty', 'Davis', 'Deckow', 'Denesik', 'Dibbert', 'Dickens', 'Dicki',
+      'Dickinson', 'Dietrich', 'Donnelly', 'Dooley', 'Douglas', 'Doyle', 'DuBuque', 'Durgan'],
     'Choose your character:',
-    'Indiana'
+    'Daniel'
 ));
 $console->line('You have chosen: ${green}' . $chosen);
 
@@ -136,33 +133,15 @@ $console->line('You have chosen: ${green}' . $chosen);
 
 
 
-//function getChoices($active)
-//{
-//    $output = '';
-//    $lines = ['A) Thomas', 'B) Karina', 'C) keiner'];
-//    foreach ($lines as $i => $line) {
-//        $output .= $active === $i ? '${invert}' . $line : $line;
-//        $output .= '${r}' . PHP_EOL;
-//    }
-//    return $output;
-//}
-//
 //$observer = $console->getInputObserver();
-//$observer->on("\e", function () use ($observer) {
+//$observer->on("\e", function ($event) use ($observer) {
+//    $event->stopPropagation = true;
 //    $observer->stop();
 //});
-//$observer->on("\e[B", function () use (&$active, $console) {
-//    $active = min(2, $active + 1);
-//    $console->getOutput()->replace($console->format(getChoices($active)));
+//$observer->addHandler(function ($event) {
+//    echo implode(" ", array_map('dechex', array_map('ord', str_split($event->char)))) . PHP_EOL;
 //});
-//$observer->on("\e[A", function () use (&$active, $console) {
-//    $active = max(0, $active - 1);
-//    $console->getOutput()->replace($console->format(getChoices($active)));
-//});
-//$active = 0;
-//$console->write(getChoices($active));
 //$observer->start();
-
 
 //$console = new \Hugga\Console();
 //

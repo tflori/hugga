@@ -52,4 +52,29 @@ class Tty extends AbstractOutput implements InteractiveOutputInterface
             $this->deleteLine();
         }
     }
+
+    /**
+     * Get the size of the output window
+     *
+     * Returns an array with [int $rows, int $cols]
+     *
+     * @return array
+     */
+    public function getSize(): array
+    {
+        exec('which stty', $dummy, $returnVar);
+        if ($returnVar === 0) {
+            return array_map('intval', explode(' ', exec('stty size')));
+        }
+
+        exec('which tput', $dummy, $returnVar);
+        if ($returnVar === 0) {
+            $rows = (int)exec('tput rows');
+            $cols = (int)exec('tput cols');
+            return [$rows, $cols];
+        }
+
+        // fallback 20 rows, 80 columns
+        return [(int)getenv('LINES') ?: 20, (int)getenv('COLUMNS') ?: 80];
+    }
 }
