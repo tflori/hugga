@@ -2,7 +2,6 @@
 
 use Hugga\Console;
 use Hugga\Input\Question\Choice;
-use Hugga\Input\Question\Confirmation;
 use Hugga\Output\Drawing\Progressbar;
 
 require_once __DIR__ . '/vendor/autoload.php';
@@ -12,6 +11,8 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 // Initialization
 $console = new Console();
+//$console->setVerbosity(Console::WEIGHT_HIGH);
+//$console->nonInteractive();
 
 // Formatted output
 $console->line('${bold;cyan}Formatting');
@@ -110,21 +111,39 @@ $console->error('This is an error');
 
 // Choices
 $console->line(PHP_EOL . '${bold;cyan}Choices');
+$names = [
+    'ezra' => 'Ezra Trickett', 'leticia' => 'Leticia Karpinski', 'celinda' => 'Celinda Baskett',
+    'jerlene' => 'Jerlene Esteban', 'merideth' => 'Merideth Utsey', 'jame' => 'Jame Depaolo',
+    'shirlene' => 'Shirlene Fraire', 'carmon' => 'Carmon Frese', 'dion' => 'Dion Rundell',
+    'elouise' => 'Elouise Mcgovern', 'leslee' => 'Leslee Rispoli', 'inell' => 'Inell Feinstein',
+    'burton' => 'Burton Lamontagne', 'machelle' => 'Machelle Wattley', 'thomas' => 'Thomas Franklin',
+    'maynard' => 'Maynard Gabourel', 'beverley' => 'Beverley Eisenbarth', 'van' => 'Van Meeks',
+    'maren' => 'Maren Wildermuth', 'shoshana' => 'Shoshana Harry', 'prince' => 'Prince Calbert',
+    'jackeline' => 'Jackeline Livermore', 'eufemia' => 'Eufemia Loux', 'almeda' => 'Almeda Bjornson',
+    'mignon' => 'Mignon Zollars', 'reyes' => 'Reyes Nodine', 'pinkie' => 'Pinkie Hedman',
+    'pablo' => 'Pablo Moyer', 'yuette' => 'Yuette Venezia', 'mitch' => 'Mitch Helwig',
+];
+// without changing options
 $chosen = $console->ask(new Choice(
-    ['Abbott', 'Abernathy', 'Abshire', 'Adams', 'Altenwerth', 'Anderson', 'Ankunding', 'Armstrong', 'Auer',
-      'Aufderhar', 'Bahringer', 'Bailey', 'Balistreri', 'Barrows', 'Bartell', 'Bartoletti', 'Barton', 'Bashirian',
-      'Batz', 'Bauch', 'Baumbach', 'Bayer', 'Beahan', 'Beatty', 'Bechtelar', 'Becker', 'Bednar', 'Beer', 'Beier',
-      'Berge', 'Bergnaum', 'Bergstrom', 'Bernhard', 'Bernier', 'Bins', 'Blanda', 'Blick', 'Block', 'Bode', 'Boehm',
-      'Bogan', 'Bogisich', 'Borer', 'Bosco', 'Botsford', 'Boyer', 'Boyle', 'Bradtke', 'Brakus', 'Braun', 'Breitenberg',
-      'Brekke', 'Brown', 'Bruen', 'Buckridge', 'Carroll', 'Carter', 'Cartwright', 'Casper', 'Cassin', 'Champlin',
-      'Christiansen', 'Cole', 'Collier', 'Collins', 'Conn', 'Connelly', 'Conroy', 'Considine', 'Corkery', 'Cormier',
-      'Corwin', 'Cremin', 'Crist', 'Crona', 'Cronin', 'Crooks', 'Cruickshank', 'Cummerata', 'Cummings', 'Dach',
-      'D\'Amore', 'Daniel', 'Dare', 'Daugherty', 'Davis', 'Deckow', 'Denesik', 'Dibbert', 'Dickens', 'Dicki',
-      'Dickinson', 'Dietrich', 'Donnelly', 'Dooley', 'Douglas', 'Doyle', 'DuBuque', 'Durgan'],
+    array_values($names),
     'Choose your character:',
-    'Daniel'
+    'Van Meeks'
 ));
 $console->line('You have chosen: ${green}' . $chosen);
+// show only 10 (only if your term is interactive) and return values
+$chosen = $console->ask(
+    (new Choice($names))
+        ->maxVisible(10)
+        ->returnValue()
+);
+$console->line('You have chosen: ${green}' . $chosen);
+// non interactive (write your answer) and return key
+$chosen = $console->ask(
+    (new Choice(array_values($names)))
+        ->nonInteractive()
+        ->returnKey()
+);
+$console->line('You have chosen: ${green}' . $chosen . ' (' . array_values($names)[$chosen] . ')');
 
 
 

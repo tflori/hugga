@@ -13,7 +13,10 @@ class Choice extends AbstractQuestion implements DrawingInterface
     protected $choices;
 
     /** @var bool */
-    protected $useCursor = true;
+    protected $indexedArray;
+
+    /** @var bool */
+    protected $interactive = true;
 
     /** @var bool */
     protected $returnKey = false;
@@ -28,22 +31,49 @@ class Choice extends AbstractQuestion implements DrawingInterface
     protected $offset = 0;
 
     /** @var int */
-    protected $maxVisible = 10;
+    protected $maxVisible = 0;
 
     public function __construct(array $choices, string $question = '', $default = null)
     {
-        $this->choices = $this->prepareChoices($choices);
-        $this->returnKey = !$this->isIndexedArray($choices);
+        $this->indexedArray = $this->isIndexedArray($choices);
+        $this->choices = $this->indexedArray ? $this->prepareChoices($choices) : $choices;
+        $this->returnKey = !$this->indexedArray;
         $this->maxKeyLen = max(array_map('strlen', array_keys($this->choices)));
         parent::__construct($question, $default);
     }
 
+    public function maxVisible(int $count)
+    {
+        $this->maxVisible = $count;
+        return $this;
+    }
+
+    public function nonInteractive()
+    {
+        $this->interactive = false;
+        return $this;
+    }
+
+    public function returnKey()
+    {
+        $this->returnKey = true;
+        return $this;
+    }
+
+    public function returnValue()
+    {
+        $this->returnKey = false;
+        return $this;
+    }
+
     public function ask(Console $console)
     {
-        if ($this->useCursor && $console->isInteractive() && Observer::isCompatible($console->getInput())) {
+        if ($this->interactive && $console->isInteractive() && Observer::isCompatible($console->getInput())) {
             /** @var InteractiveOutputInterface $output */
             $output = $console->getOutput();
-            $this->maxVisible = $output->getSize()[0] - 2;
+            if (!$this->maxVisible) {
+                $this->maxVisible = $output->getSize()[0] - 2;
+            }
             $key = $this->startInteractiveMode($console);
         } else {
             $console->line($this->question, Console::WEIGHT_HIGH);
@@ -61,9 +91,16 @@ class Choice extends AbstractQuestion implements DrawingInterface
             }
         }
 
+        if ($this->indexedArray && $this->returnKey) {
+            return is_numeric($key) ? $key - 1 : $this->charsToIndex($key);
+        }
         return $this->returnKey ? $key : $this->choices[$key] ?? null;
     }
 
+    /**
+     * @param Console $console
+     * @return int|string
+     */
     public function startInteractiveMode(Console $console)
     {
         // configure observer
@@ -125,7 +162,7 @@ class Choice extends AbstractQuestion implements DrawingInterface
         $this->updateSlice();
 
 
-            // run it
+        // run it
         $console->addDrawing($this);
         $observer->start();
         $selected = $this->selected;
@@ -149,7 +186,7 @@ class Choice extends AbstractQuestion implements DrawingInterface
     {
         $values = array_keys($this->choices);
         $pos = array_search($this->selected, $values);
-        $this->offset = min(count($values) - $this->maxVisible, max(0, $pos - floor($this->maxVisible / 2)));
+        $this->offset = max(0, min(count($values) - $this->maxVisible, $pos - floor($this->maxVisible / 2)));
     }
 
     public function getText(): string
@@ -187,35 +224,67 @@ class Choice extends AbstractQuestion implements DrawingInterface
         return '  ' . $choice;
     }
 
-    protected function isIndexedArray(iterable $array)
+    /**
+     * Determines if the array is indexed (starts from 0)
+     *
+     * @param array $array
+     * @return bool
+     */
+    protected function isIndexedArray(array $array)
     {
-        return isset($array[0]) && (isset($array[1]) || count($array) === 1);
+        return array_keys($array) === range(0, count($array) - 1);
     }
 
     /**
      * Make an indexed array more readable for humans
      *
-     * Replaces keys from indexed arrays from 1 to 9 or a to z if it fits.
+     * Replaces keys from indexed arrays from 1 to 9 or a to zz.
      *
      * @param array $choices
      * @return array
      */
     protected function prepareChoices(array $choices): array
     {
-        if ($this->isIndexedArray(($choices))) {
-            // we have an indexed array
-            if (count($choices) < 10) {
-                // keys from 1 - 9
-                return array_combine(range(1, count($choices)), array_values($choices));
-            } elseif (count($choices) < 27) {
-                // keys from a - z
-                return array_combine(
-                    range('a', chr(ord('a') + count($choices) - 1)),
-                    array_values($choices)
-                );
-            }
+        if (count($choices) < 10) {
+            // keys from 1 - 9
+            return array_combine(range(1, count($choices)), array_values($choices));
         }
 
-        return $choices;
+        $keys = array_map([$this, 'indexToChars'], range(0, count($choices)-1));
+        return array_combine($keys, $choices);
+    }
+
+    /**
+     * Converts an index to a - zz
+     *
+     * @param int $i
+     * @return string
+     */
+    protected function indexToChars($i)
+    {
+        $c = '';
+        do {
+            $r = $i % 26;
+            $c = chr(97 + $r) . $c;
+            $i = ($i - $r) / 26 -1;
+        } while ($i > -1);
+        return $c;
+    }
+
+    /**
+     * Converts a - zz to index
+     *
+     * @param string $c
+     * @return int
+     */
+    protected function charsToIndex($c)
+    {
+        $i = ord(substr($c, -1)) - 97;
+        $c = substr($c, 0, -1);
+        while (strlen($c)) {
+            $i += (ord(substr($c, -1)) - 96) * 26;
+            $c = substr($c, 0, -1);
+        }
+        return $i;
     }
 }

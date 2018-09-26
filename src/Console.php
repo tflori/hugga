@@ -56,6 +56,9 @@ class Console
     /** @var DrawingInterface[] */
     protected $drawings = [];
 
+    /** @var bool */
+    protected $interactive = true;
+
     /**
      * Console constructor.
      *
@@ -318,6 +321,19 @@ class Console
     }
 
     /**
+     * Disable interactive mode
+     *
+     * Questions will return default or null.
+     *
+     * @return $this
+     */
+    public function nonInteractive()
+    {
+        $this->interactive = false;
+        return $this;
+    }
+
+    /**
      * Increase the verbosity according to VERBOSITY_ORDER
      *
      * @return $this
@@ -451,7 +467,8 @@ class Console
 
     public function isInteractive()
     {
-        return $this->stdout instanceof InteractiveOutputInterface &&
+        return $this->interactive &&
+               $this->stdout instanceof InteractiveOutputInterface &&
                $this->stdin instanceof InteractiveInputInterface;
     }
 
