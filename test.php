@@ -133,7 +133,7 @@ $console->line('You have chosen: ${green}' . $chosen);
 // show only 10 (only if your term is interactive) and return values
 $chosen = $console->ask(
     (new Choice($names))
-        ->maxVisible(10)
+        ->limit(10)
         ->returnValue()
 );
 $console->line('You have chosen: ${green}' . $chosen);

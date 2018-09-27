@@ -42,24 +42,45 @@ class Choice extends AbstractQuestion implements DrawingInterface
         parent::__construct($question, $default);
     }
 
-    public function maxVisible(int $count)
+    /**
+     * Show at max $count choices in interactive mode
+     *
+     * @param int $count
+     * @return $this
+     */
+    public function limit(int $count)
     {
         $this->maxVisible = $count;
         return $this;
     }
 
+    /**
+     * Don't use interactive mode
+     *
+     * @return $this
+     */
     public function nonInteractive()
     {
         $this->interactive = false;
         return $this;
     }
 
+    /**
+     * Return keys even if the choices have sequential keys
+     *
+     * @return $this
+     */
     public function returnKey()
     {
         $this->returnKey = true;
         return $this;
     }
 
+    /**
+     * Return value even if the choices have alphanumeric keys
+     *
+     * @return $this
+     */
     public function returnValue()
     {
         $this->returnKey = false;
@@ -71,23 +92,24 @@ class Choice extends AbstractQuestion implements DrawingInterface
         if ($this->interactive && $console->isInteractive() && Observer::isCompatible($console->getInput())) {
             /** @var InteractiveOutputInterface $output */
             $output = $console->getOutput();
-            if (!$this->maxVisible) {
-                $this->maxVisible = $output->getSize()[0] - 2;
+            $maxVisible = $output->getSize()[0] - 2;
+            if (!$this->maxVisible || $maxVisible < $this->maxVisible) {
+                $this->maxVisible = $maxVisible;
             }
             $key = $this->startInteractiveMode($console);
         } else {
             $console->line($this->question, Console::WEIGHT_HIGH);
             $console->line($this->formatChoices($this->choices), Console::WEIGHT_HIGH);
 
-            $key = $console->readLine('> ');
-            if (empty($key)) {
-                $key = $this->returnKey ? $this->default : array_search($this->default, $this->choices);
-            }
-            while (!isset($this->choices[$key])) {
+            $key = trim($console->readLine('> '));
+            while (!empty($key) && !isset($this->choices[$key])) {
                 $console->line('${red}Unknown choice ' . $key, Console::WEIGHT_HIGH);
                 $console->line($this->question, Console::WEIGHT_HIGH);
                 $console->line($this->formatChoices($this->choices), Console::WEIGHT_HIGH);
                 $key = $console->readLine('> ');
+            }
+            if (empty($key)) {
+                $key = $this->returnKey ? $this->default : array_search($this->default, $this->choices);
             }
         }
 

@@ -59,6 +59,7 @@ class Tty extends AbstractOutput implements InteractiveOutputInterface
      * Returns an array with [int $rows, int $cols]
      *
      * @return array
+     * @codeCoverageIgnore unable to test
      */
     public function getSize(): array
     {
