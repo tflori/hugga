@@ -98,22 +98,21 @@ class Choice extends AbstractQuestion implements DrawingInterface
             }
             $key = $this->startInteractiveMode($console);
         } else {
-            $console->line($this->question, Console::WEIGHT_HIGH);
-            $console->line($this->formatChoices($this->choices), Console::WEIGHT_HIGH);
-
-            $key = trim($console->readLine('> '));
+            $key = $this->askNonInteractive($console);
             while (!empty($key) && !isset($this->choices[$key])) {
+                if ($valueKey = array_search($key, $this->choices)) {
+                    $key = $valueKey;
+                    break;
+                }
                 $console->line('${red}Unknown choice ' . $key, Console::WEIGHT_HIGH);
-                $console->line($this->question, Console::WEIGHT_HIGH);
-                $console->line($this->formatChoices($this->choices), Console::WEIGHT_HIGH);
-                $key = $console->readLine('> ');
+                $key = $this->askNonInteractive($console);
             }
             if (empty($key)) {
                 $key = $this->returnKey ? $this->default : array_search($this->default, $this->choices);
             }
         }
 
-        if ($this->indexedArray && $this->returnKey) {
+        if (!empty($key) && $this->indexedArray && $this->returnKey) {
             return is_numeric($key) ? $key - 1 : $this->charsToIndex($key);
         }
         return $this->returnKey ? $key : $this->choices[$key] ?? null;
@@ -121,9 +120,22 @@ class Choice extends AbstractQuestion implements DrawingInterface
 
     /**
      * @param Console $console
+     * @return string
+     */
+    protected function askNonInteractive(Console $console): string
+    {
+        if ($this->question) {
+            $console->line($this->question, Console::WEIGHT_HIGH);
+        }
+        $console->line($this->formatChoices($this->choices), Console::WEIGHT_HIGH);
+        return trim($console->readLine('> '));
+    }
+
+    /**
+     * @param Console $console
      * @return int|string
      */
-    public function startInteractiveMode(Console $console)
+    protected function startInteractiveMode(Console $console)
     {
         // configure observer
         $observer = $console->getInputObserver();
