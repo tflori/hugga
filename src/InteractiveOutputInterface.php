@@ -17,4 +17,13 @@ interface InteractiveOutputInterface extends OutputInterface
      * @param int $count
      */
     public function deleteLines(int $count);
+
+    /**
+     * Get the size of the output window
+     *
+     * Returns an array with [int $rows, int $cols]
+     *
+     * @return array
+     */
+    public function getSize(): array;
 }

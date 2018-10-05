@@ -4,36 +4,37 @@ namespace Hugga\Test;
 
 use Hugga\Console;
 use Hugga\Formatter;
+use Hugga\Input\File;
+use Hugga\MocksConsole;
+use Hugga\Output\Tty;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery as m;
 
 class TestCase extends MockeryTestCase
 {
+    use MocksConsole;
+
     /** @var Console|m\Mock */
     protected $console;
 
     /** @var Formatter|m\Mock */
     protected $formatter;
 
-    /** @var resource */
-    protected $stdout;
-    /** @var resource */
-    protected $stdin;
-    /** @var resource */
-    protected $stderr;
+    /** @var Tty|m\Mock */
+    protected $output;
+
+    /** @var File|m\Mock */
+    protected $input;
+
+    /** @var Tty|m\Mock */
+    protected $error;
 
     protected function setUp()
     {
-        /** @var Formatter $formatter */
-        $formatter = $this->formatter = m::mock(Formatter::class)->makePartial();
-        /** @var Console|m\Mock $console */
-        $console = $this->console = m::mock(Console::class)->makePartial();
-        $console->__construct(null, $formatter);
-        $stdout = $this->stdout = fopen('php://memory', 'w+');
-        $console->setStdout($stdout);
-        $stdin = $this->stdin = fopen('php://temp', 'w+');
-        $console->setStdin($stdin);
-        $stderr = $this->stderr = fopen('php://memory', 'w+');
-        $console->setStderr($stderr);
+        $this->console = $this->createConsoleMock(false);
+        $this->formatter = $this->consoleMocks['formatter'];
+        $this->output = $this->consoleMocks['output'];
+        $this->input = $this->consoleMocks['input'];
+        $this->error = $this->consoleMocks['error'];
     }
 }

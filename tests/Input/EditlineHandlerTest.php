@@ -24,7 +24,7 @@ class EditlineHandlerTest extends TestCase
         $this->editline->shouldAllowMockingProtectedMethods();
         $this->editline->shouldNotReceive('phpReadline')->byDefault();
 
-        $this->inputObserver = m::mock(Observer::class, [$this->stdin])->makePartial();
+        $this->inputObserver = m::mock(Observer::class, [$this->editline])->makePartial();
         $this->inputObserver->shouldReceive('start')->byDefault();
         $this->console->shouldReceive('getInputObserver')->andReturn($this->inputObserver)->byDefault();
     }

@@ -3,6 +3,7 @@
 namespace Hugga\Input;
 
 use Hugga\Console;
+use Hugga\InputInterface;
 
 /**
  * Class Observer
@@ -21,18 +22,18 @@ class Observer
 
     protected $stop = true;
 
-    public static function isCompatible($stdin)
+    public static function isCompatible(InputInterface $input)
     {
         exec('which stty', $dummy, $returnVar);
-        return $returnVar === 0 && Console::isTty($stdin);
+        return $returnVar === 0 && Console::isTty($input->getResource());
     }
 
-    public function __construct($stdin)
+    public function __construct(InputInterface $input)
     {
-        $this->stdin = $stdin;
+        $this->stdin = $input->getResource();
     }
 
-    public function start()
+    public function start(): void
     {
         $this->stop = false;
 
@@ -52,11 +53,9 @@ class Observer
 
         // reset tty settings
         self::ttySettings($sttySettings);
-
-        return;
     }
 
-    public function stop()
+    public function stop(): void
     {
         $this->stop = true;
     }

@@ -1,7 +1,8 @@
 <?php
 
 use Hugga\Console;
-use Hugga\Input\Question\Confirmation;
+use Hugga\Input\Question\Choice;
+use Hugga\Output\Drawing\Progressbar;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -10,6 +11,8 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 // Initialization
 $console = new Console();
+//$console->setVerbosity(Console::WEIGHT_HIGH);
+//$console->nonInteractive();
 
 // Formatted output
 $console->line('${bold;cyan}Formatting');
@@ -106,6 +109,47 @@ for ($i = 0; $i < $max; $i++) {
 $console->deleteLine();
 $console->write(getProgressLine($i, $max) . PHP_EOL);
 
+// Choices
+$console->line(PHP_EOL . '${bold;cyan}Choices');
+$names = [
+    'ezra' => 'Ezra Trickett', 'leticia' => 'Leticia Karpinski', 'celinda' => 'Celinda Baskett',
+    'jerlene' => 'Jerlene Esteban', 'merideth' => 'Merideth Utsey', 'jame' => 'Jame Depaolo',
+    'shirlene' => 'Shirlene Fraire', 'carmon' => 'Carmon Frese', 'dion' => 'Dion Rundell',
+    'elouise' => 'Elouise Mcgovern', 'leslee' => 'Leslee Rispoli', 'inell' => 'Inell Feinstein',
+    'burton' => 'Burton Lamontagne', 'machelle' => 'Machelle Wattley', 'thomas' => 'Thomas Franklin',
+    'maynard' => 'Maynard Gabourel', 'beverley' => 'Beverley Eisenbarth', 'van' => 'Van Meeks',
+    'maren' => 'Maren Wildermuth', 'shoshana' => 'Shoshana Harry', 'prince' => 'Prince Calbert',
+    'jackeline' => 'Jackeline Livermore', 'eufemia' => 'Eufemia Loux', 'almeda' => 'Almeda Bjornson',
+    'mignon' => 'Mignon Zollars', 'reyes' => 'Reyes Nodine', 'pinkie' => 'Pinkie Hedman',
+    'pablo' => 'Pablo Moyer', 'yuette' => 'Yuette Venezia', 'mitch' => 'Mitch Helwig',
+];
+// without changing options
+$chosen = $console->ask(new Choice(
+    array_values($names),
+    'Choose your character:',
+    'Van Meeks'
+));
+$console->line('You have chosen: ${green}' . $chosen);
+// show only 10 (only if your term is interactive) and return values
+$chosen = $console->ask(
+    (new Choice($names))
+        ->limit(10)
+        ->returnValue()
+);
+$console->line('You have chosen: ${green}' . $chosen);
+// show only 10 (only if your term is interactive) and return keys (by default)
+$chosen = $console->ask(
+    (new Choice($names))
+        ->limit(10)
+);
+$console->line('You have chosen: ${green}' . $chosen);
+// non interactive (write your answer) and return key
+$chosen = $console->ask(
+    (new Choice(array_values($names), '', 23))
+        ->nonInteractive()
+        ->returnKey()
+);
+$console->line('You have chosen: ${green}' . $chosen . ' (' . array_values($names)[$chosen] . ')');
 
 
 
@@ -114,36 +158,15 @@ $console->write(getProgressLine($i, $max) . PHP_EOL);
 
 
 
-
-
-
-//function getChoices($active)
-//{
-//    $output = '';
-//    $lines = ['A) Thomas', 'B) Karina', 'C) keiner'];
-//    foreach ($lines as $i => $line) {
-//        $output .= $active === $i ? '${invert}' . $line : $line;
-//        $output .= '${r}' . PHP_EOL;
-//    }
-//    return $output;
-//}
-//
 //$observer = $console->getInputObserver();
-//$observer->on("\e", function () use ($observer) {
+//$observer->on("\e", function ($event) use ($observer) {
+//    $event->stopPropagation = true;
 //    $observer->stop();
 //});
-//$observer->on("\e[B", function () use (&$active, $console) {
-//    $active = min(2, $active + 1);
-//    $console->getOutput()->replace($console->format(getChoices($active)));
+//$observer->addHandler(function ($event) {
+//    echo implode(" ", array_map('dechex', array_map('ord', str_split($event->char)))) . PHP_EOL;
 //});
-//$observer->on("\e[A", function () use (&$active, $console) {
-//    $active = max(0, $active - 1);
-//    $console->getOutput()->replace($console->format(getChoices($active)));
-//});
-//$active = 0;
-//$console->write(getChoices($active));
 //$observer->start();
-
 
 //$console = new \Hugga\Console();
 //
