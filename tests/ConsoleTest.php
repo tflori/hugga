@@ -228,6 +228,16 @@ class ConsoleTest extends TestCase
     }
 
     /** @test */
+    public function fallsBackToFileHandler()
+    {
+        $this->console->setStdin(fopen('php://memory', 'w+'));
+        $this->console->setStdout(fopen('php://memory', 'w+'));
+
+        self::assertInstanceOf(InputHandler::class, $this->console->getInput());
+        self::assertInstanceOf(OutputHandler::class, $this->console->getOutput());
+    }
+
+    /** @test */
     public function acceptsOutputInterfaceForStderr()
     {
         $outputHandler = new OutputHandler($this->console, $this->stderr);
@@ -291,5 +301,16 @@ class ConsoleTest extends TestCase
         self::assertFalse($this->console->isInteractive());
         $this->console->setStdout(m::mock(InteractiveOutputInterface::class));
         self::assertTrue($this->console->isInteractive());
+    }
+
+    /** @test */
+    public function isNeverInteractive()
+    {
+        $this->console->setStdin(m::mock(InteractiveInputInterface::class));
+        $this->console->setStdout(m::mock(InteractiveOutputInterface::class));
+
+        $this->console->nonInteractive();
+
+        self::assertFalse($this->console->isInteractive());
     }
 }
