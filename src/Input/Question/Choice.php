@@ -36,7 +36,7 @@ class Choice extends AbstractQuestion implements DrawingInterface
     public function __construct(array $choices, string $question = '', $default = null)
     {
         $this->indexedArray = $this->isIndexedArray($choices);
-        $this->choices = $this->indexedArray ? $this->prepareChoices($choices) : $choices;
+        $this->choices = $choices;
         $this->returnKey = !$this->indexedArray;
         $this->maxKeyLen = max(array_map('strlen', array_keys($this->choices)));
         parent::__construct($question, $default);
@@ -89,65 +89,40 @@ class Choice extends AbstractQuestion implements DrawingInterface
 
     public function ask(Console $console)
     {
-        if ($this->interactive && $console->isInteractive() && Observer::isCompatible($console->getInput())) {
-            /** @var InteractiveOutputInterface $output */
-            $output = $console->getOutput();
-            $maxVisible = $output->getSize()[0] - 2;
-            if (!$this->maxVisible || $maxVisible < $this->maxVisible) {
-                $this->maxVisible = $maxVisible;
-            }
-            $key = $this->startInteractiveMode($console);
+        if ($this->interactive && $console->isInteractive() && $observer = $console->getInputObserver()) {
+            $key = $this->askInteractive($console, $observer);
         } else {
+            $this->interactive = false;
             $key = $this->askNonInteractive($console);
-            while (!empty($key) && !isset($this->choices[$key])) {
-                if ($valueKey = array_search($key, $this->choices)) {
-                    $key = $valueKey;
-                    break;
-                }
-                $console->line('${red}Unknown choice ' . $key, Console::WEIGHT_HIGH);
-                $key = $this->askNonInteractive($console);
-            }
-            if (empty($key)) {
-                $key = $this->returnKey ? $this->default : array_search($this->default, $this->choices);
-            }
         }
 
-        if (!empty($key) && $this->indexedArray && $this->returnKey) {
-            return is_numeric($key) ? $key - 1 : $this->charsToIndex($key);
-        }
         return $this->returnKey ? $key : $this->choices[$key] ?? null;
     }
 
     /**
+     * Starts the interactive question
+     *
      * @param Console $console
-     * @return string
-     */
-    protected function askNonInteractive(Console $console): string
-    {
-        if ($this->question) {
-            $console->line($this->question, Console::WEIGHT_HIGH);
-        }
-        $console->line($this->formatChoices($this->choices), Console::WEIGHT_HIGH);
-        return trim($console->readLine('> '));
-    }
-
-    /**
-     * @param Console $console
+     * @param Observer $observer
      * @return int|string
      */
-    protected function startInteractiveMode(Console $console)
+    protected function askInteractive(Console $console, Observer $observer)
     {
-        // configure observer
-        $observer = $console->getInputObserver();
+        /** @var InteractiveOutputInterface $output */
+        $output = $console->getOutput();
+        $maxVisible = $output->getSize()[0] - 2;
+        if (!$this->maxVisible || $maxVisible < $this->maxVisible) {
+            $this->maxVisible = $maxVisible;
+        }
         $values = array_keys($this->choices);
 
         // cursor up
         $observer->on("\e[A", function () use ($values, $console) {
-            $this->changePos($values, $console, -1);
+            $this->changePos($values, $console, -1, true);
         });
         // cursor down
         $observer->on("\e[B", function () use ($values, $console) {
-            $this->changePos($values, $console, +1);
+            $this->changePos($values, $console, +1, true);
         });
         // page up
         $observer->on("\e[5~", function () use ($values, $console) {
@@ -200,15 +175,28 @@ class Choice extends AbstractQuestion implements DrawingInterface
         $console->addDrawing($this);
         $observer->start();
         $selected = $this->selected;
-        $this->selected = -1;
         $console->removeDrawing($this);
         return $selected;
     }
 
-    protected function changePos(array $values, Console $console, int $change)
+    /**
+     * Change selection by $change
+     *
+     * @param array $values
+     * @param Console $console
+     * @param int $change
+     * @param bool $loop
+     */
+    protected function changePos(array $values, Console $console, int $change, bool $loop = false)
     {
         $pos = array_search($this->selected, $values);
-        $newPos = min(count($values)-1, max(0, $pos + $change));
+        $last = count($values) - 1;
+        $newPos = min($last, max(0, $pos + $change));
+        if ($newPos === 0 && $pos === 0 && $loop) {
+            $newPos = $last;
+        } elseif ($newPos === $last && $pos === $last && $loop) {
+            $newPos = 0;
+        }
         if ($pos != $newPos) {
             $this->selected = $values[$newPos];
             $this->updateSlice();
@@ -216,6 +204,9 @@ class Choice extends AbstractQuestion implements DrawingInterface
         }
     }
 
+    /**
+     * Update the offset based on $maxVisible and
+     */
     protected function updateSlice()
     {
         $values = array_keys($this->choices);
@@ -236,22 +227,42 @@ class Choice extends AbstractQuestion implements DrawingInterface
         return $text;
     }
 
+    /**
+     * Format $choices as rows
+     *
+     * @param $choices
+     * @return string
+     */
     protected function formatChoices($choices)
     {
         return implode(PHP_EOL, array_map(
-            [$this, 'formatChoice'],
+            function ($key, $value) {
+                return $this->formatChoice($key, $value, $this->isSelected($key, $value));
+            },
             array_keys($choices),
             array_values($choices)
         ));
     }
 
-    protected function formatChoice($value, $text)
+    /**
+     * Format the choice
+     *
+     * Overload for different formatting.
+     *
+     * @param string|int $key
+     * @param string $value
+     * @param bool $selected
+     * @return string
+     */
+    protected function formatChoice($key, string $value, bool $selected = false): string
     {
-        $choice = sprintf('% ' . ($this->maxKeyLen + 2) . 's %s', '[' . $value . ']', $text);
+        $choice = $value;
 
-        if ($this->selected !== null && $this->selected === $value ||
-            !$this->selected && $this->returnKey && $this->default === $value ||
-            !$this->selected && !$this->returnKey && $this->default === $text) {
+        if ($this->returnKey || !$this->interactive) {
+            $choice = sprintf('% ' . ($this->maxKeyLen + 2) . 's %s', '[' . $key . ']', $value);
+        }
+
+        if ($selected) {
             $choice = '${invert}' . $choice . '${r}';
         }
 
@@ -259,33 +270,99 @@ class Choice extends AbstractQuestion implements DrawingInterface
     }
 
     /**
-     * Determines if the array is indexed (starts from 0)
+     * Check if $key => $value pair is selected
      *
-     * @param array $array
+     * @param $key
+     * @param string $value
      * @return bool
      */
-    protected function isIndexedArray(array $array)
+    protected function isSelected($key, string $value): bool
     {
-        return array_keys($array) === range(0, count($array) - 1);
+        if ($this->interactive) {
+            return $this->selected === $key;
+        }
+
+        if ($this->returnKey) {
+            return $this->default === $key;
+        }
+
+        return $this->default === $value;
+    }
+
+    /**
+     * Starts the non interactive question
+     *
+     * @param Console $console
+     * @return false|int|mixed|null|string
+     */
+    protected function askNonInteractive(Console $console)
+    {
+        if ($this->indexedArray) {
+            $this->humanizeKeys();
+        }
+
+        $key = $this->writeQuestionAndWaitAnswer($console);
+        // ask till we have a valid answer
+        while (!empty($key) && !isset($this->choices[$key])) {
+            // get the key if the answer is the value
+            if ($valueKey = array_search($key, $this->choices)) {
+                $key = $valueKey;
+                break;
+            }
+            $console->line('${red}Unknown choice ' . $key, Console::WEIGHT_HIGH);
+            $key = $this->writeQuestionAndWaitAnswer($console);
+        }
+
+        // use the default without answer
+        if (empty($key)) {
+            $key = $this->returnKey ? $this->default : array_search($this->default, $this->choices);
+        }
+
+        // dehumanize the key if it should be returned
+        if (!empty($key) && $this->indexedArray && $this->returnKey) {
+            return is_numeric($key) ? $key - 1 : $this->charsToIndex($key);
+        }
+
+        return $key;
+    }
+
+    /**
+     * @param Console $console
+     * @return string
+     */
+    protected function writeQuestionAndWaitAnswer(Console $console): string
+    {
+        if ($this->question) {
+            $console->line($this->question, Console::WEIGHT_HIGH);
+        }
+        $console->line($this->formatChoices($this->choices), Console::WEIGHT_HIGH);
+        return trim($console->readLine('> '));
     }
 
     /**
      * Make an indexed array more readable for humans
      *
      * Replaces keys from indexed arrays from 1 to 9 or a to zz.
-     *
-     * @param array $choices
-     * @return array
      */
-    protected function prepareChoices(array $choices): array
+    protected function humanizeKeys()
     {
-        if (count($choices) < 10) {
+        if (count($this->choices) < 10) {
             // keys from 1 - 9
-            return array_combine(range(1, count($choices)), array_values($choices));
+            $this->choices =  array_combine(range(1, count($this->choices)), array_values($this->choices));
+
+            if ($this->returnKey && $this->default !== null) {
+                $this->default += 1;
+            }
+
+            return;
         }
 
-        $keys = array_map([$this, 'indexToChars'], range(0, count($choices)-1));
-        return array_combine($keys, $choices);
+        $keys = array_map([$this, 'indexToChars'], range(0, count($this->choices)-1));
+        $this->choices = array_combine($keys, $this->choices);
+
+        if ($this->returnKey && $this->default !== null) {
+            $this->default = $this->indexToChars($this->default);
+        }
     }
 
     /**
@@ -294,7 +371,7 @@ class Choice extends AbstractQuestion implements DrawingInterface
      * @param int $i
      * @return string
      */
-    protected function indexToChars($i)
+    protected static function indexToChars($i)
     {
         $c = '';
         do {
@@ -311,7 +388,7 @@ class Choice extends AbstractQuestion implements DrawingInterface
      * @param string $c
      * @return int
      */
-    protected function charsToIndex($c)
+    protected static function charsToIndex($c)
     {
         $i = ord(substr($c, -1)) - 97;
         $c = substr($c, 0, -1);
@@ -320,5 +397,16 @@ class Choice extends AbstractQuestion implements DrawingInterface
             $c = substr($c, 0, -1);
         }
         return $i;
+    }
+
+    /**
+     * Determines if the array is indexed (starts from 0)
+     *
+     * @param array $array
+     * @return bool
+     */
+    protected static function isIndexedArray(array $array)
+    {
+        return array_keys($array) === range(0, count($array) - 1);
     }
 }

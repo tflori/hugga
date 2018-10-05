@@ -33,7 +33,7 @@ class Observer
         $this->stdin = $input->getResource();
     }
 
-    public function start()
+    public function start(): void
     {
         $this->stop = false;
 
@@ -53,11 +53,9 @@ class Observer
 
         // reset tty settings
         self::ttySettings($sttySettings);
-
-        return;
     }
 
-    public function stop()
+    public function stop(): void
     {
         $this->stop = true;
     }
