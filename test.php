@@ -2,7 +2,7 @@
 
 use Hugga\Console;
 use Hugga\Input\Question\Choice;
-use Hugga\Output\Drawing\Progressbar;
+use Hugga\Output\Drawing\ProgressBar;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -15,141 +15,155 @@ $console = new Console();
 //$console->nonInteractive();
 
 // Formatted output
-$console->line('${bold;cyan}Formatting');
-$console->line('${red}This is a red text');
-$console->line('${fg:blue;bg:white}Blue text on white background');
-$console->line('${u}Underlined ${cyan} and teal');
-$console->line('${bold}Bold${r} and ${underline}underline${reset} can be written out too');
-// preformatted:
-$console->info('This is an information');
-$console->warn('This is a warning');
-$console->error('This is an error');
+//$console->line('${bold;cyan}Formatting');
+//$console->line('${red}This is a red text');
+//$console->line('${fg:blue;bg:white}Blue text on white background');
+//$console->line('${u}Underlined ${cyan} and teal');
+//$console->line('${bold}Bold${r} and ${underline}underline${reset} can be written out too');
+//// preformatted:
+//$console->info('This is an information');
+//$console->warn('This is a warning');
+//$console->error('This is an error');
+//
+//// Color table
+//$console->line(PHP_EOL . '${bold;cyan}Colors');
+//$colors = [
+//    'black', 'dark-grey', 'grey', 'white', 'red', 'light-red', 'green', 'light-green', 'yellow', 'light-yellow', 'blue',
+//    'light-blue', 'magenta', 'light-magenta', 'cyan', 'light-cyan'
+//];
+//$maxLen = max(array_map('strlen', $colors));
+//foreach ($colors as $fgColor) {
+//    $console->write(sprintf('${%s}%' . $maxLen . 's: ', $fgColor, $fgColor));
+//    foreach ($colors as $bgColor) {
+//        $console->write(sprintf('${fg:%s;bg:%s}  #42  ${r}  ', $fgColor, $bgColor));
+//    }
+//    $console->write(PHP_EOL);
+//}
+//
+//// Questions
+//$console->line(PHP_EOL . '${bold;cyan}Questions');
+//$name = $console->ask('What is your name?', 'John Doe');
+//$console->info('Hello ' . $name . '!');
+//if ($console->ask(new Confirmation('Is this correct?'))) {
+//    $console->info('Great!');
+//} else {
+//    $console->warn('Why you are lying to me?');
+//}
+//
+//// Manual reading from input
+//$console->line(PHP_EOL . '${bold;cyan}Input');
+//$console->info('Write exit to continue; press up to restore previous line');
+//$line = '';
+//do {
+//    if (!empty($line)) {
+//        $console->warn('processing ' . $line);
+//    }
+//    $line = $console->readLine('$ ');
+//    readline_add_history($line);
+//} while (strtolower(trim($line)) != 'exit');
+//readline_clear_history();
+//$console->write('Enter 3 letters:');
+//$input = $console->read(3);
+//$console->line(sprintf('You entered: "%s"', $input));
+//$console->info('Enter your message (end with dot in line for itself)');
+//$message = $console->readUntil(PHP_EOL . '.' . PHP_EOL, '');
+//$console->line(sprintf('Message:' . PHP_EOL . '"""%s"""', $message));
+//
+//// Deleting output
+//$console->line(PHP_EOL . '${bold;cyan}Delete');
+//$console->write('Importing xml file ... ${yellow}in progress');
+//sleep(2);
+//$console->delete('in progress'); // or 11
+//$console->line('${green}done');
 
-// Color table
-$console->line(PHP_EOL . '${bold;cyan}Colors');
-$colors = [
-    'black', 'dark-grey', 'grey', 'white', 'red', 'light-red', 'green', 'light-green', 'yellow', 'light-yellow', 'blue',
-    'light-blue', 'magenta', 'light-magenta', 'cyan', 'light-cyan'
-];
-$maxLen = max(array_map('strlen', $colors));
-foreach ($colors as $fgColor) {
-    $console->write(sprintf('${%s}%' . $maxLen . 's: ', $fgColor, $fgColor));
-    foreach ($colors as $bgColor) {
-        $console->write(sprintf('${fg:%s;bg:%s}  #42  ${r}  ', $fgColor, $bgColor));
+// ProgressBar bar
+$console->line(PHP_EOL . '${bold;cyan}ProgressBar bar');
+$packages = ['openssh', 'gimp', 'libreoffce', 'linux', 'firefox', 'inkscape', 'conky', 'gnome'];
+$downloads = [];
+$console->info(sprintf('Start downloading updates for %d packages', count($packages)));
+foreach ($packages as $package) {
+    $kb = mt_rand(500, 2000);
+    $packageDownload = [
+        'package' => $package,
+        'kb' => $kb,
+        'progress' => new ProgressBar($kb, 'Downloading ' . $package, 'kb'),
+        'loaded' => 0,
+    ];
+    $downloads[] = $packageDownload;
+    $packageDownload['progress']->updateRate(0.1)->start($console);
+}
+$progressDownloads = new ProgressBar(count($packages), 'Downloaded', 'updates');
+$progressDownloads->start($console);
+while (!empty($downloads)) {
+    usleep(mt_rand(1000, 40000));
+    foreach ($downloads as $i => &$packageDownload) {
+        $loaded = mt_rand(1, 10);
+        $packageDownload['progress']->advance($loaded);
+        $packageDownload['loaded'] += $loaded;
+        if ($packageDownload['loaded'] >= $packageDownload['kb']) {
+            $packageDownload['progress']->finish();
+            $console->info('Downloaded ' . $packageDownload['package']);
+            array_splice($downloads, $i, 1);
+            $progressDownloads->advance();
+        }
     }
-    $console->write(PHP_EOL);
 }
+$progressDownloads->finish();
 
-// Questions
-$console->line(PHP_EOL . '${bold;cyan}Questions');
-$name = $console->ask('What is your name?', 'John Doe');
-$console->info('Hello ' . $name . '!');
-if ($console->ask(new Confirmation('Is this correct?'))) {
-    $console->info('Great!');
-} else {
-    $console->warn('Why you are lying to me?');
-}
-
-// Manual reading from input
-$console->line(PHP_EOL . '${bold;cyan}Input');
-$console->info('Write exit to continue; press up to restore previous line');
-$line = '';
-do {
-    if (!empty($line)) {
-        $console->warn('processing ' . $line);
+$console->info('Installing updates...');
+foreach ($packages as $package) {
+    $progressInstall = new ProgressBar(null, 'Installing ' . $package);
+    $progressInstall->start($console);
+    $installTime = mt_rand(1000, 3000) / 1000;
+    $start = microtime(true);
+    while (microtime(true) - $start < $installTime) {
+        usleep(0.08 * 1000000); // default update rate for undetermined progress bars
+        $progressInstall->advance();
     }
-    $line = $console->readLine('$ ');
-    readline_add_history($line);
-} while (strtolower(trim($line)) != 'exit');
-readline_clear_history();
-$console->write('Enter 3 letters:');
-$input = $console->read(3);
-$console->line(sprintf('You entered: "%s"', $input));
-$console->info('Enter your message (end with dot in line for itself)');
-$message = $console->readUntil(PHP_EOL . '.' . PHP_EOL, '');
-$console->line(sprintf('Message:' . PHP_EOL . '"""%s"""', $message));
-
-// Deleting output
-$console->line(PHP_EOL . '${bold;cyan}Delete');
-$console->write('Importing xml file ... ${yellow}in progress');
-sleep(2);
-$console->delete('in progress'); // or 11
-$console->line('${green}done');
-
-// Progress bar (will be implemented)
-$console->line(PHP_EOL . '${bold;cyan}Progress bar');
-function getProgressLine($i, $max)
-{
-    $size = 30;
-    $perc = $i / $max;
-    $done = floor($perc * $size);
-    $line = ' [' . str_repeat('#', $done) . str_repeat('-', $size - $done) . '] ';
-    return $line . getProgressText($i, $max);
+    $progressInstall->finish();
 }
 
-function getProgressText($i, $max)
-{
-    $perc = round($i / $max * 100, 2);
-    $l = strlen($max);
-    return sprintf('%\' 6.2f %%  ( %\' ' . $l . 'd / %d )', $perc, $i, $max);
-}
-
-$max = mt_rand(3000, 4000);
-$s = microtime(true);
-for ($i = 0; $i < $max; $i++) {
-    usleep(mt_rand(500, 2000));
-    if ($i === 0) {
-        $console->write(getProgressLine($i, $max));
-    } elseif ((microtime(true) - $s) > 0.1) {
-        $s = microtime(true);
-        $console->deleteLine();
-        $console->write(getProgressLine($i, $max));
-    }
-}
-$console->deleteLine();
-$console->write(getProgressLine($i, $max) . PHP_EOL);
-
-// Choices
-$console->line(PHP_EOL . '${bold;cyan}Choices');
-$names = [
-    'ezra' => 'Ezra Trickett', 'leticia' => 'Leticia Karpinski', 'celinda' => 'Celinda Baskett',
-    'jerlene' => 'Jerlene Esteban', 'merideth' => 'Merideth Utsey', 'jame' => 'Jame Depaolo',
-    'shirlene' => 'Shirlene Fraire', 'carmon' => 'Carmon Frese', 'dion' => 'Dion Rundell',
-    'elouise' => 'Elouise Mcgovern', 'leslee' => 'Leslee Rispoli', 'inell' => 'Inell Feinstein',
-    'burton' => 'Burton Lamontagne', 'machelle' => 'Machelle Wattley', 'thomas' => 'Thomas Franklin',
-    'maynard' => 'Maynard Gabourel', 'beverley' => 'Beverley Eisenbarth', 'van' => 'Van Meeks',
-    'maren' => 'Maren Wildermuth', 'shoshana' => 'Shoshana Harry', 'prince' => 'Prince Calbert',
-    'jackeline' => 'Jackeline Livermore', 'eufemia' => 'Eufemia Loux', 'almeda' => 'Almeda Bjornson',
-    'mignon' => 'Mignon Zollars', 'reyes' => 'Reyes Nodine', 'pinkie' => 'Pinkie Hedman',
-    'pablo' => 'Pablo Moyer', 'yuette' => 'Yuette Venezia', 'mitch' => 'Mitch Helwig',
-];
-// without changing options
-$chosen = $console->ask(new Choice(
-    array_values($names),
-    'Choose your character:',
-    'Van Meeks'
-));
-$console->line('You have chosen: ${green}' . $chosen);
-// show only 10 (only if your term is interactive) and return values
-$chosen = $console->ask(
-    (new Choice($names))
-        ->limit(10)
-        ->returnValue()
-);
-$console->line('You have chosen: ${green}' . $chosen);
-// show only 10 (only if your term is interactive) and return keys (by default)
-$chosen = $console->ask(
-    (new Choice($names))
-        ->limit(10)
-);
-$console->line('You have chosen: ${green}' . $chosen);
-// non interactive (write your answer) and return key
-$chosen = $console->ask(
-    (new Choice(array_values($names), '', 23))
-        ->nonInteractive()
-        ->returnKey()
-);
-$console->line('You have chosen: ${green}' . $chosen . ' (' . array_values($names)[$chosen] . ')');
+//// Choices
+//$console->line(PHP_EOL . '${bold;cyan}Choices');
+//$names = [
+//    'ezra' => 'Ezra Trickett', 'leticia' => 'Leticia Karpinski', 'celinda' => 'Celinda Baskett',
+//    'jerlene' => 'Jerlene Esteban', 'merideth' => 'Merideth Utsey', 'jame' => 'Jame Depaolo',
+//    'shirlene' => 'Shirlene Fraire', 'carmon' => 'Carmon Frese', 'dion' => 'Dion Rundell',
+//    'elouise' => 'Elouise Mcgovern', 'leslee' => 'Leslee Rispoli', 'inell' => 'Inell Feinstein',
+//    'burton' => 'Burton Lamontagne', 'machelle' => 'Machelle Wattley', 'thomas' => 'Thomas Franklin',
+//    'maynard' => 'Maynard Gabourel', 'beverley' => 'Beverley Eisenbarth', 'van' => 'Van Meeks',
+//    'maren' => 'Maren Wildermuth', 'shoshana' => 'Shoshana Harry', 'prince' => 'Prince Calbert',
+//    'jackeline' => 'Jackeline Livermore', 'eufemia' => 'Eufemia Loux', 'almeda' => 'Almeda Bjornson',
+//    'mignon' => 'Mignon Zollars', 'reyes' => 'Reyes Nodine', 'pinkie' => 'Pinkie Hedman',
+//    'pablo' => 'Pablo Moyer', 'yuette' => 'Yuette Venezia', 'mitch' => 'Mitch Helwig',
+//];
+//// without changing options
+//$chosen = $console->ask(new Choice(
+//    array_values($names),
+//    'Choose your character:',
+//    'Van Meeks'
+//));
+//$console->line('You have chosen: ${green}' . $chosen);
+//// show only 10 (only if your term is interactive) and return values
+//$chosen = $console->ask(
+//    (new Choice($names))
+//        ->limit(10)
+//        ->returnValue()
+//);
+//$console->line('You have chosen: ${green}' . $chosen);
+//// show only 10 (only if your term is interactive) and return keys (by default)
+//$chosen = $console->ask(
+//    (new Choice($names))
+//        ->limit(10)
+//);
+//$console->line('You have chosen: ${green}' . $chosen);
+//// non interactive (write your answer) and return key
+//$chosen = $console->ask(
+//    (new Choice(array_values($names), '', 23))
+//        ->nonInteractive()
+//        ->returnKey()
+//);
+//$console->line('You have chosen: ${green}' . $chosen . ' (' . array_values($names)[$chosen] . ')');
 
 
 
