@@ -78,7 +78,7 @@ class DrawingsTest extends TestCase
     {
         $drawing = new Drawing();
 
-        $this->stdout->shouldReceive('write')->with($this->formatter->format($drawing->getText()))
+        $this->stdout->shouldReceive('deleteLines')->with(0, $this->formatter->format($drawing->getText()))
             ->once();
 
         $this->console->addDrawing($drawing);
@@ -90,13 +90,13 @@ class DrawingsTest extends TestCase
         $drawing1 = new Drawing();
         $drawing2 = new Drawing();
 
-        $this->stdout->shouldReceive('write')->with($this->formatter->format($drawing1->getText()))
+        $this->stdout->shouldReceive('deleteLines')->with(0, $this->formatter->format($drawing1->getText()))
             ->once()->ordered();
-        $this->stdout->shouldReceive('deleteLines')->with(4)
-            ->once()->ordered();
-        $this->stdout->shouldReceive('write')->with($this->formatter->format(
-            $drawing1->getText() . PHP_EOL . $drawing2->getText()
-        ))->once()->ordered();
+        $this->stdout->shouldReceive('deleteLines')->with(
+            4,
+            $this->formatter->format($drawing1->getText()) . PHP_EOL .
+            $this->formatter->format($drawing2->getText())
+        )->once()->ordered();
 
         $this->console->addDrawing($drawing1);
         $this->console->addDrawing($drawing2);
@@ -109,22 +109,22 @@ class DrawingsTest extends TestCase
         $drawing2 = new Drawing();
 
         // what was before
-        $this->stdout->shouldReceive('write')->with($this->formatter->format($drawing1->getText()))
+        $this->stdout->shouldReceive('deleteLines')->with(0, $this->formatter->format($drawing1->getText()))
             ->once()->ordered();
-        $this->stdout->shouldReceive('deleteLines')->with(4)
-            ->once()->ordered();
-        $this->stdout->shouldReceive('write')->with($this->formatter->format(
-            $drawing1->getText() . PHP_EOL . $drawing2->getText()
-        ))->once()->ordered();
+        $this->stdout->shouldReceive('deleteLines')->with(
+            4,
+            $this->formatter->format($drawing1->getText()) . PHP_EOL .
+            $this->formatter->format($drawing2->getText())
+        )->once()->ordered();
         $this->console->addDrawing($drawing1);
         $this->console->addDrawing($drawing2);
 
         // redrawing expectation
-        $this->stdout->shouldReceive('deleteLines')->with(8)
-            ->once()->ordered();
-        $this->stdout->shouldReceive('write')->with($this->formatter->format(
-            $drawing1->getText() . PHP_EOL . $drawing2->getText()
-        ))->once()->ordered();
+        $this->stdout->shouldReceive('deleteLines')->with(
+            8,
+            $this->formatter->format($drawing1->getText()) . PHP_EOL .
+            $this->formatter->format($drawing2->getText())
+        )->once()->ordered();
 
         $this->console->redraw();
     }
@@ -136,13 +136,13 @@ class DrawingsTest extends TestCase
         $drawing2 = new Drawing();
 
         // what was before
-        $this->stdout->shouldReceive('write')->with($this->formatter->format($drawing1->getText()))
+        $this->stdout->shouldReceive('deleteLines')->with(0, $this->formatter->format($drawing1->getText()))
             ->once()->ordered();
-        $this->stdout->shouldReceive('deleteLines')->with(4)
-            ->once()->ordered();
-        $this->stdout->shouldReceive('write')->with($this->formatter->format(
-            $drawing1->getText() . PHP_EOL . $drawing2->getText()
-        ))->once()->ordered();
+        $this->stdout->shouldReceive('deleteLines')->with(
+            4,
+            $this->formatter->format($drawing1->getText()) . PHP_EOL .
+            $this->formatter->format($drawing2->getText())
+        )->once()->ordered();
         $this->console->addDrawing($drawing1);
         $this->console->addDrawing($drawing2);
 
@@ -151,14 +151,14 @@ class DrawingsTest extends TestCase
             ->once()->ordered();
 
         // output of removed drawing
-        $this->stdout->shouldReceive('write')->with($this->formatter->format(
-            $drawing2->getText() . PHP_EOL
-        ))->once()->ordered();
+        $this->stdout->shouldReceive('write')->with(
+            $this->formatter->format($drawing2->getText()) . PHP_EOL
+        )->once()->ordered();
 
         // drawing of left drawings
-        $this->stdout->shouldReceive('write')->with($this->formatter->format(
-            $drawing1->getText()
-        ))->once()->ordered();
+        $this->stdout->shouldReceive('write')->with(
+            $this->formatter->format($drawing1->getText())
+        )->once()->ordered();
 
         $this->console->removeDrawing($drawing2);
     }

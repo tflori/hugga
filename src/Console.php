@@ -127,8 +127,7 @@ class Console
      */
     public function redraw()
     {
-        $this->cleanDrawings();
-        $this->drawDrawings();
+        $this->refreshDrawings();
     }
 
     /**
@@ -141,13 +140,16 @@ class Console
      */
     public function addDrawing(DrawingInterface $drawing): bool
     {
-        if (in_array($drawing, $this->drawings, true)) {
+        $hash = spl_object_hash($drawing);
+        if (isset($this->drawings[$hash])) {
             return false;
         }
 
-        $this->cleanDrawings();
-        $this->drawings[] = $drawing;
-        $this->drawDrawings();
+        $this->drawings[$hash] = [
+            'drawing' => $drawing,
+            'lines' => 0,
+        ];
+        $this->refreshDrawings();
         return true;
     }
 
@@ -163,13 +165,14 @@ class Console
      */
     public function removeDrawing(DrawingInterface $drawing): bool
     {
-        if (!in_array($drawing, $this->drawings, true)) {
+        $hash = spl_object_hash($drawing);
+        if (!isset($this->drawings[$hash])) {
             return false;
         }
 
         $this->cleanDrawings();
-        $this->stdout->write($this->format(rtrim($drawing->getText()) . PHP_EOL));
-        array_splice($this->drawings, array_search($drawing, $this->drawings, true), 1);
+        $this->stdout->write($this->format($drawing->getText()) . PHP_EOL);
+        unset($this->drawings[$hash]);
         $this->drawDrawings();
         return true;
     }
@@ -499,9 +502,11 @@ class Console
             return;
         }
 
-        $this->stdout->deleteLines(substr_count(implode(PHP_EOL, array_map(function (DrawingInterface $drawing) {
-            return rtrim($drawing->getText());
-        }, $this->drawings)), PHP_EOL) + 1);
+        $lines = array_sum(array_map(function ($d) {
+            return $d['lines'];
+        }, $this->drawings));
+
+        $this->stdout->deleteLines($lines);
     }
 
     /**
@@ -513,9 +518,29 @@ class Console
             return;
         }
 
-        $this->stdout->write($this->format(implode(PHP_EOL, array_map(function (DrawingInterface $drawing) {
-            return rtrim($drawing->getText());
-        }, $this->drawings))));
+        $output = implode(PHP_EOL, array_map(function ($d) {
+            return $this->format($d['drawing']->getText());
+        }, $this->drawings));
+
+        $this->stdout->write($output);
+    }
+
+    protected function refreshDrawings()
+    {
+        if (!$this->stdout instanceof InteractiveOutputInterface || empty($this->drawings)) {
+            return;
+        }
+
+        $lines = 0;
+        $texts = [];
+        foreach ($this->drawings as $hash => $d) {
+            $lines += $d['lines'];
+            $text = $this->format($d['drawing']->getText());
+            $this->drawings[$hash]['lines'] = substr_count($text, PHP_EOL) + 1;
+            $texts[] = $text;
+        }
+
+        $this->stdout->deleteLines($lines, implode(PHP_EOL, $texts));
     }
 
     /**

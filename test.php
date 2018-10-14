@@ -2,12 +2,17 @@
 
 use Hugga\Console;
 use Hugga\Input\Question\Choice;
-use Hugga\Output\Drawing\Progressbar;
+use Hugga\Input\Question\Confirmation;
+use Hugga\Output\Drawing\ProgressBar;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
 // This script will demonstrate the usage of Hugga\Console and allow users to test if this lib fits into their
 // environment.
+
+/**********
+ * BASICS *
+ **********/
 
 // Initialization
 $console = new Console();
@@ -40,6 +45,10 @@ foreach ($colors as $fgColor) {
     $console->write(PHP_EOL);
 }
 
+/*********
+ * Input *
+ *********/
+
 // Questions
 $console->line(PHP_EOL . '${bold;cyan}Questions');
 $name = $console->ask('What is your name?', 'John Doe');
@@ -68,46 +77,6 @@ $console->line(sprintf('You entered: "%s"', $input));
 $console->info('Enter your message (end with dot in line for itself)');
 $message = $console->readUntil(PHP_EOL . '.' . PHP_EOL, '');
 $console->line(sprintf('Message:' . PHP_EOL . '"""%s"""', $message));
-
-// Deleting output
-$console->line(PHP_EOL . '${bold;cyan}Delete');
-$console->write('Importing xml file ... ${yellow}in progress');
-sleep(2);
-$console->delete('in progress'); // or 11
-$console->line('${green}done');
-
-// Progress bar (will be implemented)
-$console->line(PHP_EOL . '${bold;cyan}Progress bar');
-function getProgressLine($i, $max)
-{
-    $size = 30;
-    $perc = $i / $max;
-    $done = floor($perc * $size);
-    $line = ' [' . str_repeat('#', $done) . str_repeat('-', $size - $done) . '] ';
-    return $line . getProgressText($i, $max);
-}
-
-function getProgressText($i, $max)
-{
-    $perc = round($i / $max * 100, 2);
-    $l = strlen($max);
-    return sprintf('%\' 6.2f %%  ( %\' ' . $l . 'd / %d )', $perc, $i, $max);
-}
-
-$max = mt_rand(3000, 4000);
-$s = microtime(true);
-for ($i = 0; $i < $max; $i++) {
-    usleep(mt_rand(500, 2000));
-    if ($i === 0) {
-        $console->write(getProgressLine($i, $max));
-    } elseif ((microtime(true) - $s) > 0.1) {
-        $s = microtime(true);
-        $console->deleteLine();
-        $console->write(getProgressLine($i, $max));
-    }
-}
-$console->deleteLine();
-$console->write(getProgressLine($i, $max) . PHP_EOL);
 
 // Choices
 $console->line(PHP_EOL . '${bold;cyan}Choices');
@@ -151,6 +120,76 @@ $chosen = $console->ask(
 );
 $console->line('You have chosen: ${green}' . $chosen . ' (' . array_values($names)[$chosen] . ')');
 
+/*******************
+ * Advanced Output *
+ *******************/
+
+// Deleting output
+$console->line(PHP_EOL . '${bold;cyan}Delete');
+$console->write('Importing xml file ... ${yellow}in progress');
+sleep(2);
+$console->delete('in progress'); // or ->delete(11)
+$console->line('${green}done');
+
+// ProgressBar bar
+$console->line(PHP_EOL . '${bold;cyan}ProgressBar bar');
+
+// simple progress bar
+$progress = new ProgressBar($console, 80);
+$progress->width(10)->start();
+for ($i = 0; $i < 80; $i++) {
+    usleep(40000);
+    $progress->advance();
+}
+$progress->finish();
+
+// concurrent progress bars
+$packages = ['openssh', 'gimp', 'libreoffce', 'linux', 'firefox', 'inkscape', 'conky', 'gnome'];
+$downloads = [];
+$console->info(sprintf('Start downloading updates for %d packages', count($packages)));
+foreach ($packages as $package) {
+    $kb = mt_rand(1000, 3000);
+    $packageDownload = [
+        'package' => $package,
+        'kb' => $kb,
+        'progress' => new ProgressBar($console, $kb, 'Downloading ' . $package, 'kb'),
+        'loaded' => 0,
+    ];
+    $downloads[] = $packageDownload;
+    $packageDownload['progress']->updateRate(0.1)->start();
+}
+$progressDownloads = new ProgressBar($console, count($packages), 'Downloaded', 'updates');
+$progressDownloads->start();
+while (!empty($downloads)) {
+    usleep(mt_rand(6000, 20000));
+    foreach ($downloads as $i => &$packageDownload) {
+        $loaded = mt_rand(1, 10);
+        $packageDownload['progress']->advance($loaded);
+        $packageDownload['loaded'] += $loaded;
+        if ($packageDownload['loaded'] >= $packageDownload['kb']) {
+            $packageDownload['progress']->finish();
+            $console->info('Downloaded ' . $packageDownload['package']);
+            array_splice($downloads, $i, 1);
+            $progressDownloads->advance();
+        }
+    }
+}
+$progressDownloads->finish();
+
+// undetermined progress bars
+$console->info('Installing updates...');
+$progressInstall = new ProgressBar($console, null, 'Updating packages');
+$progressInstall->start();
+foreach ($packages as $package) {
+    $installTime = mt_rand(500, 1500) / 1000;
+    $start = microtime(true);
+    while (microtime(true) - $start < $installTime) {
+        usleep(40000);
+        $progressInstall->advance();
+    }
+    $console->info('Updated ' . $package);
+}
+$progressInstall->template('{title} ${green}done')->finish();
 
 
 

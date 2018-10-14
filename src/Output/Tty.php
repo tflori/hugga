@@ -44,12 +44,31 @@ class Tty extends AbstractOutput implements InteractiveOutputInterface
     /** {@inheritdoc}
      * @codeCoverageIgnore we can not test this with phpunit
      */
-    public function deleteLines(int $count)
+    public function deleteLines(int $count, string $replace = '')
     {
-        $this->deleteLine();
-        for ($i = 1; $i < $count; $i++) {
-            $this->write("\e[A");
+        if ($count <= 0) {
+            $this->write($replace);
+            return;
+        }
+        $rows = explode(PHP_EOL, $replace);
+        $this->write(str_repeat("\e[A", $count));
+        $cleanLines = $count;
+        foreach ($rows as $row) {
+            if ($cleanLines <= 0) {
+                $this->write(PHP_EOL . $row);
+                continue;
+            }
+            $this->write("\e[B");
             $this->deleteLine();
+            $this->write($row);
+            $cleanLines--;
+        }
+        if ($cleanLines > 0) {
+            for ($i = 0; $i < $cleanLines; $i++) {
+                $this->write("\e[B");
+                $this->deleteLine();
+            }
+            $this->write(str_repeat("\e[A", $cleanLines));
         }
     }
 

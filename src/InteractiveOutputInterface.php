@@ -12,11 +12,14 @@ interface InteractiveOutputInterface extends OutputInterface
     public function replace(string $new);
 
     /**
-     * Deletes rows and moves cursor to first row
+     * Deletes $count rows and replaces them with $replace
+     *
+     * If $replace contains more rows than $count the rows will be appended.
      *
      * @param int $count
+     * @param string $replace
      */
-    public function deleteLines(int $count);
+    public function deleteLines(int $count, string $replace = '');
 
     /**
      * Get the size of the output window
