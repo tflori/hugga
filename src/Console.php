@@ -262,6 +262,17 @@ class Console
     }
 
     /**
+     * Get the string length of $message without formatting
+     *
+     * @param $message
+     * @return int
+     */
+    public function strLen($message)
+    {
+        return mb_strlen($this->formatter->stripFormatting($message));
+    }
+
+    /**
      * Shortcut to ->write('${green;bold}Your message' . PHP_EOL)
      *
      * @param string $message
