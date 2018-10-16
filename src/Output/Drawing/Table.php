@@ -28,6 +28,8 @@ class Table implements DrawingInterface
     protected $withBorder = true;
     protected $borderBetweenRows = false;
     protected $padding = 1;
+    protected $repeatHeader = 0;
+    protected $headerStyle = '${b}';
 
     protected $borderStyle = [
         self::CORNER_TOP_LEFT  => '┌',
@@ -69,15 +71,56 @@ class Table implements DrawingInterface
         return $this;
     }
 
+    public function withoutBorderRows()
+    {
+        $this->borderBetweenRows = false;
+        return $this;
+    }
+
     public function padding(int $padding)
     {
         $this->padding = $padding;
         return $this;
     }
 
+    public function repeatHeaders(int $every = 10)
+    {
+        $this->repeatHeader = $every;
+        return $this;
+    }
+
+    public function headerStyle(string $format)
+    {
+        $this->headerStyle = $format;
+        return $this;
+    }
+
     public function headersFromKeys($row = 0)
     {
-        $this->headers = array_keys($this->data[$row]);
+        $this->headers = array_combine(array_keys($this->data[$row]), array_keys($this->data[$row]));
+        return $this;
+    }
+
+    public function column($key, $definition)
+    {
+        $columns = $this->getColumnDefinitions();
+        if (!isset($columns[$key])) {
+            throw new \LogicException('There is no column $key in our data');
+        }
+
+        foreach ($definition as $var => $value) {
+            switch ($var) {
+                case 'header':
+                    $this->headers[$key] = $value;
+                    break;
+                case 'delete':
+                    unset($this->columns[$key]);
+                    break;
+                default:
+                    $this->columns[$key]->$var = $value;
+            }
+        }
+
         return $this;
     }
 
@@ -128,13 +171,22 @@ class Table implements DrawingInterface
         $rows = [];
 
         array_push($rows, ...$this->getRows($columns, $this->data));
+        $borderRow = $this->getBorderRow($columns);
 
         if ($this->borderBetweenRows) {
-            $borderRow = $this->getBorderRow($columns);
-            $c = count($rows) / 1 - 1;
-            for ($i = 0; $i < $c; $i++) {
-                array_splice($rows, $i * 2 + 1, 0, $borderRow);
+            $this->repeatRow($rows, $borderRow);
+        }
+
+        if ($this->headers) {
+            $headerRow = $this->getHeaderRow($columns);
+            if ($this->repeatHeader) {
+                if ($this->borderBetweenRows) {
+                    $this->repeatRow($rows, [$headerRow, $borderRow], $this->repeatHeader * 2);
+                } else {
+                    $this->repeatRow($rows, [$borderRow, $headerRow, $borderRow], $this->repeatHeader);
+                }
             }
+            array_unshift($rows, $headerRow, $borderRow);
         }
 
         if ($this->withBorder) {
@@ -162,18 +214,19 @@ class Table implements DrawingInterface
         foreach ($data as $row) {
             $r = [];
             foreach ($columns as $key => $column) {
-                if (!isset($row[$key])) {
+                $value = is_object($row) ? $row->$key ?? null : $row[$key] ?? null;
+                if (!$value) {
                     $r[] = str_repeat(' ', $column->width);
                     continue;
                 }
 
                 switch ($column->type) {
                     case 'number':
-                        $value = isset($column->format) ? sprintf($column->format) : (string)$row[$key];
+                        $value = isset($column->format) ? sprintf($column->format, $value) : (string)$value;
                         break;
 
                     case 'string':
-                        $value = (string)$row[$key];
+                        $value = (string)$value;
                         break;
                 }
 
@@ -188,8 +241,8 @@ class Table implements DrawingInterface
                         break;
 
                     case 'center':
-                        $r[] = str_repeat(' ', floor($column->width - $width / 2)) . $value .
-                               str_repeat(' ', ceil($column->width - $width / 2));
+                        $r[] = str_repeat(' ', ceil(($column->width - $width) / 2)) . $value .
+                               str_repeat(' ', floor(($column->width - $width) / 2));
                         break;
                 }
             }
@@ -197,6 +250,38 @@ class Table implements DrawingInterface
         }
 
         return $rows;
+    }
+
+    protected function getHeaderRow(array $columns)
+    {
+        $left = '';
+        $right = '';
+        $spacer = str_repeat(' ', $this->padding * 2);
+        if ($this->withBorder) {
+            $left = $this->borderStyle[self::BORDER_VERTICAL] . str_repeat(' ', $this->padding);
+            $right = str_repeat(' ', $this->padding) . $this->borderStyle[self::BORDER_VERTICAL];
+            $spacer = str_repeat(' ', $this->padding) .
+                      $this->borderStyle[self::BORDER_VERTICAL] .
+                      str_repeat(' ', $this->padding);
+        }
+
+        $r = [];
+        foreach ($columns as $key => $column) {
+            if (!isset($this->headers[$key])) {
+                $r[] = str_repeat(' ', $column->width);
+                continue;
+            }
+
+            $value = $this->headers[$key];
+            $width = $this->console->strLen($value);
+            if ($width > $column->width) {
+                $value = substr($this->headers[$key], 0, $column->width - $width - 1) . '…';
+                $width = $this->console->strLen($value);
+            }
+            $r[] = $this->headerStyle . $value . str_repeat(' ', $column->width - $width) . '${r}';
+        }
+
+        return $left . implode($spacer, $r) . $right;
     }
 
     protected function getTopBorderRow(array $columns)
@@ -233,5 +318,13 @@ class Table implements DrawingInterface
         return $this->borderStyle[self::TEE_VERTICAL_RIGHT] .
                implode($this->borderStyle[self::CROSS], $r) .
                $this->borderStyle[self::TEE_VERTICAL_LEFT];
+    }
+
+    protected function repeatRow(array &$rows, $repeat, int $every = 1)
+    {
+        $count = ceil(count($rows) / $every) - 1;
+        for ($i = 0; $i < $count; $i++) {
+            array_splice($rows, $i * ($every + (is_array($repeat) ? count($repeat) : 1)) + $every, 0, $repeat);
+        }
     }
 }
