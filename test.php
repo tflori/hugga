@@ -211,7 +211,7 @@ $console->line($table->padding(3)->getText());
 $console->line($table->padding(1)->withoutBorderRows()->getText());
 $console->line($table->repeatHeaders(4)->getText());
 $console->line($table->column(0, ['header' => 'ID', 'align' => 'center'])->getText());
-
+$console->line($table->withoutBorder()->getText());
 
 
 

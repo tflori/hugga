@@ -200,16 +200,7 @@ class Table implements DrawingInterface
     protected function getRows(array $columns, array $data): array
     {
         $rows = [];
-        $left = '';
-        $right = '';
-        $spacer = str_repeat(' ', $this->padding * 2);
-        if ($this->withBorder) {
-            $left = $this->borderStyle[self::BORDER_VERTICAL] . str_repeat(' ', $this->padding);
-            $right = str_repeat(' ', $this->padding) . $this->borderStyle[self::BORDER_VERTICAL];
-            $spacer = str_repeat(' ', $this->padding) .
-                      $this->borderStyle[self::BORDER_VERTICAL] .
-                      str_repeat(' ', $this->padding);
-        }
+        list($left, $right, $spacer) = $this->getDivider();
 
         foreach ($data as $row) {
             $r = [];
@@ -254,16 +245,7 @@ class Table implements DrawingInterface
 
     protected function getHeaderRow(array $columns)
     {
-        $left = '';
-        $right = '';
-        $spacer = str_repeat(' ', $this->padding * 2);
-        if ($this->withBorder) {
-            $left = $this->borderStyle[self::BORDER_VERTICAL] . str_repeat(' ', $this->padding);
-            $right = str_repeat(' ', $this->padding) . $this->borderStyle[self::BORDER_VERTICAL];
-            $spacer = str_repeat(' ', $this->padding) .
-                      $this->borderStyle[self::BORDER_VERTICAL] .
-                      str_repeat(' ', $this->padding);
-        }
+        list($left, $right, $spacer) = $this->getDivider();
 
         $r = [];
         foreach ($columns as $key => $column) {
@@ -310,14 +292,37 @@ class Table implements DrawingInterface
 
     protected function getBorderRow(array $columns)
     {
+        list($left, $right, $spacer) = $this->getDivider(
+            $this->borderStyle[self::BORDER_HORIZONTAL],
+            $this->borderStyle[self::TEE_VERTICAL_RIGHT],
+            $this->borderStyle[self::TEE_VERTICAL_LEFT],
+            $this->borderStyle[self::CROSS]
+        );
+
         $r = [];
         foreach ($columns as $column) {
-            $r[] = str_repeat($this->borderStyle[self::BORDER_HORIZONTAL], $column->width + $this->padding * 2);
+            $r[] = str_repeat($this->borderStyle[self::BORDER_HORIZONTAL], $column->width);
         }
 
-        return $this->borderStyle[self::TEE_VERTICAL_RIGHT] .
-               implode($this->borderStyle[self::CROSS], $r) .
-               $this->borderStyle[self::TEE_VERTICAL_LEFT];
+        return $left . implode($spacer, $r) . $right;
+    }
+
+    protected function getDivider($padding = ' ', $borderLeft = null, $borderRight = null, $borderInside = null)
+    {
+        $borderLeft   = $borderLeft   ?? $this->borderStyle[self::BORDER_VERTICAL];
+        $borderRight  = $borderRight  ?? $this->borderStyle[self::BORDER_VERTICAL];
+        $borderInside = $borderInside ?? $this->borderStyle[self::BORDER_VERTICAL];
+
+        $left = '';
+        $right = '';
+        $spacer = str_repeat($padding, $this->padding * 2);
+        if ($this->withBorder) {
+            $left = $borderLeft . str_repeat($padding, $this->padding);
+            $right = str_repeat($padding, $this->padding) . $borderRight;
+            $spacer = str_repeat($padding, $this->padding) . $borderInside . str_repeat($padding, $this->padding);
+        }
+
+        return [$left, $right, $spacer];
     }
 
     protected function repeatRow(array &$rows, $repeat, int $every = 1)
