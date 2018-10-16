@@ -186,7 +186,11 @@ class Table implements DrawingInterface
                     $this->repeatRow($rows, [$borderRow, $headerRow, $borderRow], $this->repeatHeader);
                 }
             }
-            array_unshift($rows, $headerRow, $borderRow);
+
+            if ($this->withBorder) {
+                array_unshift($rows, $borderRow);
+            }
+            array_unshift($rows, $headerRow);
         }
 
         if ($this->withBorder) {
