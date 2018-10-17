@@ -19,23 +19,44 @@ class Table implements DrawingInterface
     const TEE_VERTICAL_LEFT = 'tvl';
     const CROSS = 'cro';
 
+    protected static $defaultStyle = [
+        'border' => true,
+        'bordersInside' => false,
+        'padding' => 1,
+        'repeatHeader' => 0,
+        'headerStyle' => '${b}',
+        'borderStyle' => [
+            self::CORNER_TOP_LEFT => '╭',
+            self::CORNER_TOP_RIGHT => '╮',
+            self::CORNER_BOTTOM_LEFT => '╰',
+            self::CORNER_BOTTOM_RIGHT => '╯',
+            self::BORDER_HORIZONTAL => '─',
+            self::BORDER_VERTICAL => '│',
+            self::TEE_HORIZONTAL_DOWN => '┬',
+            self::TEE_HORIZONTAL_UP => '┴',
+            self::TEE_VERTICAL_LEFT => '┤',
+            self::TEE_VERTICAL_RIGHT => '├',
+            self::CROSS => '┼'
+        ],
+    ];
+
     protected $console;
 
     protected $data;
     protected $headers;
     protected $columns;
 
-    protected $withBorder = true;
-    protected $borderBetweenRows = false;
+    protected $border = true;
+    protected $bordersInside = false;
     protected $padding = 1;
     protected $repeatHeader = 0;
     protected $headerStyle = '${b}';
 
     protected $borderStyle = [
-        self::CORNER_TOP_LEFT  => '┌',
-        self::CORNER_TOP_RIGHT => '┐',
-        self::CORNER_BOTTOM_LEFT => '└',
-        self::CORNER_BOTTOM_RIGHT => '┘',
+        self::CORNER_TOP_LEFT => '╭',
+        self::CORNER_TOP_RIGHT => '╮',
+        self::CORNER_BOTTOM_LEFT => '╰',
+        self::CORNER_BOTTOM_RIGHT => '╯',
         self::BORDER_HORIZONTAL => '─',
         self::BORDER_VERTICAL => '│',
         self::TEE_HORIZONTAL_DOWN => '┬',
@@ -44,6 +65,28 @@ class Table implements DrawingInterface
         self::TEE_VERTICAL_RIGHT => '├',
         self::CROSS => '┼'
     ];
+
+    public static function setDefaultStyle(array $defaultStyle)
+    {
+        foreach ($defaultStyle as $key => $value) {
+            if (!array_key_exists($key, static::$defaultStyle)) {
+                throw new \InvalidArgumentException('Default style can not contain ' . $key);
+            }
+
+            $type = gettype(static::$defaultStyle[$key]);
+            if ($type !== gettype($value)) {
+                throw new \InvalidArgumentException($key . ' has to be from type ' . $type);
+            }
+
+            switch ($type) {
+                case 'array':
+                    static::$defaultStyle[$key] = array_merge(static::$defaultStyle[$key], $value);
+                    break;
+                default:
+                    static::$defaultStyle[$key] = $value;
+            }
+        }
+    }
 
     /**
      * Table constructor.
@@ -57,23 +100,18 @@ class Table implements DrawingInterface
         $this->console = $console;
         $this->data = $data;
         $this->headers = $headers;
+        $this->applyDefaultStyle();
     }
 
-    public function withoutBorder()
+    public function borders(bool $borders = true)
     {
-        $this->withBorder = false;
+        $this->border = $borders;
         return $this;
     }
 
-    public function withBorderRows()
+    public function bordersInside(bool $bordersInside = false)
     {
-        $this->borderBetweenRows = true;
-        return $this;
-    }
-
-    public function withoutBorderRows()
-    {
-        $this->borderBetweenRows = false;
+        $this->bordersInside = $bordersInside;
         return $this;
     }
 
@@ -92,6 +130,20 @@ class Table implements DrawingInterface
     public function headerStyle(string $format)
     {
         $this->headerStyle = $format;
+        return $this;
+    }
+
+    public function borderStyle(array $borderStyle)
+    {
+        if (isset($borderStyle[self::CROSS])) {
+            foreach ([
+                self::CORNER_TOP_LEFT, self::CORNER_TOP_RIGHT, self::CORNER_BOTTOM_LEFT, self::CORNER_BOTTOM_RIGHT,
+                self::TEE_HORIZONTAL_UP, self::TEE_HORIZONTAL_DOWN, self::TEE_VERTICAL_LEFT, self::TEE_VERTICAL_RIGHT,
+                     ] as $key) {
+                isset($borderStyle[$key]) || $borderStyle[$key] = $borderStyle[self::CROSS];
+            }
+        }
+        $this->borderStyle = array_merge($this->borderStyle, $borderStyle);
         return $this;
     }
 
@@ -173,27 +225,27 @@ class Table implements DrawingInterface
         array_push($rows, ...$this->getRows($columns, $this->data));
         $borderRow = $this->getBorderRow($columns);
 
-        if ($this->borderBetweenRows) {
+        if ($this->bordersInside) {
             $this->repeatRow($rows, $borderRow);
         }
 
         if ($this->headers) {
             $headerRow = $this->getHeaderRow($columns);
             if ($this->repeatHeader) {
-                if ($this->borderBetweenRows) {
+                if ($this->bordersInside) {
                     $this->repeatRow($rows, [$headerRow, $borderRow], $this->repeatHeader * 2);
                 } else {
                     $this->repeatRow($rows, [$borderRow, $headerRow, $borderRow], $this->repeatHeader);
                 }
             }
 
-            if ($this->withBorder) {
+            if ($this->border) {
                 array_unshift($rows, $borderRow);
             }
             array_unshift($rows, $headerRow);
         }
 
-        if ($this->withBorder) {
+        if ($this->border) {
             array_unshift($rows, $this->getTopBorderRow($columns));
             array_push($rows, $this->getBottomBorderRow($columns));
         }
@@ -226,6 +278,9 @@ class Table implements DrawingInterface
                 }
 
                 $width = $this->console->strLen($value);
+                if ($width !== mb_strlen($value)) {
+                    $value .= '${r}';
+                }
                 switch ($column->align) {
                     case 'left':
                         $r[] = $value . str_repeat(' ', $column->width - $width);
@@ -320,7 +375,7 @@ class Table implements DrawingInterface
         $left = '';
         $right = '';
         $spacer = str_repeat($padding, $this->padding * 2);
-        if ($this->withBorder) {
+        if ($this->border) {
             $left = $borderLeft . str_repeat($padding, $this->padding);
             $right = str_repeat($padding, $this->padding) . $borderRight;
             $spacer = str_repeat($padding, $this->padding) . $borderInside . str_repeat($padding, $this->padding);
@@ -334,6 +389,13 @@ class Table implements DrawingInterface
         $count = ceil(count($rows) / $every) - 1;
         for ($i = 0; $i < $count; $i++) {
             array_splice($rows, $i * ($every + (is_array($repeat) ? count($repeat) : 1)) + $every, 0, $repeat);
+        }
+    }
+
+    protected function applyDefaultStyle()
+    {
+        foreach (self::$defaultStyle as $attribute => $value) {
+            $this->$attribute = $value;
         }
     }
 }

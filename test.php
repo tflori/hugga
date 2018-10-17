@@ -200,18 +200,23 @@ $table = new Table($console, [
     ['23', 'John Doe', 'john.doe', 'john.doe@example.com'],
     ['42', 'Marvin', 'marvin', 'marvin@example.com'],
     ['5552342', 'Arthur Dent', 'adent', 'arthur@example.com', 'extra column'],
-    ['213', 'Röhrich', 'roerich', 'roerich@example.com'],
+    ['213', 'Röhrich', 'roerich', '${red}roerich'],
 ], ['External ID', 'Name', 'User', 'E-Mail']);
 $console->line($table->getText());
 $console->line($table->column(4, ['delete' => true])->getText());
-$console->line($table->withBorderRows()->getText());
+$console->line($table->bordersInside(true)->getText());
 $console->line($table->repeatHeaders(3)->getText());
 $console->line($table->headerStyle('${b;red}')->getText());
 $console->line($table->padding(3)->getText());
-$console->line($table->padding(1)->withoutBorderRows()->getText());
+$console->line($table->padding(1)->bordersInside(false)->getText());
 $console->line($table->repeatHeaders(4)->getText());
 $console->line($table->column(0, ['header' => 'ID', 'align' => 'center'])->getText());
-$console->line($table->withoutBorder()->getText());
+$console->line($table->borders(false)->getText());
+$console->line($table->borderStyle([
+    Table::BORDER_HORIZONTAL => '-',
+    Table::BORDER_VERTICAL => '|',
+    Table::CROSS => ' ',
+])->borders(true)->getText());
 
 
 
