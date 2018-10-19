@@ -35,7 +35,7 @@ class Choice extends AbstractQuestion implements DrawingInterface
 
     public function __construct(array $choices, string $question = '', $default = null)
     {
-        $this->indexedArray = $this->isIndexedArray($choices);
+        $this->indexedArray = array_keys($choices) === range(0, count($choices) - 1);
         $this->choices = $choices;
         $this->returnKey = !$this->indexedArray;
         $this->maxKeyLen = max(array_map('strlen', array_keys($this->choices)));
@@ -397,16 +397,5 @@ class Choice extends AbstractQuestion implements DrawingInterface
             $c = substr($c, 0, -1);
         }
         return $i;
-    }
-
-    /**
-     * Determines if the array is indexed (starts from 0)
-     *
-     * @param array $array
-     * @return bool
-     */
-    protected static function isIndexedArray(array $array)
-    {
-        return array_keys($array) === range(0, count($array) - 1);
     }
 }

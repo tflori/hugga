@@ -4,6 +4,7 @@ use Hugga\Console;
 use Hugga\Input\Question\Choice;
 use Hugga\Input\Question\Confirmation;
 use Hugga\Output\Drawing\ProgressBar;
+use Hugga\Output\Drawing\Table;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -33,14 +34,15 @@ $console->error('This is an error');
 // Color table
 $console->line(PHP_EOL . '${bold;cyan}Colors');
 $colors = [
-    'black', 'dark-grey', 'grey', 'white', 'red', 'light-red', 'green', 'light-green', 'yellow', 'light-yellow', 'blue',
-    'light-blue', 'magenta', 'light-magenta', 'cyan', 'light-cyan'
+    39 => 'default', 30 => 'black', 90 => 'dark-grey', 37 => 'grey', 97 => 'white', 31 => 'red', 91 => 'light-red',
+    32 => 'green', 92 => 'light-green', 33 => 'yellow', 93 => 'light-yellow', 34 => 'blue', 94 => 'light-blue',
+    35 => 'magenta', 95 => 'light-magenta', 36 => 'cyan', 96 => 'light-cyan'
 ];
 $maxLen = max(array_map('strlen', $colors));
-foreach ($colors as $fgColor) {
+foreach ($colors as $key => $fgColor) {
     $console->write(sprintf('${%s}%' . $maxLen . 's: ', $fgColor, $fgColor));
     foreach ($colors as $bgColor) {
-        $console->write(sprintf('${fg:%s;bg:%s}  #42  ${r}  ', $fgColor, $bgColor));
+        $console->write(sprintf('${fg:%s;bg:%s} %s ${r}', $fgColor, $bgColor, $key));
     }
     $console->write(PHP_EOL);
 }
@@ -191,9 +193,36 @@ foreach ($packages as $package) {
 }
 $progressInstall->template('{title} ${green}done')->finish();
 
+// Tables
+$console->line(PHP_EOL . '${bold;cyan}Tables');
 
-
-
+// Simple table
+$table = new Table($console, [
+    ['23', 'John Doe', 'john.doe', 'john.doe@example.com'],
+    ['42', 'Marvin', 'marvin', 'marvin@example.com'],
+    ['5552342', 'Arthur Dent', 'adent', 'arthur@example.com', 'extra column'],
+    ['213', 'Röhrich', 'roerich', '${red}roerich'],
+], ['External ID', 'Name', 'User', 'E-Mail']);
+$table->draw();
+$table->column(4, ['delete' => true])
+    ->bordersInside(true)
+    ->repeatHeaders(3)
+    ->headerStyle('${b;red}')
+    ->padding(3)
+    ->draw();
+$table->padding(1)
+    ->bordersInside(false)
+    ->draw();
+$table->column(0, ['header' => 'ID', 'align' => 'center'])
+    ->borders(false)
+    ->draw();
+$table->borderStyle([
+        Table::BORDER_HORIZONTAL => '-',
+        Table::BORDER_VERTICAL => '|',
+        Table::CROSS => ' ',
+    ])
+    ->borders(true)
+    ->draw();
 
 
 
