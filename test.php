@@ -21,176 +21,177 @@ $console = new Console();
 //$console->nonInteractive();
 
 // Formatted output
-//$console->line('${bold;cyan}Formatting');
-//$console->line('${red}This is a red text');
-//$console->line('${fg:blue;bg:white}Blue text on white background');
-//$console->line('${u}Underlined ${cyan} and teal');
-//$console->line('${bold}Bold${r} and ${underline}underline${reset} can be written out too');
-//// preformatted:
-//$console->info('This is an information');
-//$console->warn('This is a warning');
-//$console->error('This is an error');
-//
-//// Color table
-//$console->line(PHP_EOL . '${bold;cyan}Colors');
-//$colors = [
-//    'black', 'dark-grey', 'grey', 'white', 'red', 'light-red', 'green', 'light-green', 'yellow', 'light-yellow', 'blue',
-//    'light-blue', 'magenta', 'light-magenta', 'cyan', 'light-cyan'
-//];
-//$maxLen = max(array_map('strlen', $colors));
-//foreach ($colors as $fgColor) {
-//    $console->write(sprintf('${%s}%' . $maxLen . 's: ', $fgColor, $fgColor));
-//    foreach ($colors as $bgColor) {
-//        $console->write(sprintf('${fg:%s;bg:%s}  #42  ${r}  ', $fgColor, $bgColor));
-//    }
-//    $console->write(PHP_EOL);
-//}
-//
-///*********
-// * Input *
-// *********/
-//
-//// Questions
-//$console->line(PHP_EOL . '${bold;cyan}Questions');
-//$name = $console->ask('What is your name?', 'John Doe');
-//$console->info('Hello ' . $name . '!');
-//if ($console->ask(new Confirmation('Is this correct?'))) {
-//    $console->info('Great!');
-//} else {
-//    $console->warn('Why you are lying to me?');
-//}
-//
-//// Manual reading from input
-//$console->line(PHP_EOL . '${bold;cyan}Input');
-//$console->info('Write exit to continue; press up to restore previous line');
-//$line = '';
-//do {
-//    if (!empty($line)) {
-//        $console->warn('processing ' . $line);
-//    }
-//    $line = $console->readLine('$ ');
-//    readline_add_history($line);
-//} while (strtolower(trim($line)) != 'exit');
-//readline_clear_history();
-//$console->write('Enter 3 letters:');
-//$input = $console->read(3);
-//$console->line(sprintf('You entered: "%s"', $input));
-//$console->info('Enter your message (end with dot in line for itself)');
-//$message = $console->readUntil(PHP_EOL . '.' . PHP_EOL, '');
-//$console->line(sprintf('Message:' . PHP_EOL . '"""%s"""', $message));
-//
-//// Choices
-//$console->line(PHP_EOL . '${bold;cyan}Choices');
-//$names = [
-//    'ezra' => 'Ezra Trickett', 'leticia' => 'Leticia Karpinski', 'celinda' => 'Celinda Baskett',
-//    'jerlene' => 'Jerlene Esteban', 'merideth' => 'Merideth Utsey', 'jame' => 'Jame Depaolo',
-//    'shirlene' => 'Shirlene Fraire', 'carmon' => 'Carmon Frese', 'dion' => 'Dion Rundell',
-//    'elouise' => 'Elouise Mcgovern', 'leslee' => 'Leslee Rispoli', 'inell' => 'Inell Feinstein',
-//    'burton' => 'Burton Lamontagne', 'machelle' => 'Machelle Wattley', 'thomas' => 'Thomas Franklin',
-//    'maynard' => 'Maynard Gabourel', 'beverley' => 'Beverley Eisenbarth', 'van' => 'Van Meeks',
-//    'maren' => 'Maren Wildermuth', 'shoshana' => 'Shoshana Harry', 'prince' => 'Prince Calbert',
-//    'jackeline' => 'Jackeline Livermore', 'eufemia' => 'Eufemia Loux', 'almeda' => 'Almeda Bjornson',
-//    'mignon' => 'Mignon Zollars', 'reyes' => 'Reyes Nodine', 'pinkie' => 'Pinkie Hedman',
-//    'pablo' => 'Pablo Moyer', 'yuette' => 'Yuette Venezia', 'mitch' => 'Mitch Helwig',
-//];
-//// without changing options
-//$chosen = $console->ask(new Choice(
-//    array_values($names),
-//    'Choose your character:',
-//    'Van Meeks'
-//));
-//$console->line('You have chosen: ${green}' . $chosen);
-//// show only 10 (only if your term is interactive) and return values
-//$chosen = $console->ask(
-//    (new Choice($names))
-//        ->limit(10)
-//        ->returnValue()
-//);
-//$console->line('You have chosen: ${green}' . $chosen);
-//// show only 10 (only if your term is interactive) and return keys (by default)
-//$chosen = $console->ask(
-//    (new Choice($names))
-//        ->limit(10)
-//);
-//$console->line('You have chosen: ${green}' . $chosen);
-//// non interactive (write your answer) and return key
-//$chosen = $console->ask(
-//    (new Choice(array_values($names), '', 23))
-//        ->nonInteractive()
-//        ->returnKey()
-//);
-//$console->line('You have chosen: ${green}' . $chosen . ' (' . array_values($names)[$chosen] . ')');
-//
-///*******************
-// * Advanced Output *
-// *******************/
-//
-//// Deleting output
-//$console->line(PHP_EOL . '${bold;cyan}Delete');
-//$console->write('Importing xml file ... ${yellow}in progress');
-//sleep(2);
-//$console->delete('in progress'); // or ->delete(11)
-//$console->line('${green}done');
-//
-//// ProgressBar bar
-//$console->line(PHP_EOL . '${bold;cyan}ProgressBar bar');
-//
-//// simple progress bar
-//$progress = new ProgressBar($console, 80);
-//$progress->width(10)->start();
-//for ($i = 0; $i < 80; $i++) {
-//    usleep(40000);
-//    $progress->advance();
-//}
-//$progress->finish();
-//
-//// concurrent progress bars
-//$packages = ['openssh', 'gimp', 'libreoffce', 'linux', 'firefox', 'inkscape', 'conky', 'gnome'];
-//$downloads = [];
-//$console->info(sprintf('Start downloading updates for %d packages', count($packages)));
-//foreach ($packages as $package) {
-//    $kb = mt_rand(1000, 3000);
-//    $packageDownload = [
-//        'package' => $package,
-//        'kb' => $kb,
-//        'progress' => new ProgressBar($console, $kb, 'Downloading ' . $package, 'kb'),
-//        'loaded' => 0,
-//    ];
-//    $downloads[] = $packageDownload;
-//    $packageDownload['progress']->updateRate(0.1)->start();
-//}
-//$progressDownloads = new ProgressBar($console, count($packages), 'Downloaded', 'updates');
-//$progressDownloads->start();
-//while (!empty($downloads)) {
-//    usleep(mt_rand(6000, 20000));
-//    foreach ($downloads as $i => &$packageDownload) {
-//        $loaded = mt_rand(1, 10);
-//        $packageDownload['progress']->advance($loaded);
-//        $packageDownload['loaded'] += $loaded;
-//        if ($packageDownload['loaded'] >= $packageDownload['kb']) {
-//            $packageDownload['progress']->finish();
-//            $console->info('Downloaded ' . $packageDownload['package']);
-//            array_splice($downloads, $i, 1);
-//            $progressDownloads->advance();
-//        }
-//    }
-//}
-//$progressDownloads->finish();
-//
-//// undetermined progress bars
-//$console->info('Installing updates...');
-//$progressInstall = new ProgressBar($console, null, 'Updating packages');
-//$progressInstall->start();
-//foreach ($packages as $package) {
-//    $installTime = mt_rand(500, 1500) / 1000;
-//    $start = microtime(true);
-//    while (microtime(true) - $start < $installTime) {
-//        usleep(40000);
-//        $progressInstall->advance();
-//    }
-//    $console->info('Updated ' . $package);
-//}
-//$progressInstall->template('{title} ${green}done')->finish();
+$console->line('${bold;cyan}Formatting');
+$console->line('${red}This is a red text');
+$console->line('${fg:blue;bg:white}Blue text on white background');
+$console->line('${u}Underlined ${cyan} and teal');
+$console->line('${bold}Bold${r} and ${underline}underline${reset} can be written out too');
+// preformatted:
+$console->info('This is an information');
+$console->warn('This is a warning');
+$console->error('This is an error');
+
+// Color table
+$console->line(PHP_EOL . '${bold;cyan}Colors');
+$colors = [
+    39 => 'default', 30 => 'black', 90 => 'dark-grey', 37 => 'grey', 97 => 'white', 31 => 'red', 91 => 'light-red',
+    32 => 'green', 92 => 'light-green', 33 => 'yellow', 93 => 'light-yellow', 34 => 'blue', 94 => 'light-blue',
+    35 => 'magenta', 95 => 'light-magenta', 36 => 'cyan', 96 => 'light-cyan'
+];
+$maxLen = max(array_map('strlen', $colors));
+foreach ($colors as $key => $fgColor) {
+    $console->write(sprintf('${%s}%' . $maxLen . 's: ', $fgColor, $fgColor));
+    foreach ($colors as $bgColor) {
+        $console->write(sprintf('${fg:%s;bg:%s} %s ${r}', $fgColor, $bgColor, $key));
+    }
+    $console->write(PHP_EOL);
+}
+
+/*********
+ * Input *
+ *********/
+
+// Questions
+$console->line(PHP_EOL . '${bold;cyan}Questions');
+$name = $console->ask('What is your name?', 'John Doe');
+$console->info('Hello ' . $name . '!');
+if ($console->ask(new Confirmation('Is this correct?'))) {
+    $console->info('Great!');
+} else {
+    $console->warn('Why you are lying to me?');
+}
+
+// Manual reading from input
+$console->line(PHP_EOL . '${bold;cyan}Input');
+$console->info('Write exit to continue; press up to restore previous line');
+$line = '';
+do {
+    if (!empty($line)) {
+        $console->warn('processing ' . $line);
+    }
+    $line = $console->readLine('$ ');
+    readline_add_history($line);
+} while (strtolower(trim($line)) != 'exit');
+readline_clear_history();
+$console->write('Enter 3 letters:');
+$input = $console->read(3);
+$console->line(sprintf('You entered: "%s"', $input));
+$console->info('Enter your message (end with dot in line for itself)');
+$message = $console->readUntil(PHP_EOL . '.' . PHP_EOL, '');
+$console->line(sprintf('Message:' . PHP_EOL . '"""%s"""', $message));
+
+// Choices
+$console->line(PHP_EOL . '${bold;cyan}Choices');
+$names = [
+    'ezra' => 'Ezra Trickett', 'leticia' => 'Leticia Karpinski', 'celinda' => 'Celinda Baskett',
+    'jerlene' => 'Jerlene Esteban', 'merideth' => 'Merideth Utsey', 'jame' => 'Jame Depaolo',
+    'shirlene' => 'Shirlene Fraire', 'carmon' => 'Carmon Frese', 'dion' => 'Dion Rundell',
+    'elouise' => 'Elouise Mcgovern', 'leslee' => 'Leslee Rispoli', 'inell' => 'Inell Feinstein',
+    'burton' => 'Burton Lamontagne', 'machelle' => 'Machelle Wattley', 'thomas' => 'Thomas Franklin',
+    'maynard' => 'Maynard Gabourel', 'beverley' => 'Beverley Eisenbarth', 'van' => 'Van Meeks',
+    'maren' => 'Maren Wildermuth', 'shoshana' => 'Shoshana Harry', 'prince' => 'Prince Calbert',
+    'jackeline' => 'Jackeline Livermore', 'eufemia' => 'Eufemia Loux', 'almeda' => 'Almeda Bjornson',
+    'mignon' => 'Mignon Zollars', 'reyes' => 'Reyes Nodine', 'pinkie' => 'Pinkie Hedman',
+    'pablo' => 'Pablo Moyer', 'yuette' => 'Yuette Venezia', 'mitch' => 'Mitch Helwig',
+];
+// without changing options
+$chosen = $console->ask(new Choice(
+    array_values($names),
+    'Choose your character:',
+    'Van Meeks'
+));
+$console->line('You have chosen: ${green}' . $chosen);
+// show only 10 (only if your term is interactive) and return values
+$chosen = $console->ask(
+    (new Choice($names))
+        ->limit(10)
+        ->returnValue()
+);
+$console->line('You have chosen: ${green}' . $chosen);
+// show only 10 (only if your term is interactive) and return keys (by default)
+$chosen = $console->ask(
+    (new Choice($names))
+        ->limit(10)
+);
+$console->line('You have chosen: ${green}' . $chosen);
+// non interactive (write your answer) and return key
+$chosen = $console->ask(
+    (new Choice(array_values($names), '', 23))
+        ->nonInteractive()
+        ->returnKey()
+);
+$console->line('You have chosen: ${green}' . $chosen . ' (' . array_values($names)[$chosen] . ')');
+
+/*******************
+ * Advanced Output *
+ *******************/
+
+// Deleting output
+$console->line(PHP_EOL . '${bold;cyan}Delete');
+$console->write('Importing xml file ... ${yellow}in progress');
+sleep(2);
+$console->delete('in progress'); // or ->delete(11)
+$console->line('${green}done');
+
+// ProgressBar bar
+$console->line(PHP_EOL . '${bold;cyan}ProgressBar bar');
+
+// simple progress bar
+$progress = new ProgressBar($console, 80);
+$progress->width(10)->start();
+for ($i = 0; $i < 80; $i++) {
+    usleep(40000);
+    $progress->advance();
+}
+$progress->finish();
+
+// concurrent progress bars
+$packages = ['openssh', 'gimp', 'libreoffce', 'linux', 'firefox', 'inkscape', 'conky', 'gnome'];
+$downloads = [];
+$console->info(sprintf('Start downloading updates for %d packages', count($packages)));
+foreach ($packages as $package) {
+    $kb = mt_rand(1000, 3000);
+    $packageDownload = [
+        'package' => $package,
+        'kb' => $kb,
+        'progress' => new ProgressBar($console, $kb, 'Downloading ' . $package, 'kb'),
+        'loaded' => 0,
+    ];
+    $downloads[] = $packageDownload;
+    $packageDownload['progress']->updateRate(0.1)->start();
+}
+$progressDownloads = new ProgressBar($console, count($packages), 'Downloaded', 'updates');
+$progressDownloads->start();
+while (!empty($downloads)) {
+    usleep(mt_rand(6000, 20000));
+    foreach ($downloads as $i => &$packageDownload) {
+        $loaded = mt_rand(1, 10);
+        $packageDownload['progress']->advance($loaded);
+        $packageDownload['loaded'] += $loaded;
+        if ($packageDownload['loaded'] >= $packageDownload['kb']) {
+            $packageDownload['progress']->finish();
+            $console->info('Downloaded ' . $packageDownload['package']);
+            array_splice($downloads, $i, 1);
+            $progressDownloads->advance();
+        }
+    }
+}
+$progressDownloads->finish();
+
+// undetermined progress bars
+$console->info('Installing updates...');
+$progressInstall = new ProgressBar($console, null, 'Updating packages');
+$progressInstall->start();
+foreach ($packages as $package) {
+    $installTime = mt_rand(500, 1500) / 1000;
+    $start = microtime(true);
+    while (microtime(true) - $start < $installTime) {
+        usleep(40000);
+        $progressInstall->advance();
+    }
+    $console->info('Updated ' . $package);
+}
+$progressInstall->template('{title} ${green}done')->finish();
 
 // Tables
 $console->line(PHP_EOL . '${bold;cyan}Tables');
@@ -202,21 +203,26 @@ $table = new Table($console, [
     ['5552342', 'Arthur Dent', 'adent', 'arthur@example.com', 'extra column'],
     ['213', 'Röhrich', 'roerich', '${red}roerich'],
 ], ['External ID', 'Name', 'User', 'E-Mail']);
-$console->line($table->getText());
-$console->line($table->column(4, ['delete' => true])->getText());
-$console->line($table->bordersInside(true)->getText());
-$console->line($table->repeatHeaders(3)->getText());
-$console->line($table->headerStyle('${b;red}')->getText());
-$console->line($table->padding(3)->getText());
-$console->line($table->padding(1)->bordersInside(false)->getText());
-$console->line($table->repeatHeaders(4)->getText());
-$console->line($table->column(0, ['header' => 'ID', 'align' => 'center'])->getText());
-$console->line($table->borders(false)->getText());
-$console->line($table->borderStyle([
-    Table::BORDER_HORIZONTAL => '-',
-    Table::BORDER_VERTICAL => '|',
-    Table::CROSS => ' ',
-])->borders(true)->getText());
+$table->draw();
+$table->column(4, ['delete' => true])
+    ->bordersInside(true)
+    ->repeatHeaders(3)
+    ->headerStyle('${b;red}')
+    ->padding(3)
+    ->draw();
+$table->padding(1)
+    ->bordersInside(false)
+    ->draw();
+$table->column(0, ['header' => 'ID', 'align' => 'center'])
+    ->borders(false)
+    ->draw();
+$table->borderStyle([
+        Table::BORDER_HORIZONTAL => '-',
+        Table::BORDER_VERTICAL => '|',
+        Table::CROSS => ' ',
+    ])
+    ->borders(true)
+    ->draw();
 
 
 

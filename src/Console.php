@@ -264,10 +264,10 @@ class Console
     /**
      * Get the string length of $message without formatting
      *
-     * @param $message
+     * @param string $message
      * @return int
      */
-    public function strLen($message)
+    public function strLen(string $message)
     {
         return mb_strlen($this->formatter->stripFormatting($message));
     }

@@ -42,8 +42,8 @@ class Table implements DrawingInterface
 
     protected $console;
 
+    /** @var iterable */
     protected $data;
-    protected $headers;
     protected $columns;
 
     protected $border = true;
@@ -66,6 +66,34 @@ class Table implements DrawingInterface
         self::CROSS => '┼'
     ];
 
+    /**
+     * Change the default style for tables
+     *
+     * The default default style is:
+     * ```
+     * [
+     *      'border' => true,
+     *      'bordersInside' => false,
+     *      'padding' => 1,
+     *      'repeatHeader' => 0,
+     *      'headerStyle' => '${b}',
+     *      'borderStyle' => [
+     *          self::CORNER_TOP_LEFT => '╭',
+     *          self::CORNER_TOP_RIGHT => '╮',
+     *          self::CORNER_BOTTOM_LEFT => '╰',
+     *          self::CORNER_BOTTOM_RIGHT => '╯',
+     *          self::BORDER_HORIZONTAL => '─',
+     *          self::BORDER_VERTICAL => '│',
+     *          self::TEE_HORIZONTAL_DOWN => '┬',
+     *          self::TEE_HORIZONTAL_UP => '┴',
+     *          self::TEE_VERTICAL_LEFT => '┤',
+     *          self::TEE_VERTICAL_RIGHT => '├',
+     *          self::CROSS => '┼'
+     *      ],
+     * ]
+     * ```
+     * @param array $defaultStyle
+     */
     public static function setDefaultStyle(array $defaultStyle)
     {
         foreach ($defaultStyle as $key => $value) {
@@ -92,47 +120,112 @@ class Table implements DrawingInterface
      * Table constructor.
      *
      * @param Console $console
-     * @param array $data
+     * @param iterable $data
      * @param array|null $headers
      */
-    public function __construct(Console $console, array $data, array $headers = null)
+    public function __construct(Console $console, iterable $data, array $headers = null)
     {
         $this->console = $console;
         $this->data = $data;
-        $this->headers = $headers;
+        !$headers || $this->setHeaders($headers);
         $this->applyDefaultStyle();
     }
 
+    /**
+     * Set / Change the headers
+     *
+     * Unless you pass $adjustWidth=true the width of the columns stays the same and longer column names are shortened
+     *
+     * @param array $headers
+     * @param bool $adjustWidth
+     * @return $this
+     */
+    public function setHeaders(array $headers, bool $adjustWidth = false)
+    {
+        $this->prepareColumns();
+
+        if (array_keys($headers) === range(0, count($headers) - 1) &&
+            array_keys($this->columns) !== range(0, count($this->columns) - 1)
+        ) {
+            $headers = array_combine(array_keys($this->columns), $headers);
+        }
+
+        foreach ($headers as $key => $header) {
+            if ($adjustWidth && $this->columns[$key]->width < $width = $this->console->strLen($header)) {
+                $this->columns[$key]->width = $width;
+            }
+            $this->columns[$key]->header = $header;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Enable / disable borders
+     *
+     * @param bool $borders
+     * @return $this
+     */
     public function borders(bool $borders = true)
     {
         $this->border = $borders;
         return $this;
     }
 
+    /**
+     * Enable / disable borders inside
+     *
+     * @param bool $bordersInside
+     * @return $this
+     */
     public function bordersInside(bool $bordersInside = false)
     {
         $this->bordersInside = $bordersInside;
         return $this;
     }
 
+    /**
+     * Set the padding in number of spaces
+     *
+     * @param int $padding
+     * @return $this
+     */
     public function padding(int $padding)
     {
         $this->padding = $padding;
         return $this;
     }
 
-    public function repeatHeaders(int $every = 10)
+    /**
+     * Repeat the headers every $n rows
+     *
+     * @param int $n
+     * @return $this
+     */
+    public function repeatHeaders(int $n = 10)
     {
-        $this->repeatHeader = $every;
+        $this->repeatHeader = $n;
         return $this;
     }
 
+    /**
+     * Set the header style
+     *
+     * @param string $format
+     * @return $this
+     */
     public function headerStyle(string $format)
     {
         $this->headerStyle = $format;
         return $this;
     }
 
+    /**
+     * Set the border style (the chars used for drawing the border)
+     *
+     * @param array $borderStyle
+     * @return $this
+     */
     public function borderStyle(array $borderStyle)
     {
         if (isset($borderStyle[self::CROSS])) {
@@ -147,24 +240,38 @@ class Table implements DrawingInterface
         return $this;
     }
 
-    public function headersFromKeys($row = 0)
+    /**
+     * Use the keys as of the rows as header
+     *
+     * @return $this
+     */
+    public function headersFromKeys()
     {
-        $this->headers = array_combine(array_keys($this->data[$row]), array_keys($this->data[$row]));
+        $this->prepareColumns();
+        foreach ($this->columns as $key => $column) {
+            $column->header = $key;
+        }
         return $this;
     }
 
+    /**
+     * Adjust column identified by $key
+     *
+     * $definition may include `width`, `header`, `delete` and `format`
+     *
+     * @param $key
+     * @param $definition
+     * @return $this
+     */
     public function column($key, $definition)
     {
-        $columns = $this->getColumnDefinitions();
-        if (!isset($columns[$key])) {
-            throw new \LogicException('There is no column $key in our data');
+        $this->prepareColumns();
+        if (!isset($this->columns[$key])) {
+            throw new \InvalidArgumentException('There is no column ' . $key . ' in our data');
         }
 
         foreach ($definition as $var => $value) {
             switch ($var) {
-                case 'header':
-                    $this->headers[$key] = $value;
-                    break;
                 case 'delete':
                     unset($this->columns[$key]);
                     break;
@@ -176,37 +283,30 @@ class Table implements DrawingInterface
         return $this;
     }
 
-    public function getColumnDefinitions(): array
+    /**
+     * Check if headers are defined
+     *
+     * @return bool
+     */
+    public function hasHeaders()
     {
-        if (!$this->columns) {
-            $columns = [];
-            foreach ($this->data as $row) {
-                foreach ($row as $key => $value) {
-                    $width = $this->console->strLen($value);
-
-                    if (!isset($columns[$key])) {
-                        $columns[$key] = (object)[
-                            'type' => is_numeric($value) ? 'number' : 'string',
-                            'width' => $width,
-                        ];
-                        $columns[$key]->align = $columns[$key]->type === 'number' ? 'right' : 'left';
-                        continue;
-                    }
-
-                    if ($columns[$key]->type === 'number' && !is_numeric($value)) {
-                        $columns[$key]->type = 'string';
-                        $columns[$key]->align = 'left';
-                    }
-
-                    if ($width > $columns[$key]->width) {
-                        $columns[$key]->width = $width;
-                    }
-                }
+        foreach ($this->columns as $column) {
+            if (isset($column->header)) {
+                return true;
             }
-            $this->columns = $columns;
         }
 
-        return $this->columns;
+        return false;
+    }
+
+    /**
+     * Draw the table on provided console
+     *
+     * @todo this should start an interactive mode if requested and available
+     */
+    public function draw()
+    {
+        $this->console->line($this->getText());
     }
 
     /**
@@ -219,18 +319,18 @@ class Table implements DrawingInterface
      */
     public function getText(): string
     {
-        $columns = $this->getColumnDefinitions();
+        $this->prepareColumns();
         $rows = [];
 
-        array_push($rows, ...$this->getRows($columns, $this->data));
-        $borderRow = $this->getBorderRow($columns);
+        array_push($rows, ...$this->getRows($this->data));
+        $borderRow = $this->getBorderRow();
 
         if ($this->bordersInside) {
             $this->repeatRow($rows, $borderRow);
         }
 
-        if ($this->headers) {
-            $headerRow = $this->getHeaderRow($columns);
+        if ($this->hasHeaders()) {
+            $headerRow = $this->getHeaderRow();
             if ($this->repeatHeader) {
                 if ($this->bordersInside) {
                     $this->repeatRow($rows, [$headerRow, $borderRow], $this->repeatHeader * 2);
@@ -246,55 +346,110 @@ class Table implements DrawingInterface
         }
 
         if ($this->border) {
-            array_unshift($rows, $this->getTopBorderRow($columns));
-            array_push($rows, $this->getBottomBorderRow($columns));
+            array_unshift($rows, $this->getTopBorderRow());
+            array_push($rows, $this->getBottomBorderRow());
         }
 
         return implode(PHP_EOL, $rows);
     }
 
-    protected function getRows(array $columns, array $data): array
+    protected function prepareColumns()
+    {
+        if ($this->columns) {
+            return;
+        }
+
+        $columns = [];
+        foreach ($this->data as $row) {
+            foreach ($row as $key => $value) {
+                $type = gettype($value);
+
+                if (!isset($columns[$key])) {
+                    $columns[$key] = (object)['width' => 0];
+                }
+
+                switch ($type) {
+                    case 'integer':
+                    case 'double':
+                        $width = strlen($value);
+                        isset($columns[$key]->type) || $columns[$key]->type = 'number';
+                        isset($columns[$key]->align) || $columns[$key]->align = 'right';
+                        break;
+
+                    case 'boolean':
+                        $width = 1;
+                        isset($columns[$key]->type) || $columns[$key]->type = 'boolean';
+                        break;
+
+                    case 'object':
+                    case 'string':
+                        $width = $this->console->strLen($value);
+                        $columns[$key]->type = 'string';
+                        $columns[$key]->align = 'left';
+                        break;
+
+                    case 'NULL':
+                        $width = 4;
+                        isset($columns[$key]->type) || $columns[$key]->type = 'null';
+                        break;
+                }
+
+                if ($width > $columns[$key]->width) {
+                    $columns[$key]->width = $width;
+                }
+            }
+        }
+        $this->columns = $columns;
+    }
+
+    protected function getRows(array $data): array
     {
         $rows = [];
         list($left, $right, $spacer) = $this->getDivider();
 
         foreach ($data as $row) {
             $r = [];
-            foreach ($columns as $key => $column) {
-                $value = is_object($row) ? $row->$key ?? null : $row[$key] ?? null;
+            foreach ($this->columns as $key => $column) {
+                $fallback = null;
+                if (is_object($row) && !$row instanceof \ArrayAccess && property_exists($row, $key) ||
+                    (!is_object($row) || $row instanceof \ArrayAccess) && array_key_exists($key, $row)
+                ) {
+                    $fallback = 'null';
+                }
+                $value = is_object($row) && !$row instanceof \ArrayAccess ? $row->$key ?? $fallback :
+                    $row[$key] ?? $fallback;
+
+                if (is_bool($value)) {
+                    $value = $value ? 't' : 'f';
+                }
+
                 if (!$value) {
                     $r[] = str_repeat(' ', $column->width);
                     continue;
                 }
 
-                switch ($column->type) {
-                    case 'number':
-                        $value = isset($column->format) ? sprintf($column->format, $value) : (string)$value;
-                        break;
-
-                    case 'string':
-                        $value = (string)$value;
-                        break;
-                }
-
+                $value = isset($column->format) ? sprintf($column->format, $value) : (string)$value;
                 $width = $this->console->strLen($value);
                 if ($width !== mb_strlen($value)) {
                     $value .= '${r}';
                 }
-                switch ($column->align) {
-                    case 'left':
-                        $r[] = $value . str_repeat(' ', $column->width - $width);
-                        break;
+                if ($width < $column->width) {
+                    switch ($column->align ?? 'left') {
+                        case 'left':
+                            $value = $value . str_repeat(' ', $column->width - $width);
+                            break;
 
-                    case 'right':
-                        $r[] = str_repeat(' ', $column->width - $width) . $value;
-                        break;
+                        case 'right':
+                            $value = str_repeat(' ', $column->width - $width) . $value;
+                            break;
 
-                    case 'center':
-                        $r[] = str_repeat(' ', ceil(($column->width - $width) / 2)) . $value .
-                               str_repeat(' ', floor(($column->width - $width) / 2));
-                        break;
+                        case 'center':
+                            $value = str_repeat(' ', ceil(($column->width - $width) / 2)) . $value .
+                                   str_repeat(' ', floor(($column->width - $width) / 2));
+                            break;
+                    }
                 }
+                $r[] = $value;
             }
             $rows[] = $left . implode($spacer, $r) . $right;
         }
@@ -302,21 +457,21 @@ class Table implements DrawingInterface
         return $rows;
     }
 
-    protected function getHeaderRow(array $columns)
+    protected function getHeaderRow()
     {
         list($left, $right, $spacer) = $this->getDivider();
 
         $r = [];
-        foreach ($columns as $key => $column) {
-            if (!isset($this->headers[$key])) {
+        foreach ($this->columns as $column) {
+            if (!isset($column->header)) {
                 $r[] = str_repeat(' ', $column->width);
                 continue;
             }
 
-            $value = $this->headers[$key];
+            $value = $column->header;
             $width = $this->console->strLen($value);
             if ($width > $column->width) {
-                $value = substr($this->headers[$key], 0, $column->width - $width - 1) . '…';
+                $value = substr($value, 0, $column->width - $width - 1) . '…';
                 $width = $this->console->strLen($value);
             }
             $r[] = $this->headerStyle . $value . str_repeat(' ', $column->width - $width) . '${r}';
@@ -325,10 +480,10 @@ class Table implements DrawingInterface
         return $left . implode($spacer, $r) . $right;
     }
 
-    protected function getTopBorderRow(array $columns)
+    protected function getTopBorderRow()
     {
         $r = [];
-        foreach ($columns as $column) {
+        foreach ($this->columns as $column) {
             $r[] = str_repeat($this->borderStyle[self::BORDER_HORIZONTAL], $column->width + $this->padding * 2);
         }
 
@@ -337,10 +492,10 @@ class Table implements DrawingInterface
                $this->borderStyle[self::CORNER_TOP_RIGHT];
     }
 
-    protected function getBottomBorderRow(array $columns)
+    protected function getBottomBorderRow()
     {
         $r = [];
-        foreach ($columns as $column) {
+        foreach ($this->columns as $column) {
             $r[] = str_repeat($this->borderStyle[self::BORDER_HORIZONTAL], $column->width + $this->padding * 2);
         }
 
@@ -349,7 +504,7 @@ class Table implements DrawingInterface
                $this->borderStyle[self::CORNER_BOTTOM_RIGHT];
     }
 
-    protected function getBorderRow(array $columns)
+    protected function getBorderRow()
     {
         list($left, $right, $spacer) = $this->getDivider(
             $this->borderStyle[self::BORDER_HORIZONTAL],
@@ -359,7 +514,7 @@ class Table implements DrawingInterface
         );
 
         $r = [];
-        foreach ($columns as $column) {
+        foreach ($this->columns as $column) {
             $r[] = str_repeat($this->borderStyle[self::BORDER_HORIZONTAL], $column->width);
         }
 
