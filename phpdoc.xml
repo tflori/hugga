@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdocumentor>
+    <parser>
+        <target>/tmp/phpdoc/orm</target>
+    </parser>
+    <transformer>
+        <target>.</target>
+    </transformer>
+    <transformations>
+        <template name="resources/reference"/>
+    </transformations>
+    <files>
+        <directory>src</directory>
+    </files>
+</phpdocumentor>
