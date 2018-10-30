@@ -82,7 +82,7 @@
 
 #### Hugga\Input\Observer::__construct
 
-```php?start_inline=true
+```php
 public function __construct( \Hugga\InputInterface $input ): Observer
 ```
 
@@ -103,7 +103,7 @@ public function __construct( \Hugga\InputInterface $input ): Observer
 
 #### Hugga\Input\Observer::addHandler
 
-```php?start_inline=true
+```php
 public function addHandler( callable $callback )
 ```
 
@@ -124,7 +124,7 @@ public function addHandler( callable $callback )
 
 #### Hugga\Input\Observer::handle
 
-```php?start_inline=true
+```php
 protected function handle( \Hugga\Input\string $char )
 ```
 
@@ -145,7 +145,7 @@ protected function handle( \Hugga\Input\string $char )
 
 #### Hugga\Input\Observer::isCompatible
 
-```php?start_inline=true
+```php
 public static function isCompatible( \Hugga\InputInterface $input )
 ```
 
@@ -167,7 +167,7 @@ public static function isCompatible( \Hugga\InputInterface $input )
 
 #### Hugga\Input\Observer::off
 
-```php?start_inline=true
+```php
 public function off( \Hugga\Input\string $char, callable $callback )
 ```
 
@@ -189,7 +189,7 @@ public function off( \Hugga\Input\string $char, callable $callback )
 
 #### Hugga\Input\Observer::on
 
-```php?start_inline=true
+```php
 public function on( \Hugga\Input\string $char, callable $callback )
 ```
 
@@ -211,7 +211,7 @@ public function on( \Hugga\Input\string $char, callable $callback )
 
 #### Hugga\Input\Observer::removeHandler
 
-```php?start_inline=true
+```php
 public function removeHandler( callable $callback )
 ```
 
@@ -232,7 +232,7 @@ public function removeHandler( callable $callback )
 
 #### Hugga\Input\Observer::start
 
-```php?start_inline=true
+```php
 public function start()
 ```
 
@@ -247,7 +247,7 @@ public function start()
 
 #### Hugga\Input\Observer::stop
 
-```php?start_inline=true
+```php
 public function stop()
 ```
 
@@ -262,7 +262,7 @@ public function stop()
 
 #### Hugga\Input\Observer::ttySettings
 
-```php?start_inline=true
+```php
 public static function ttySettings( $options )
 ```
 
@@ -304,7 +304,7 @@ public static function ttySettings( $options )
 
 #### Hugga\DrawingInterface::getText
 
-```php?start_inline=true
+```php
 public function getText(): string
 ```
 
@@ -356,7 +356,7 @@ It should never change the amount of rows.
 
 #### Hugga\Formatter::escape
 
-```php?start_inline=true
+```php
 protected function escape( \Hugga\string $code )
 ```
 
@@ -377,7 +377,7 @@ protected function escape( \Hugga\string $code )
 
 #### Hugga\Formatter::format
 
-```php?start_inline=true
+```php
 public function format( string $message ): string
 ```
 
@@ -400,7 +400,7 @@ public function format( string $message ): string
 
 #### Hugga\Formatter::getEscapeSequence
 
-```php?start_inline=true
+```php
 protected function getEscapeSequence( string $def ): string
 ```
 
@@ -427,7 +427,7 @@ it is simply not used. So keep in mind that many terminals don't support dim, bl
 
 #### Hugga\Formatter::replaceFormatting
 
-```php?start_inline=true
+```php
 protected function replaceFormatting( \Hugga\string $message, $strip = false )
 ```
 
@@ -449,7 +449,7 @@ protected function replaceFormatting( \Hugga\string $message, $strip = false )
 
 #### Hugga\Formatter::stripFormatting
 
-```php?start_inline=true
+```php
 public function stripFormatting( string $message ): string
 ```
 
@@ -500,7 +500,7 @@ public function stripFormatting( string $message ): string
 
 #### Hugga\AbstractInputOutput::__construct
 
-```php?start_inline=true
+```php
 public function __construct(
     \Hugga\Console $console, resource $resource
 ): AbstractInputOutput
@@ -524,7 +524,7 @@ public function __construct(
 
 #### Hugga\AbstractInputOutput::getResource
 
-```php?start_inline=true
+```php
 public function getResource(): resource
 ```
 
@@ -540,7 +540,7 @@ public function getResource(): resource
 
 #### Hugga\AbstractInputOutput::isCompatible
 
-```php?start_inline=true
+```php
 public static function isCompatible( $resource )
 ```
 
@@ -583,7 +583,7 @@ public static function isCompatible( $resource )
 
 #### Hugga\QuestionInterface::ask
 
-```php?start_inline=true
+```php
 public function ask( \Hugga\Console $console )
 ```
 
@@ -604,7 +604,7 @@ public function ask( \Hugga\Console $console )
 
 #### Hugga\QuestionInterface::getDefault
 
-```php?start_inline=true
+```php
 public function getDefault()
 ```
 
@@ -683,7 +683,7 @@ public function getDefault()
 
 #### Hugga\Output\Drawing\ProgressBar::__construct
 
-```php?start_inline=true
+```php
 public function __construct(
     \Hugga\Console $console, float $max, string $title = '', string $type = ''
 ): ProgressBar
@@ -710,7 +710,7 @@ public function __construct(
 
 #### Hugga\Output\Drawing\ProgressBar::advance
 
-```php?start_inline=true
+```php
 public function advance( $steps = 1 )
 ```
 
@@ -731,7 +731,7 @@ public function advance( $steps = 1 )
 
 #### Hugga\Output\Drawing\ProgressBar::finish
 
-```php?start_inline=true
+```php
 public function finish()
 ```
 
@@ -746,7 +746,7 @@ public function finish()
 
 #### Hugga\Output\Drawing\ProgressBar::getMaxFormat
 
-```php?start_inline=true
+```php
 protected function getMaxFormat()
 ```
 
@@ -761,7 +761,7 @@ protected function getMaxFormat()
 
 #### Hugga\Output\Drawing\ProgressBar::getProgress
 
-```php?start_inline=true
+```php
 protected function getProgress()
 ```
 
@@ -776,7 +776,7 @@ protected function getProgress()
 
 #### Hugga\Output\Drawing\ProgressBar::getTemplate
 
-```php?start_inline=true
+```php
 protected function getTemplate()
 ```
 
@@ -791,7 +791,7 @@ protected function getTemplate()
 
 #### Hugga\Output\Drawing\ProgressBar::getTemplateEngine
 
-```php?start_inline=true
+```php
 protected function getTemplateEngine()
 ```
 
@@ -806,7 +806,7 @@ protected function getTemplateEngine()
 
 #### Hugga\Output\Drawing\ProgressBar::getText
 
-```php?start_inline=true
+```php
 public function getText(): string
 ```
 
@@ -824,7 +824,7 @@ It should never change the amount of rows.
 
 #### Hugga\Output\Drawing\ProgressBar::getUndeterminedProgress
 
-```php?start_inline=true
+```php
 protected function getUndeterminedProgress()
 ```
 
@@ -839,7 +839,7 @@ protected function getUndeterminedProgress()
 
 #### Hugga\Output\Drawing\ProgressBar::isUndetermined
 
-```php?start_inline=true
+```php
 public function isUndetermined()
 ```
 
@@ -854,7 +854,7 @@ public function isUndetermined()
 
 #### Hugga\Output\Drawing\ProgressBar::progress
 
-```php?start_inline=true
+```php
 public function progress( $done, \Hugga\Output\Drawing\bool $flush = false )
 ```
 
@@ -876,7 +876,7 @@ public function progress( $done, \Hugga\Output\Drawing\bool $flush = false )
 
 #### Hugga\Output\Drawing\ProgressBar::progressCharacters
 
-```php?start_inline=true
+```php
 public function progressCharacters(
     \Hugga\Output\Drawing\string $empty, \Hugga\Output\Drawing\string $full, 
     \Hugga\Output\Drawing\string $steps
@@ -902,7 +902,7 @@ public function progressCharacters(
 
 #### Hugga\Output\Drawing\ProgressBar::resetDefaultProgressCharacters
 
-```php?start_inline=true
+```php
 public static function resetDefaultProgressCharacters()
 ```
 
@@ -919,7 +919,7 @@ public static function resetDefaultProgressCharacters()
 
 #### Hugga\Output\Drawing\ProgressBar::resetDefaultThrobber
 
-```php?start_inline=true
+```php
 public static function resetDefaultThrobber()
 ```
 
@@ -936,7 +936,7 @@ public static function resetDefaultThrobber()
 
 #### Hugga\Output\Drawing\ProgressBar::setDefaultProgressCharacters
 
-```php?start_inline=true
+```php
 public static function setDefaultProgressCharacters(
     string $empty, string $full, string $steps
 )
@@ -963,7 +963,7 @@ public static function setDefaultProgressCharacters(
 
 #### Hugga\Output\Drawing\ProgressBar::setDefaultThrobber
 
-```php?start_inline=true
+```php
 public static function setDefaultThrobber( string $throbber )
 ```
 
@@ -986,7 +986,7 @@ public static function setDefaultThrobber( string $throbber )
 
 #### Hugga\Output\Drawing\ProgressBar::setFormatDefinition
 
-```php?start_inline=true
+```php
 public static function setFormatDefinition( string $name, string $format )
 ```
 
@@ -1010,7 +1010,7 @@ public static function setFormatDefinition( string $name, string $format )
 
 #### Hugga\Output\Drawing\ProgressBar::start
 
-```php?start_inline=true
+```php
 public function start( $done )
 ```
 
@@ -1031,7 +1031,7 @@ public function start( $done )
 
 #### Hugga\Output\Drawing\ProgressBar::template
 
-```php?start_inline=true
+```php
 public function template( \Hugga\Output\Drawing\string $template )
 ```
 
@@ -1052,7 +1052,7 @@ public function template( \Hugga\Output\Drawing\string $template )
 
 #### Hugga\Output\Drawing\ProgressBar::throbber
 
-```php?start_inline=true
+```php
 public function throbber( \Hugga\Output\Drawing\string $throbber )
 ```
 
@@ -1073,7 +1073,7 @@ public function throbber( \Hugga\Output\Drawing\string $throbber )
 
 #### Hugga\Output\Drawing\ProgressBar::undetermined
 
-```php?start_inline=true
+```php
 public function undetermined()
 ```
 
@@ -1088,7 +1088,7 @@ public function undetermined()
 
 #### Hugga\Output\Drawing\ProgressBar::updateRate
 
-```php?start_inline=true
+```php
 public function updateRate( \Hugga\Output\Drawing\float $updateRate )
 ```
 
@@ -1109,7 +1109,7 @@ public function updateRate( \Hugga\Output\Drawing\float $updateRate )
 
 #### Hugga\Output\Drawing\ProgressBar::width
 
-```php?start_inline=true
+```php
 public function width( \Hugga\Output\Drawing\int $width )
 ```
 
@@ -1204,7 +1204,7 @@ public function width( \Hugga\Output\Drawing\int $width )
 
 #### Hugga\Output\Drawing\Table::__construct
 
-```php?start_inline=true
+```php
 public function __construct(
     \Hugga\Console $console, \Hugga\Output\Drawing\iterable $data, 
     array $headers = null
@@ -1231,7 +1231,7 @@ public function __construct(
 
 #### Hugga\Output\Drawing\Table::applyDefaultStyle
 
-```php?start_inline=true
+```php
 protected function applyDefaultStyle()
 ```
 
@@ -1246,7 +1246,7 @@ protected function applyDefaultStyle()
 
 #### Hugga\Output\Drawing\Table::borders
 
-```php?start_inline=true
+```php
 public function borders( boolean $borders = true ): $this
 ```
 
@@ -1269,7 +1269,7 @@ public function borders( boolean $borders = true ): $this
 
 #### Hugga\Output\Drawing\Table::bordersInside
 
-```php?start_inline=true
+```php
 public function bordersInside( boolean $bordersInside = false ): $this
 ```
 
@@ -1292,7 +1292,7 @@ public function bordersInside( boolean $bordersInside = false ): $this
 
 #### Hugga\Output\Drawing\Table::borderStyle
 
-```php?start_inline=true
+```php
 public function borderStyle( array $borderStyle ): $this
 ```
 
@@ -1315,7 +1315,7 @@ public function borderStyle( array $borderStyle ): $this
 
 #### Hugga\Output\Drawing\Table::column
 
-```php?start_inline=true
+```php
 public function column( $key, $definition ): $this
 ```
 
@@ -1339,7 +1339,7 @@ $definition may include `width`, `header`, `delete` and `format`
 
 #### Hugga\Output\Drawing\Table::draw
 
-```php?start_inline=true
+```php
 public function draw()
 ```
 
@@ -1355,7 +1355,7 @@ public function draw()
 
 #### Hugga\Output\Drawing\Table::getBorderRow
 
-```php?start_inline=true
+```php
 protected function getBorderRow()
 ```
 
@@ -1370,7 +1370,7 @@ protected function getBorderRow()
 
 #### Hugga\Output\Drawing\Table::getBottomBorderRow
 
-```php?start_inline=true
+```php
 protected function getBottomBorderRow()
 ```
 
@@ -1385,7 +1385,7 @@ protected function getBottomBorderRow()
 
 #### Hugga\Output\Drawing\Table::getDivider
 
-```php?start_inline=true
+```php
 protected function getDivider(
     $padding = ' ', $borderLeft = null, $borderRight = null, 
     $borderInside = null
@@ -1412,7 +1412,7 @@ protected function getDivider(
 
 #### Hugga\Output\Drawing\Table::getHeaderRow
 
-```php?start_inline=true
+```php
 protected function getHeaderRow()
 ```
 
@@ -1427,7 +1427,7 @@ protected function getHeaderRow()
 
 #### Hugga\Output\Drawing\Table::getRows
 
-```php?start_inline=true
+```php
 protected function getRows( array $data )
 ```
 
@@ -1448,7 +1448,7 @@ protected function getRows( array $data )
 
 #### Hugga\Output\Drawing\Table::getText
 
-```php?start_inline=true
+```php
 public function getText(): string
 ```
 
@@ -1466,7 +1466,7 @@ It should never change the amount of rows.
 
 #### Hugga\Output\Drawing\Table::getTopBorderRow
 
-```php?start_inline=true
+```php
 protected function getTopBorderRow()
 ```
 
@@ -1481,7 +1481,7 @@ protected function getTopBorderRow()
 
 #### Hugga\Output\Drawing\Table::hasHeaders
 
-```php?start_inline=true
+```php
 public function hasHeaders(): boolean
 ```
 
@@ -1498,7 +1498,7 @@ public function hasHeaders(): boolean
 
 #### Hugga\Output\Drawing\Table::headersFromKeys
 
-```php?start_inline=true
+```php
 public function headersFromKeys(): $this
 ```
 
@@ -1515,7 +1515,7 @@ public function headersFromKeys(): $this
 
 #### Hugga\Output\Drawing\Table::headerStyle
 
-```php?start_inline=true
+```php
 public function headerStyle( string $format ): $this
 ```
 
@@ -1538,7 +1538,7 @@ public function headerStyle( string $format ): $this
 
 #### Hugga\Output\Drawing\Table::padding
 
-```php?start_inline=true
+```php
 public function padding( integer $padding ): $this
 ```
 
@@ -1561,7 +1561,7 @@ public function padding( integer $padding ): $this
 
 #### Hugga\Output\Drawing\Table::prepareColumns
 
-```php?start_inline=true
+```php
 protected function prepareColumns()
 ```
 
@@ -1576,7 +1576,7 @@ protected function prepareColumns()
 
 #### Hugga\Output\Drawing\Table::repeatHeaders
 
-```php?start_inline=true
+```php
 public function repeatHeaders( integer $n = 10 ): $this
 ```
 
@@ -1599,7 +1599,7 @@ public function repeatHeaders( integer $n = 10 ): $this
 
 #### Hugga\Output\Drawing\Table::repeatRow
 
-```php?start_inline=true
+```php
 protected function repeatRow(
     array &$rows, $repeat, \Hugga\Output\Drawing\int $every = 1
 )
@@ -1624,7 +1624,7 @@ protected function repeatRow(
 
 #### Hugga\Output\Drawing\Table::setDefaultStyle
 
-```php?start_inline=true
+```php
 public static function setDefaultStyle( array $defaultStyle )
 ```
 
@@ -1669,7 +1669,7 @@ The default default style is:
 
 #### Hugga\Output\Drawing\Table::setHeaders
 
-```php?start_inline=true
+```php
 public function setHeaders(
     array $headers, boolean $adjustWidth = false
 ): $this
@@ -1725,7 +1725,7 @@ Unless you pass $adjustWidth=true the width of the columns stays the same and lo
 
 #### Hugga\Input\Question\AbstractQuestion::__construct
 
-```php?start_inline=true
+```php
 public function __construct(
     string $question = '', string $default = null
 ): AbstractQuestion
@@ -1749,7 +1749,7 @@ public function __construct(
 
 #### Hugga\Input\Question\AbstractQuestion::getDefault
 
-```php?start_inline=true
+```php
 public function getDefault(): mixed
 ```
 
@@ -1765,7 +1765,7 @@ public function getDefault(): mixed
 
 #### Hugga\Input\Question\AbstractQuestion::getQuestionText
 
-```php?start_inline=true
+```php
 protected function getQuestionText()
 ```
 
@@ -1811,7 +1811,7 @@ protected function getQuestionText()
 
 #### Hugga\Output\AbstractOutput::__construct
 
-```php?start_inline=true
+```php
 public function __construct(
     \Hugga\Console $console, resource $resource
 ): AbstractInputOutput
@@ -1835,7 +1835,7 @@ public function __construct(
 
 #### Hugga\Output\AbstractOutput::getResource
 
-```php?start_inline=true
+```php
 public function getResource(): resource
 ```
 
@@ -1851,7 +1851,7 @@ public function getResource(): resource
 
 #### Hugga\Output\AbstractOutput::isCompatible
 
-```php?start_inline=true
+```php
 public static function isCompatible( $resource )
 ```
 
@@ -1896,7 +1896,7 @@ public static function isCompatible( $resource )
 
 #### Hugga\InputInterface::getResource
 
-```php?start_inline=true
+```php
 public function getResource()
 ```
 
@@ -1911,7 +1911,7 @@ public function getResource()
 
 #### Hugga\InputInterface::read
 
-```php?start_inline=true
+```php
 public function read( \Hugga\int $count = 1, \Hugga\string $prompt = null )
 ```
 
@@ -1933,7 +1933,7 @@ public function read( \Hugga\int $count = 1, \Hugga\string $prompt = null )
 
 #### Hugga\InputInterface::readLine
 
-```php?start_inline=true
+```php
 public function readLine( \Hugga\string $prompt = null )
 ```
 
@@ -1954,7 +1954,7 @@ public function readLine( \Hugga\string $prompt = null )
 
 #### Hugga\InputInterface::readUntil
 
-```php?start_inline=true
+```php
 public function readUntil(
     \Hugga\string $sequence, \Hugga\string $prompt = null
 )
@@ -2020,7 +2020,7 @@ public function readUntil(
 
 #### Hugga\Input\ObserverFaker::__construct
 
-```php?start_inline=true
+```php
 public function __construct( \Hugga\InputInterface $input ): Observer
 ```
 
@@ -2041,7 +2041,7 @@ public function __construct( \Hugga\InputInterface $input ): Observer
 
 #### Hugga\Input\ObserverFaker::addHandler
 
-```php?start_inline=true
+```php
 public function addHandler( callable $callback )
 ```
 
@@ -2062,7 +2062,7 @@ public function addHandler( callable $callback )
 
 #### Hugga\Input\ObserverFaker::handle
 
-```php?start_inline=true
+```php
 protected function handle( \Hugga\Input\string $char )
 ```
 
@@ -2083,7 +2083,7 @@ protected function handle( \Hugga\Input\string $char )
 
 #### Hugga\Input\ObserverFaker::isCompatible
 
-```php?start_inline=true
+```php
 public static function isCompatible( \Hugga\InputInterface $input )
 ```
 
@@ -2105,7 +2105,7 @@ public static function isCompatible( \Hugga\InputInterface $input )
 
 #### Hugga\Input\ObserverFaker::off
 
-```php?start_inline=true
+```php
 public function off( \Hugga\Input\string $char, callable $callback )
 ```
 
@@ -2127,7 +2127,7 @@ public function off( \Hugga\Input\string $char, callable $callback )
 
 #### Hugga\Input\ObserverFaker::on
 
-```php?start_inline=true
+```php
 public function on( \Hugga\Input\string $char, callable $callback )
 ```
 
@@ -2149,7 +2149,7 @@ public function on( \Hugga\Input\string $char, callable $callback )
 
 #### Hugga\Input\ObserverFaker::removeHandler
 
-```php?start_inline=true
+```php
 public function removeHandler( callable $callback )
 ```
 
@@ -2170,7 +2170,7 @@ public function removeHandler( callable $callback )
 
 #### Hugga\Input\ObserverFaker::sendKeys
 
-```php?start_inline=true
+```php
 public function sendKeys( array<string> $chars )
 ```
 
@@ -2192,7 +2192,7 @@ public function sendKeys( array<string> $chars )
 
 #### Hugga\Input\ObserverFaker::start
 
-```php?start_inline=true
+```php
 public function start()
 ```
 
@@ -2208,7 +2208,7 @@ Sending keys will not have effect until started.
 
 #### Hugga\Input\ObserverFaker::stop
 
-```php?start_inline=true
+```php
 public function stop()
 ```
 
@@ -2223,7 +2223,7 @@ public function stop()
 
 #### Hugga\Input\ObserverFaker::ttySettings
 
-```php?start_inline=true
+```php
 public static function ttySettings( $options )
 ```
 
@@ -2277,7 +2277,7 @@ public static function ttySettings( $options )
 
 #### Hugga\Input\Question\Simple::__construct
 
-```php?start_inline=true
+```php
 public function __construct(
     string $question = '', string $default = null
 ): AbstractQuestion
@@ -2301,7 +2301,7 @@ public function __construct(
 
 #### Hugga\Input\Question\Simple::ask
 
-```php?start_inline=true
+```php
 public function ask( \Hugga\Console $console )
 ```
 
@@ -2322,7 +2322,7 @@ public function ask( \Hugga\Console $console )
 
 #### Hugga\Input\Question\Simple::getDefault
 
-```php?start_inline=true
+```php
 public function getDefault(): mixed
 ```
 
@@ -2338,7 +2338,7 @@ public function getDefault(): mixed
 
 #### Hugga\Input\Question\Simple::getQuestionText
 
-```php?start_inline=true
+```php
 protected function getQuestionText()
 ```
 
@@ -2398,7 +2398,7 @@ Ideas:
 
 #### Hugga\Input\Question\Confirmation::__construct
 
-```php?start_inline=true
+```php
 public function __construct(
     \Hugga\Input\Question\string $question, string $default = false
 ): Confirmation
@@ -2422,7 +2422,7 @@ public function __construct(
 
 #### Hugga\Input\Question\Confirmation::ask
 
-```php?start_inline=true
+```php
 public function ask( \Hugga\Console $console ): boolean|string
 ```
 
@@ -2444,7 +2444,7 @@ public function ask( \Hugga\Console $console ): boolean|string
 
 #### Hugga\Input\Question\Confirmation::getDefault
 
-```php?start_inline=true
+```php
 public function getDefault(): mixed
 ```
 
@@ -2460,7 +2460,7 @@ public function getDefault(): mixed
 
 #### Hugga\Input\Question\Confirmation::getQuestionText
 
-```php?start_inline=true
+```php
 protected function getQuestionText()
 ```
 
@@ -2475,7 +2475,7 @@ protected function getQuestionText()
 
 #### Hugga\Input\Question\Confirmation::setCharacters
 
-```php?start_inline=true
+```php
 public function setCharacters( string $true = 'y', string $false = 'n' ): $this
 ```
 
@@ -2554,7 +2554,7 @@ public function setCharacters( string $true = 'y', string $false = 'n' ): $this
 
 #### Hugga\Input\Question\Choice::__construct
 
-```php?start_inline=true
+```php
 public function __construct(
     array $choices, \Hugga\Input\Question\string $question = '', 
     string $default = null
@@ -2580,7 +2580,7 @@ public function __construct(
 
 #### Hugga\Input\Question\Choice::ask
 
-```php?start_inline=true
+```php
 public function ask( \Hugga\Console $console )
 ```
 
@@ -2601,7 +2601,7 @@ public function ask( \Hugga\Console $console )
 
 #### Hugga\Input\Question\Choice::askInteractive
 
-```php?start_inline=true
+```php
 protected function askInteractive(
     \Hugga\Console $console, \Hugga\Input\Observer $observer
 ): integer|string
@@ -2627,7 +2627,7 @@ protected function askInteractive(
 
 #### Hugga\Input\Question\Choice::askNonInteractive
 
-```php?start_inline=true
+```php
 protected function askNonInteractive(
     \Hugga\Console $console
 ): false|integer|mixed|null|string
@@ -2652,7 +2652,7 @@ protected function askNonInteractive(
 
 #### Hugga\Input\Question\Choice::changePos
 
-```php?start_inline=true
+```php
 protected function changePos(
     array $values, \Hugga\Console $console, integer $change, 
     boolean $loop = false
@@ -2680,7 +2680,7 @@ protected function changePos(
 
 #### Hugga\Input\Question\Choice::charsToIndex
 
-```php?start_inline=true
+```php
 protected static function charsToIndex( string $c ): integer
 ```
 
@@ -2704,7 +2704,7 @@ protected static function charsToIndex( string $c ): integer
 
 #### Hugga\Input\Question\Choice::formatChoice
 
-```php?start_inline=true
+```php
 protected function formatChoice(
     string $key, string $value, boolean $selected = false
 ): string
@@ -2731,7 +2731,7 @@ Overload for different formatting.
 
 #### Hugga\Input\Question\Choice::formatChoices
 
-```php?start_inline=true
+```php
 protected function formatChoices( $choices ): string
 ```
 
@@ -2754,7 +2754,7 @@ protected function formatChoices( $choices ): string
 
 #### Hugga\Input\Question\Choice::getDefault
 
-```php?start_inline=true
+```php
 public function getDefault(): mixed
 ```
 
@@ -2770,7 +2770,7 @@ public function getDefault(): mixed
 
 #### Hugga\Input\Question\Choice::getQuestionText
 
-```php?start_inline=true
+```php
 protected function getQuestionText()
 ```
 
@@ -2785,7 +2785,7 @@ protected function getQuestionText()
 
 #### Hugga\Input\Question\Choice::getText
 
-```php?start_inline=true
+```php
 public function getText(): string
 ```
 
@@ -2803,7 +2803,7 @@ It should never change the amount of rows.
 
 #### Hugga\Input\Question\Choice::humanizeKeys
 
-```php?start_inline=true
+```php
 protected function humanizeKeys()
 ```
 
@@ -2819,7 +2819,7 @@ Replaces keys from indexed arrays from 1 to 9 or a to zz.
 
 #### Hugga\Input\Question\Choice::indexToChars
 
-```php?start_inline=true
+```php
 protected static function indexToChars( integer $i ): string
 ```
 
@@ -2843,7 +2843,7 @@ protected static function indexToChars( integer $i ): string
 
 #### Hugga\Input\Question\Choice::isSelected
 
-```php?start_inline=true
+```php
 protected function isSelected( $key, string $value ): boolean
 ```
 
@@ -2867,7 +2867,7 @@ protected function isSelected( $key, string $value ): boolean
 
 #### Hugga\Input\Question\Choice::limit
 
-```php?start_inline=true
+```php
 public function limit( integer $count ): $this
 ```
 
@@ -2890,7 +2890,7 @@ public function limit( integer $count ): $this
 
 #### Hugga\Input\Question\Choice::nonInteractive
 
-```php?start_inline=true
+```php
 public function nonInteractive(): $this
 ```
 
@@ -2907,7 +2907,7 @@ public function nonInteractive(): $this
 
 #### Hugga\Input\Question\Choice::returnKey
 
-```php?start_inline=true
+```php
 public function returnKey(): $this
 ```
 
@@ -2924,7 +2924,7 @@ public function returnKey(): $this
 
 #### Hugga\Input\Question\Choice::returnValue
 
-```php?start_inline=true
+```php
 public function returnValue(): $this
 ```
 
@@ -2941,7 +2941,7 @@ public function returnValue(): $this
 
 #### Hugga\Input\Question\Choice::updateSlice
 
-```php?start_inline=true
+```php
 protected function updateSlice()
 ```
 
@@ -2957,7 +2957,7 @@ protected function updateSlice()
 
 #### Hugga\Input\Question\Choice::writeQuestionAndWaitAnswer
 
-```php?start_inline=true
+```php
 protected function writeQuestionAndWaitAnswer( \Hugga\Console $console ): string
 ```
 
@@ -3016,7 +3016,7 @@ protected function writeQuestionAndWaitAnswer( \Hugga\Console $console ): string
 
 #### Hugga\Input\Readline::__construct
 
-```php?start_inline=true
+```php
 public function __construct(
     \Hugga\Console $console, resource $resource
 ): AbstractInputOutput
@@ -3040,7 +3040,7 @@ public function __construct(
 
 #### Hugga\Input\Readline::getResource
 
-```php?start_inline=true
+```php
 public function getResource(): resource
 ```
 
@@ -3056,7 +3056,7 @@ public function getResource(): resource
 
 #### Hugga\Input\Readline::isCompatible
 
-```php?start_inline=true
+```php
 public static function isCompatible( $resource )
 ```
 
@@ -3078,7 +3078,7 @@ public static function isCompatible( $resource )
 
 #### Hugga\Input\Readline::isEditline
 
-```php?start_inline=true
+```php
 protected static function isEditline(): boolean
 ```
 
@@ -3096,7 +3096,7 @@ protected static function isEditline(): boolean
 
 #### Hugga\Input\Readline::phpReadline
 
-```php?start_inline=true
+```php
 protected static function phpReadline( string $method, $args ): mixed
 ```
 
@@ -3121,7 +3121,7 @@ protected static function phpReadline( string $method, $args ): mixed
 
 #### Hugga\Input\Readline::read
 
-```php?start_inline=true
+```php
 public function read(
     \Hugga\Input\int $count = 1, \Hugga\Input\string $prompt = null
 )
@@ -3145,7 +3145,7 @@ public function read(
 
 #### Hugga\Input\Readline::readConditional
 
-```php?start_inline=true
+```php
 protected function readConditional(
     callable $conditionMet, \Hugga\Input\string $prompt = null
 )
@@ -3169,7 +3169,7 @@ protected function readConditional(
 
 #### Hugga\Input\Readline::readLine
 
-```php?start_inline=true
+```php
 public function readLine( \Hugga\Input\string $prompt = null )
 ```
 
@@ -3190,7 +3190,7 @@ public function readLine( \Hugga\Input\string $prompt = null )
 
 #### Hugga\Input\Readline::readUntil
 
-```php?start_inline=true
+```php
 public function readUntil(
     \Hugga\Input\string $sequence, \Hugga\Input\string $prompt = null
 )
@@ -3254,7 +3254,7 @@ public function readUntil(
 
 #### Hugga\Output\File::__construct
 
-```php?start_inline=true
+```php
 public function __construct(
     \Hugga\Console $console, resource $resource
 ): AbstractInputOutput
@@ -3278,7 +3278,7 @@ public function __construct(
 
 #### Hugga\Output\File::delete
 
-```php?start_inline=true
+```php
 public function delete( \Hugga\Output\int $count )
 ```
 
@@ -3299,7 +3299,7 @@ public function delete( \Hugga\Output\int $count )
 
 #### Hugga\Output\File::deleteLine
 
-```php?start_inline=true
+```php
 public function deleteLine( \Hugga\Output\int $bufferSize = self::BUFFER_SIZE )
 ```
 
@@ -3320,7 +3320,7 @@ public function deleteLine( \Hugga\Output\int $bufferSize = self::BUFFER_SIZE )
 
 #### Hugga\Output\File::getResource
 
-```php?start_inline=true
+```php
 public function getResource(): resource
 ```
 
@@ -3336,7 +3336,7 @@ public function getResource(): resource
 
 #### Hugga\Output\File::isCompatible
 
-```php?start_inline=true
+```php
 public static function isCompatible( $resource )
 ```
 
@@ -3358,7 +3358,7 @@ public static function isCompatible( $resource )
 
 #### Hugga\Output\File::truncate
 
-```php?start_inline=true
+```php
 protected function truncate( \Hugga\Output\int $count )
 ```
 
@@ -3379,7 +3379,7 @@ protected function truncate( \Hugga\Output\int $count )
 
 #### Hugga\Output\File::write
 
-```php?start_inline=true
+```php
 public function write( \Hugga\Output\string $str )
 ```
 
@@ -3437,7 +3437,7 @@ public function write( \Hugga\Output\string $str )
 
 #### Hugga\Output\Tty::__construct
 
-```php?start_inline=true
+```php
 public function __construct(
     \Hugga\Console $console, resource $resource
 ): AbstractInputOutput
@@ -3461,7 +3461,7 @@ public function __construct(
 
 #### Hugga\Output\Tty::delete
 
-```php?start_inline=true
+```php
 public function delete( \Hugga\Output\int $count )
 ```
 
@@ -3482,7 +3482,7 @@ public function delete( \Hugga\Output\int $count )
 
 #### Hugga\Output\Tty::deleteLine
 
-```php?start_inline=true
+```php
 public function deleteLine()
 ```
 
@@ -3497,7 +3497,7 @@ public function deleteLine()
 
 #### Hugga\Output\Tty::deleteLines
 
-```php?start_inline=true
+```php
 public function deleteLines(
     \Hugga\Output\int $count, \Hugga\Output\string $replace = ''
 )
@@ -3522,7 +3522,7 @@ If $replace contains more rows than $count the rows will be appended.
 
 #### Hugga\Output\Tty::getResource
 
-```php?start_inline=true
+```php
 public function getResource(): resource
 ```
 
@@ -3538,7 +3538,7 @@ public function getResource(): resource
 
 #### Hugga\Output\Tty::getSize
 
-```php?start_inline=true
+```php
 public function getSize(): array
 ```
 
@@ -3555,7 +3555,7 @@ Returns an array with [int $rows, int $cols]
 
 #### Hugga\Output\Tty::isCompatible
 
-```php?start_inline=true
+```php
 public static function isCompatible( $resource )
 ```
 
@@ -3577,7 +3577,7 @@ public static function isCompatible( $resource )
 
 #### Hugga\Output\Tty::replace
 
-```php?start_inline=true
+```php
 public function replace( \Hugga\Output\string $new )
 ```
 
@@ -3599,7 +3599,7 @@ public function replace( \Hugga\Output\string $new )
 
 #### Hugga\Output\Tty::write
 
-```php?start_inline=true
+```php
 public function write( \Hugga\Output\string $str )
 ```
 
@@ -3659,7 +3659,7 @@ public function write( \Hugga\Output\string $str )
 
 #### Hugga\Input\File::__construct
 
-```php?start_inline=true
+```php
 public function __construct(
     \Hugga\Console $console, resource $resource
 ): AbstractInputOutput
@@ -3683,7 +3683,7 @@ public function __construct(
 
 #### Hugga\Input\File::getResource
 
-```php?start_inline=true
+```php
 public function getResource(): resource
 ```
 
@@ -3699,7 +3699,7 @@ public function getResource(): resource
 
 #### Hugga\Input\File::isCompatible
 
-```php?start_inline=true
+```php
 public static function isCompatible( $resource )
 ```
 
@@ -3721,7 +3721,7 @@ public static function isCompatible( $resource )
 
 #### Hugga\Input\File::read
 
-```php?start_inline=true
+```php
 public function read(
     \Hugga\Input\int $count = 1, \Hugga\Input\string $prompt = null
 )
@@ -3745,7 +3745,7 @@ public function read(
 
 #### Hugga\Input\File::readLine
 
-```php?start_inline=true
+```php
 public function readLine( \Hugga\Input\string $prompt = null )
 ```
 
@@ -3766,7 +3766,7 @@ public function readLine( \Hugga\Input\string $prompt = null )
 
 #### Hugga\Input\File::readUntil
 
-```php?start_inline=true
+```php
 public function readUntil(
     \Hugga\Input\string $sequence, \Hugga\Input\string $prompt = null
 )
@@ -3826,7 +3826,7 @@ public function readUntil(
 
 #### Hugga\Input\Editline::__construct
 
-```php?start_inline=true
+```php
 public function __construct(
     \Hugga\Console $console, resource $resource
 ): AbstractInputOutput
@@ -3850,7 +3850,7 @@ public function __construct(
 
 #### Hugga\Input\Editline::getResource
 
-```php?start_inline=true
+```php
 public function getResource(): resource
 ```
 
@@ -3866,7 +3866,7 @@ public function getResource(): resource
 
 #### Hugga\Input\Editline::isCompatible
 
-```php?start_inline=true
+```php
 public static function isCompatible( $resource )
 ```
 
@@ -3888,7 +3888,7 @@ public static function isCompatible( $resource )
 
 #### Hugga\Input\Editline::isEditline
 
-```php?start_inline=true
+```php
 protected static function isEditline(): boolean
 ```
 
@@ -3906,7 +3906,7 @@ protected static function isEditline(): boolean
 
 #### Hugga\Input\Editline::phpReadline
 
-```php?start_inline=true
+```php
 protected static function phpReadline( string $method, $args ): mixed
 ```
 
@@ -3931,7 +3931,7 @@ protected static function phpReadline( string $method, $args ): mixed
 
 #### Hugga\Input\Editline::read
 
-```php?start_inline=true
+```php
 public function read(
     \Hugga\Input\int $count = 1, \Hugga\Input\string $prompt = null
 )
@@ -3955,7 +3955,7 @@ public function read(
 
 #### Hugga\Input\Editline::readConditional
 
-```php?start_inline=true
+```php
 protected function readConditional(
     callable $conditionMet, \Hugga\Input\string $prompt = null
 )
@@ -3979,7 +3979,7 @@ protected function readConditional(
 
 #### Hugga\Input\Editline::readLine
 
-```php?start_inline=true
+```php
 public function readLine( \Hugga\Input\string $prompt = null )
 ```
 
@@ -4000,7 +4000,7 @@ public function readLine( \Hugga\Input\string $prompt = null )
 
 #### Hugga\Input\Editline::readUntil
 
-```php?start_inline=true
+```php
 public function readUntil(
     \Hugga\Input\string $sequence, \Hugga\Input\string $prompt = null
 )
@@ -4047,7 +4047,7 @@ public function readUntil(
 
 #### Hugga\OutputInterface::delete
 
-```php?start_inline=true
+```php
 public function delete( \Hugga\int $count )
 ```
 
@@ -4068,7 +4068,7 @@ public function delete( \Hugga\int $count )
 
 #### Hugga\OutputInterface::deleteLine
 
-```php?start_inline=true
+```php
 public function deleteLine()
 ```
 
@@ -4083,7 +4083,7 @@ public function deleteLine()
 
 #### Hugga\OutputInterface::getResource
 
-```php?start_inline=true
+```php
 public function getResource()
 ```
 
@@ -4098,7 +4098,7 @@ public function getResource()
 
 #### Hugga\OutputInterface::write
 
-```php?start_inline=true
+```php
 public function write( \Hugga\string $str )
 ```
 
@@ -4146,7 +4146,7 @@ public function write( \Hugga\string $str )
 
 #### Hugga\InteractiveOutputInterface::delete
 
-```php?start_inline=true
+```php
 public function delete( \Hugga\int $count )
 ```
 
@@ -4167,7 +4167,7 @@ public function delete( \Hugga\int $count )
 
 #### Hugga\InteractiveOutputInterface::deleteLine
 
-```php?start_inline=true
+```php
 public function deleteLine()
 ```
 
@@ -4182,7 +4182,7 @@ public function deleteLine()
 
 #### Hugga\InteractiveOutputInterface::deleteLines
 
-```php?start_inline=true
+```php
 public function deleteLines( integer $count, string $replace = '' )
 ```
 
@@ -4205,7 +4205,7 @@ If $replace contains more rows than $count the rows will be appended.
 
 #### Hugga\InteractiveOutputInterface::getResource
 
-```php?start_inline=true
+```php
 public function getResource()
 ```
 
@@ -4220,7 +4220,7 @@ public function getResource()
 
 #### Hugga\InteractiveOutputInterface::getSize
 
-```php?start_inline=true
+```php
 public function getSize(): array
 ```
 
@@ -4237,7 +4237,7 @@ Returns an array with [int $rows, int $cols]
 
 #### Hugga\InteractiveOutputInterface::replace
 
-```php?start_inline=true
+```php
 public function replace( string $new )
 ```
 
@@ -4259,7 +4259,7 @@ public function replace( string $new )
 
 #### Hugga\InteractiveOutputInterface::write
 
-```php?start_inline=true
+```php
 public function write( \Hugga\string $str )
 ```
 
