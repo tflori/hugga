@@ -115,18 +115,6 @@ class ConsoleTest extends TestCase
     }
 
     /** @test */
-    public function ignoresVerbosity()
-    {
-        $message = 'foo bar';
-
-        $this->console->setVerbosity(Console::WEIGHT_NORMAL);
-        $this->console->writeError($message, Console::WEIGHT_LOW);
-
-        rewind($this->stderr);
-        self::assertSame($message, fread($this->stderr, strlen($message)));
-    }
-
-    /** @test */
     public function addsErrorFormatting()
     {
         $message = 'foo bar';
