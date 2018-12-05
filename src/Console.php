@@ -241,6 +241,11 @@ class Console
     public function writeError(string $message, int $weight = self::WEIGHT_HIGH): void
     {
         $this->log($weight, $message);
+
+        if ($this->verbosity > $weight) {
+            return;
+        }
+
         $this->cleanDrawings();
         $this->stderr->write($this->format($message));
         $this->drawDrawings();
