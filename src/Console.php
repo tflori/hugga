@@ -136,19 +136,22 @@ class Console
      * Returns false when drawing was already added.
      *
      * @param DrawingInterface $drawing
+     * @param bool $above
      * @return bool
      */
-    public function addDrawing(DrawingInterface $drawing): bool
+    public function addDrawing(DrawingInterface $drawing, $above = false): bool
     {
         $hash = spl_object_hash($drawing);
         if (isset($this->drawings[$hash])) {
             return false;
         }
 
-        $this->drawings[$hash] = [
-            'drawing' => $drawing,
-            'lines' => 0,
-        ];
+        $drawings = [$hash => ['drawing' => $drawing, 'lines' => 0]];
+        $this->drawings = array_merge(
+            $above ? $drawings : $this->drawings,
+            $above ? $this->drawings : $drawings
+        );
+
         $this->refreshDrawings();
         return true;
     }
@@ -161,9 +164,10 @@ class Console
      * Returns false when the drawing was not registered.
      *
      * @param DrawingInterface $drawing
+     * @param bool $silent
      * @return bool
      */
-    public function removeDrawing(DrawingInterface $drawing): bool
+    public function removeDrawing(DrawingInterface $drawing, $silent = false): bool
     {
         $hash = spl_object_hash($drawing);
         if (!isset($this->drawings[$hash])) {
@@ -171,7 +175,7 @@ class Console
         }
 
         $this->cleanDrawings();
-        $this->stdout->write($this->format($drawing->getText()) . PHP_EOL);
+        $silent || $this->stdout->write($this->format($drawing->getText()) . PHP_EOL);
         unset($this->drawings[$hash]);
         $this->drawDrawings();
         return true;
