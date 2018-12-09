@@ -285,28 +285,31 @@ class Console
      * Shortcut to ->write('${green;bold}Your message' . PHP_EOL)
      *
      * @param string $message
+     * @param int $weight
      * @codeCoverageIgnore trivial
      */
-    public function info(string $message)
+    public function info(string $message, int $weight = self::WEIGHT_NORMAL)
     {
-        $this->line('${green;bold}' . $message, self::WEIGHT_NORMAL);
+        $this->line('${green;bold}' . $message, $weight);
     }
 
     /**
      * Shortcut to ->write('${red;bold}Your message' . PHP_EOL, WEIGHT_HIGHER);
      *
      * @param string $message
+     * @param int $weight
      * @codeCoverageIgnore trivial
      */
-    public function warn(string $message)
+    public function warn(string $message, int $weight = self::WEIGHT_HIGHER)
     {
-        $this->line('${yellow;bold}' . $message, self::WEIGHT_HIGHER);
+        $this->line('${yellow;bold}' . $message, $weight);
     }
 
     /**
      * Shortcut to ->write('Your message' . PHP_EOL);
      *
      * @param string $message
+     * @param int $weight
      * @codeCoverageIgnore trivial
      */
     public function line(string $message, int $weight = self::WEIGHT_NORMAL): void
