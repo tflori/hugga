@@ -236,8 +236,6 @@ class ProgressBar implements DrawingInterface
     {
         $engine = $this->getTemplateEngine();
         $title = $this->title;
-        $percentage = '';
-        $steps = '';
 
         if (!$this->isUndetermined()) {
             $stepsTemplate = $this->type ? 'steps-with-type' : 'steps';
@@ -253,11 +251,11 @@ class ProgressBar implements DrawingInterface
 
         if ($this->done === $this->max) {
             $progress = str_repeat($this->progressCharacters[1], $this->width);
-            return $engine->render($this->getTemplate(), compact('title', 'progress', 'steps', 'percentage'));
+            return $engine->render($this->getTemplate(), @compact('title', 'progress', 'steps', 'percentage'));
         }
 
         $progress = $this->isUndetermined() ? $this->getUndeterminedProgress() : $this->getProgress();
-        return $engine->render($this->getTemplate(), compact('title', 'progress', 'steps', 'percentage'));
+        return $engine->render($this->getTemplate(), @compact('title', 'progress', 'steps', 'percentage'));
     }
 
     protected function getMaxFormat()
