@@ -236,6 +236,8 @@ class ProgressBar implements DrawingInterface
     {
         $engine = $this->getTemplateEngine();
         $title = $this->title;
+        $percentage = '';
+        $steps = '';
 
         if (!$this->isUndetermined()) {
             $stepsTemplate = $this->type ? 'steps-with-type' : 'steps';

@@ -41,7 +41,7 @@ $console->line('But this is just a debug message', Hugga\Console::WEIGHT_DEBUG);
 ## Documentation
 
 There is no documentation yet except this [api reference](reference.md). For some examples also have a look at
-[test.php](test.php).
+[test.php](test.php) and try them yourself with `php vendor/tflori/hugga/test.php`.
 
 ## Features
 
