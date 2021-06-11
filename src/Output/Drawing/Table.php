@@ -402,7 +402,7 @@ class Table implements DrawingInterface
         $this->columns = $columns;
     }
 
-    protected function getRows(array $data): array
+    protected function getRows(iterable $data): array
     {
         $rows = [];
         list($left, $right, $spacer) = $this->getDivider();
