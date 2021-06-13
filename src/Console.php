@@ -107,7 +107,7 @@ class Console
      * @param string $message
      * @param int    $weight
      */
-    public function write(string $message, int $weight = self::WEIGHT_NORMAL): void
+    public function write(string $message, int $weight = self::WEIGHT_NORMAL)
     {
         $this->log($weight, $message);
 
@@ -242,7 +242,7 @@ class Console
      * @param string $message
      * @param int    $weight
      */
-    public function writeError(string $message, int $weight = self::WEIGHT_HIGH): void
+    public function writeError(string $message, int $weight = self::WEIGHT_HIGH)
     {
         $this->log($weight, $message);
 
@@ -255,7 +255,7 @@ class Console
         $this->drawDrawings();
     }
 
-    public function error(string $message, int $weight = self::WEIGHT_HIGH): void
+    public function error(string $message, int $weight = self::WEIGHT_HIGH)
     {
         $lines = array_map('rtrim', explode(PHP_EOL, $message));
         $maxLength = max(array_map('strlen', $lines));
@@ -312,7 +312,7 @@ class Console
      * @param int $weight
      * @codeCoverageIgnore trivial
      */
-    public function line(string $message, int $weight = self::WEIGHT_NORMAL): void
+    public function line(string $message, int $weight = self::WEIGHT_NORMAL)
     {
         $this->write($message . PHP_EOL, $weight);
     }
