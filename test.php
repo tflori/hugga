@@ -34,43 +34,26 @@ $console = new Console();
 function drawLogo(Console $console)
 {
     $logo = [
-        ' ,dPYb,                                                    ',
-        ' IP\'`Yb                                                    ',
-        ' I8  8I                                                    ',
-        ' I8  8\'                                                    ',
-        ' I8 dPgg,   gg      gg    ,gggg,gg    ,gggg,gg    ,gggg,gg ',
-        ' I8dP" "8I  I8      8I   dP"  "Y8I   dP"  "Y8I   dP"  "Y8I ',
-        ' I8P    I8  I8,    ,8I  i8\'    ,8I  i8\'    ,8I  i8\'    ,8I ',
-        ',d8     I8,,d8b,  ,d8b,,d8,   ,d8I ,d8,   ,d8I ,d8,   ,d8b,',
-        '88P     `Y88P\'"Y88P"`Y8P"Y8888P"888P"Y8888P"888P"Y8888P"`Y8',
-        '                              ,d8I\'       ,d8I\'            ',
-        '                            ,dP\'8I      ,dP\'8I             ',
-        '                           ,8"  8I     ,8"  8I             ',
-        '                           I8   8I     I8   8I             ',
-        '                           `8, ,8I     `8, ,8I             ',
-        '                            `Y8P"       `Y8P"              ',
-    ];
-    $colors = [
-        'default',
-        'light-magenta',
-        'magenta',
-        'blue',
-        'blue',
-        'cyan',
-        'cyan',
-        'yellow',
-        'yellow',
-        'green',
-        'green',
-        'red',
-        'red',
-        'light-red',
-        'default',
+        ['default',       ' ,dPYb,                                                    '],
+        ['light-magenta', ' IP\'`Yb                                                    '],
+        ['magenta',       ' I8  8I                                                    '],
+        ['blue',          ' I8  8\'                                                    '],
+        ['blue',          ' I8 dPgg,   gg      gg    ,gggg,gg    ,gggg,gg    ,gggg,gg '],
+        ['cyan',          ' I8dP" "8I  I8      8I   dP"  "Y8I   dP"  "Y8I   dP"  "Y8I '],
+        ['cyan',          ' I8P    I8  I8,    ,8I  i8\'    ,8I  i8\'    ,8I  i8\'    ,8I '],
+        ['yellow',        ',d8     I8,,d8b,  ,d8b,,d8,   ,d8I ,d8,   ,d8I ,d8,   ,d8b,'],
+        ['yellow',        '88P     `Y88P\'"Y88P"`Y8P"Y8888P"888P"Y8888P"888P"Y8888P"`Y8'],
+        ['green',         '                              ,d8I\'       ,d8I\'            '],
+        ['green',         '                            ,dP\'8I      ,dP\'8I             '],
+        ['red',           '                           ,8"  8I     ,8"  8I             '],
+        ['red',           '                           I8   8I     I8   8I             '],
+        ['light-red',     '                           `8, ,8I     `8, ,8I             '],
+        ['default',       '                            `Y8P"       `Y8P"              '],
     ];
 
     $console->line('');
     foreach ($logo as $i => $row) {
-        $console->line('   ${' . $colors[$i] . '}' . $row . '   ');
+        $console->line('   ${' . $row[0] . '}' . $row[1] . '   ');
     }
     $console->line('');
 };
@@ -140,18 +123,26 @@ function inputDemo(Console $console)
         $console->warn('Why you are lying to me?');
     }
 
+    // Check if interactive
+    if (!$console->isInteractive()) {
+        $console->warn('non-interactive output detected');
+        $console->info('The result of read* is always "' . $console->readLine('$ ') . '"');
+    }
+
     // Read line (prefers readline with history)
-    $console->line(PHP_EOL . '${bold;cyan}Input');
-    $console->info('Write exit to continue; press up to restore previous line');
-    $line = '';
-    do {
-        if (!empty($line)) {
-            $console->warn('processing ' . $line);
-        }
-        $line = $console->readLine('$ ');
-        readline_add_history($line);
-    } while (strtolower(trim($line)) != 'exit');
-    readline_clear_history();
+    if ($console->isInteractive()) {
+        $console->line(PHP_EOL . '${bold;cyan}Input');
+        $console->info('Write exit to continue; press up to restore previous line');
+        $line = '';
+        do {
+            if (!empty($line)) {
+                $console->warn('processing ' . $line);
+            }
+            $line = $console->readLine('$ ');
+            readline_add_history($line);
+        } while (strtolower(trim($line)) != 'exit');
+        readline_clear_history();
+    }
 
     // Read specific amount of chars (UTF-8 compatible)
     $console->write('Enter 3 letters:');
@@ -168,6 +159,12 @@ function choicesDemo(Console $console)
 {
     // Choices
     $console->line(PHP_EOL . '${bold;cyan}Choices');
+
+    if (!$console->isInteractive()) {
+        $console->warn('non-interactive output detected');
+        $console->info('The result of ask is always the default value');
+    }
+
     $names = [
         'ezra' => 'Ezra Trickett', 'leticia' => 'Leticia Karpinski', 'celinda' => 'Celinda Baskett',
         'jerlene' => 'Jerlene Esteban', 'merideth' => 'Merideth Utsey', 'jame' => 'Jame Depaolo',
@@ -216,6 +213,8 @@ function advancedDemo(Console $console)
     sleep(2);
     $console->delete('in progress'); // or ->delete(11)
     $console->line('${green}done');
+    $console->write('waiting for something...');
+    $console->deleteLine();
 }
 
 function progressDemo(Console $console)
@@ -323,6 +322,10 @@ function observerDemo(Console $console)
 {
     $console->line(PHP_EOL . '${bold;cyan}Observer (press esc to stop)');
     $observer = $console->getInputObserver();
+    if (!$observer) {
+        $console->warn('observers are not supported for this input / output interfaces');
+        return;
+    }
     $observer->on("\e", function ($event) use ($observer) {
         $event->stopPropagation = true;
         $observer->stop();
@@ -336,10 +339,33 @@ function observerDemo(Console $console)
 
 drawLogo($console);
 
+$ranDemo = false;
+foreach ($_SERVER['argv'] as $arg) {
+    if ($arg === '--force-ansi') {
+        $console->disableAnsi(false);
+    } elseif (in_array($arg, [
+            'formatting',
+            'colors',
+            'choices',
+            'input',
+            'advanced',
+            'progress',
+            'tables',
+            'observer'
+        ])) {
+        call_user_func($arg . 'Demo', $console);
+        $ranDemo = true;
+    }
+}
+
+if ($ranDemo) {
+    return;
+}
+
 while (true) {
     $next = askNext($console, $next ?? 'exit');
     if ($next === 'exit') {
-        exit;
+        return;
     }
 
     $console->line('');
