@@ -40,7 +40,6 @@ class ReadlineHandlerTest extends TestCase
         }
 
         self::assertFalse(Readline::isCompatible(STDOUT));
-        self::assertTrue(Readline::isCompatible(STDIN));
     }
 
     /** @test */

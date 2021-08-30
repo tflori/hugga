@@ -49,6 +49,7 @@ trait MocksConsole
             $output->shouldReceive('getSize')->andReturn([20, 80])->byDefault();
         }
 
+        $console->disableAnsi(false); // for tests enable ansi anyway
         return $console;
     }
 }

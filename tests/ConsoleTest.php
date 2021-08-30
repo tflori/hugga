@@ -131,6 +131,16 @@ class ConsoleTest extends TestCase
     }
 
     /** @test */
+    public function errorsCanBeHiddenByLowVerbosity()
+    {
+        $this->console->setVerbosity(Console::WEIGHT_NORMAL);
+        $this->console->error('The user made a mistake', Console::WEIGHT_LOWER);
+
+        rewind($this->stderr);
+        self::assertSame("", fread($this->stderr, 4096));
+    }
+
+    /** @test */
     public function debugIsShownAtThirdLevel()
     {
         $message = 'foo bar';
@@ -164,6 +174,7 @@ class ConsoleTest extends TestCase
     /** @test */
     public function readsALine()
     {
+        $this->console->shouldReceive('isInteractive')->andReturn(true);
         $line = 'John Doe' . PHP_EOL;
         fwrite($this->stdin, $line . 'Jane Doe' . PHP_EOL);
         rewind($this->stdin);
@@ -176,6 +187,7 @@ class ConsoleTest extends TestCase
     /** @test */
     public function readsACharacter()
     {
+        $this->console->shouldReceive('isInteractive')->andReturn(true);
         fwrite($this->stdin, 'foo bar');
         rewind($this->stdin);
 
@@ -187,6 +199,7 @@ class ConsoleTest extends TestCase
     /** @test */
     public function readsUntilSequence()
     {
+        $this->console->shouldReceive('isInteractive')->andReturn(true);
         fwrite($this->stdin, 'lorem ipsum dolor sit amet' . PHP_EOL . PHP_EOL);
         rewind($this->stdin);
 
@@ -260,8 +273,7 @@ class ConsoleTest extends TestCase
     /** @test */
     public function createsASimpleQuestionAndAsks()
     {
-        $this->console->shouldReceive('isInteractive')->with()
-            ->once()->andReturn(true);
+        $this->console->shouldReceive('isInteractive')->andReturn(true);
         fwrite($this->stdin, 'Answer' . PHP_EOL);
         rewind($this->stdin);
 
@@ -273,7 +285,8 @@ class ConsoleTest extends TestCase
     /** @test */
     public function deletesStrlenCharacters()
     {
-        fwrite($this->stdout, 'foo bär');
+        $this->console->disableAnsi();
+        $this->console->write('foo bär');
 
         $this->console->delete('bar');
 

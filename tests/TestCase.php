@@ -37,4 +37,20 @@ class TestCase extends MockeryTestCase
         $this->input = $this->consoleMocks['input'];
         $this->error = $this->consoleMocks['error'];
     }
+
+    /**
+     * Overwrite a protected or private $property from $object to $value
+     *
+     * @param object $object
+     * @param string $property
+     * @param mixed  $value
+     */
+    protected static function setProtectedProperty($object, string $property, $value)
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $property = (new \ReflectionClass($object))->getProperty($property);
+        $property->setAccessible(true);
+        $property->setValue($object, $value);
+        $property->setAccessible(false);
+    }
 }

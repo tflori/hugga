@@ -209,7 +209,7 @@ class Console
      */
     public function readLine(string $prompt = null): string
     {
-        return $this->stdin->readLine($prompt);
+        return $this->isInteractive() ? $this->stdin->readLine($prompt) : '';
     }
 
     /**
@@ -221,7 +221,7 @@ class Console
      */
     public function read(int $count = 1, string $prompt = null): string
     {
-        return $this->stdin->read($count, $prompt);
+        return $this->isInteractive() ? $this->stdin->read($count, $prompt) : '';
     }
 
     /**
@@ -233,7 +233,7 @@ class Console
      */
     public function readUntil(string $sequence, string $prompt = null): string
     {
-        return $this->stdin->readUntil($sequence, $prompt);
+        return $this->isInteractive() ? $this->stdin->readUntil($sequence, $prompt) : '';
     }
 
     /**
@@ -394,6 +394,7 @@ class Console
      */
     public function setStdout($stdout)
     {
+//        var_dump(stream_get_meta_data($stdout));die();
         if ($stdout instanceof OutputInterface) {
             $this->stdout = $stdout;
             return $this;
@@ -448,7 +449,7 @@ class Console
      */
     public function getInputObserver(): ?Observer
     {
-        if (!Observer::isCompatible($this->stdin)) {
+        if (!Observer::isCompatible($this->stdin) || !$this->isInteractive()) {
             return null;
         }
         // @codeCoverageIgnoreStart

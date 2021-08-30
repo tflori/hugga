@@ -60,7 +60,7 @@ class ResourceHandlerTest extends TestCase
         $handler = new File($this->console, $this->stdout);
         $handler->write('Text before the last line' . PHP_EOL . 'foo bar');
 
-        $handler->deleteLine(3); // buffer size 3 -> 3 steps
+        $handler->deleteLine(); // buffer size 3 -> 3 steps
 
         rewind($this->stdout);
         self::assertSame('Text before the last line' . PHP_EOL, fread($this->stdout, 4096));
@@ -76,5 +76,33 @@ class ResourceHandlerTest extends TestCase
 
         rewind($this->stdout);
         self::assertSame('', fread($this->stdout, 4096));
+    }
+
+    /** @test */
+    public function deleteIsDisabledWhenResourceIsNotSeekable()
+    {
+        $handler = new File($this->console, $this->stdout);
+        // mock not seekable as it is not possible to create a resource that is not seekable
+        $this->setProtectedProperty($handler, 'seekable', false);
+
+        $handler->write('Doing something ... in progress');
+        $handler->delete(11);
+
+        rewind($this->stdout);
+        self::assertSame('Doing something ... in progress', fread($this->stdout, 4096));
+    }
+
+    /** @test */
+    public function deleteLineIsDisabledWhenResourceIsNotSeekable()
+    {
+        $handler = new File($this->console, $this->stdout);
+        // mock not seekable as it is not possible to create a resource that is not seekable
+        $this->setProtectedProperty($handler, 'seekable', false);
+
+        $handler->write('Text before the last line' . PHP_EOL . 'text to be removed...');
+        $handler->deleteLine();
+
+        rewind($this->stdout);
+        self::assertSame('Text before the last line' . PHP_EOL . 'text to be removed...', fread($this->stdout, 4096));
     }
 }
