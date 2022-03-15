@@ -14,7 +14,7 @@ class DrawingsTest extends TestCase
     /** @var OutputInterface|m\Mock */
     protected $stdout;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

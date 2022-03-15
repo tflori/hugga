@@ -255,7 +255,7 @@ class ChoiceTest extends TestCase
     /** @var ObserverFaker|m\mock */
     protected $observer;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->console = $this->createConsoleMock(true);
         $this->formatter = $this->consoleMocks['formatter'];

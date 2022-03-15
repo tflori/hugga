@@ -7,14 +7,14 @@ use Hugga\Test\TestCase;
 
 class ProgressBarTest extends TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->console->shouldReceive('addDrawing')->byDefault();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
         ProgressBar::resetDefaultProgressCharacters();

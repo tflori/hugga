@@ -29,7 +29,7 @@ class TestCase extends MockeryTestCase
     /** @var Tty|m\Mock */
     protected $error;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->console = $this->createConsoleMock(false);
         $this->formatter = $this->consoleMocks['formatter'];

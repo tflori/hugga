@@ -16,7 +16,7 @@ class EditlineHandlerTest extends TestCase
     /** @var \Hugga\Input\Observer|m\Mock */
     protected $inputObserver;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

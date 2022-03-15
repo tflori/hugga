@@ -12,7 +12,7 @@ class ReadlineHandlerTest extends TestCase
     /** @var Readline|m\Mock */
     protected $readline;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->readline = m::mock(Readline::class, [$this->console, $this->stdin])->makePartial();

@@ -9,7 +9,7 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false"
-         printerClass="\Hugga\Test\Printer">
+         printerClass="PhpUnitPrinter\TextPrinter">
     <testsuite name="tests">
         <directory>./tests/</directory>
     </testsuite>
