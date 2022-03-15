@@ -1,7 +1,8 @@
 # tflori/hugga
 
-[![Build Status](https://travis-ci.org/tflori/hugga.svg?branch=master)](https://travis-ci.org/tflori/hugga)
-[![Coverage Status](https://coveralls.io/repos/github/tflori/hugga/badge.svg?branch=master)](https://coveralls.io/github/tflori/hugga?branch=master)
+[![.github/workflows/push.yml](https://github.com/tflori/hugga/actions/workflows/push.yml/badge.svg)](https://github.com/tflori/hugga/actions/workflows/push.yml)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/80847397f1b1980f3bbb/test_coverage)](https://codeclimate.com/github/tflori/hugga/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/80847397f1b1980f3bbb/maintainability)](https://codeclimate.com/github/tflori/hugga/maintainability)
 [![Latest Stable Version](https://poser.pugx.org/tflori/hugga/v/stable.svg)](https://packagist.org/packages/tflori/hugga) 
 [![Total Downloads](https://poser.pugx.org/tflori/hugga/downloads.svg)](https://packagist.org/packages/tflori/hugga) 
 [![License](https://poser.pugx.org/tflori/hugga/license.svg)](https://packagist.org/packages/tflori/hugga)
