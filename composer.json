@@ -3,7 +3,7 @@
     "description": "library for console applications with input and output handling",
     "license": "MIT",
     "require": {
-        "php": "^7.1",
+        "php": "^7.1 || ^8.0",
         "ext-mbstring": "*",
         "ext-readline": "*",
         "nicmart/string-template": "^0.1.1",
@@ -11,7 +11,8 @@
     },
     "require-dev": {
         "mockery/mockery": "^1.1",
-        "phpunit/phpunit": "^7.2",
+        "phpunit/phpunit": "*",
+        "tflori/phpunit-printer": "*",
         "squizlabs/php_codesniffer": "^3.3"
     },
     "suggest": {

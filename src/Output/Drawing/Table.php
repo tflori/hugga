@@ -411,12 +411,13 @@ class Table implements DrawingInterface
             $r = [];
             foreach ($this->columns as $key => $column) {
                 $fallback = null;
-                if (is_object($row) && !$row instanceof \ArrayAccess && property_exists($row, $key) ||
-                    (!is_object($row) || $row instanceof \ArrayAccess) && array_key_exists($key, $row)
+                if (is_object($row) && property_exists($row, $key) ||
+                    is_array($row) && array_key_exists($key, $row) ||
+                    ($row instanceof \ArrayAccess) && $row->offsetExists($key)
                 ) {
                     $fallback = 'null';
                 }
-                $value = is_object($row) && !$row instanceof \ArrayAccess ? $row->$key ?? $fallback :
+                $value = is_object($row) && !($row instanceof \ArrayAccess) ? $row->$key ?? $fallback :
                     $row[$key] ?? $fallback;
 
                 if (is_bool($value)) {
