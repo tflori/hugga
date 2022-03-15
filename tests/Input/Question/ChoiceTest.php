@@ -177,7 +177,7 @@ class ChoiceTest extends TestCase
         $choices = [];
         while (count($choices) < 28) {
             $choices[] = mt_rand(1000, 2000);
-            $choices = array_unique($choices);
+            $choices = array_values(array_unique($choices));
         }
 
         $choice = new Choice($choices);
