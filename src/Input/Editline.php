@@ -9,7 +9,10 @@ class Editline extends Readline
     public static function isCompatible($resource): bool
     {
         if (AbstractInput::isCompatible($resource) && Console::isTty($resource) && STDIN === $resource) {
+            // @codeCoverageIgnoreStart
+            // can not be executed in CI (no tty)
             return self::isEditline();
+            // @codeCoverageIgnoreEnd
         }
         return false;
     }

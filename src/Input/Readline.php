@@ -10,7 +10,10 @@ class Readline extends AbstractInput implements InteractiveInputInterface
     public static function isCompatible($resource): bool
     {
         if (parent::isCompatible($resource) && Console::isTty($resource) && STDIN === $resource) {
+            // @codeCoverageIgnoreStart
+            // can not be executed in CI (no tty)
             return !self::isEditline();
+            // @codeCoverageIgnoreEnd
         }
         return false;
     }
@@ -41,6 +44,7 @@ class Readline extends AbstractInput implements InteractiveInputInterface
      * Check if readline uses editline library
      *
      * @return bool
+     * @codeCoverageIgnore Can not be executed in CI (no tty)
      */
     protected static function isEditline()
     {

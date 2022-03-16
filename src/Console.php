@@ -427,8 +427,11 @@ class Console
         self::assertResource($stdin, __METHOD__);
         foreach ([Readline::class, Editline::class] as $handler) {
             if ($handler::isCompatible($stdin)) {
+                // @codeCoverageIgnoreStart
+                // can not be executed in CI (no tty)
                 $this->stdin = new $handler($this, $stdin);
                 return $this;
+                // @codeCoverageIgnoreEnd
             }
         }
         $this->stdin = new InputHandler($this, $stdin);
