@@ -541,6 +541,28 @@ class TableTest extends TestCase
     }
 
     /** @test */
+    public function changeData()
+    {
+        $table = new Table($this->console, $this->buildNamesData(['name'], 'assoc'));
+        $table->getText(); // here the width of the column gets calculated
+
+        $table->setData([
+            ['name' => 'Johnny Depp'],
+            ['name' => 'Benedict Cumberbatch'],
+            ['name' => 'John Malkovich'],
+        ]);
+
+        self::assertSame(
+            '╭─────────────╮' . PHP_EOL .
+            '│ Johnny Depp │' . PHP_EOL .
+            '│ Benedict Cumberbatch │' . PHP_EOL .
+            '│ John Malkovich │' . PHP_EOL .
+            '╰─────────────╯',
+            $table->getText()
+        );
+    }
+
+    /** @test */
     public function changeBorderStyle()
     {
         $table = new Table(
