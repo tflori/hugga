@@ -161,6 +161,21 @@ class Table implements DrawingInterface
     }
 
     /**
+     * Change the dataset to show
+     *
+     * Keep in mind that the columns might already been calculated and will not update.
+     *
+     * @param iterable $data
+     * @return $this
+     */
+    public function setData(iterable $data)
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+
+    /**
      * Enable / disable borders
      *
      * @param bool $borders
