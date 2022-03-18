@@ -42,7 +42,10 @@ $console->line('But this is just a debug message', Hugga\Console::WEIGHT_DEBUG);
 ## Documentation
 
 There is no documentation yet except this [api reference](reference.md). For some examples also have a look at
-[test.php](test.php) and try them yourself with `php vendor/tflori/hugga/test.php`.
+[examples/test.php](examples/test.php) and try them yourself with `php vendor/tflori/hugga/examples/test.php`.
+
+Also, there is an example how to create a paginated table with existing features in 
+[examples/paginated-table.php'](examples/paginated-table.php).
 
 ## Features
 
