@@ -3,9 +3,9 @@
 [![.github/workflows/push.yml](https://github.com/tflori/hugga/actions/workflows/push.yml/badge.svg)](https://github.com/tflori/hugga/actions/workflows/push.yml)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/80847397f1b1980f3bbb/test_coverage)](https://codeclimate.com/github/tflori/hugga/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/80847397f1b1980f3bbb/maintainability)](https://codeclimate.com/github/tflori/hugga/maintainability)
-[![Latest Stable Version](https://poser.pugx.org/tflori/hugga/v/stable.svg)](https://packagist.org/packages/tflori/hugga) 
-[![Total Downloads](https://poser.pugx.org/tflori/hugga/downloads.svg)](https://packagist.org/packages/tflori/hugga) 
-[![License](https://poser.pugx.org/tflori/hugga/license.svg)](https://packagist.org/packages/tflori/hugga)
+[![Latest Stable Version](http://poser.pugx.org/tflori/hugga/v)](https://packagist.org/packages/tflori/hugga)
+[![Total Downloads](http://poser.pugx.org/tflori/hugga/downloads)](https://packagist.org/packages/tflori/hugga)
+[![License](http://poser.pugx.org/tflori/hugga/license)](https://packagist.org/packages/tflori/hugga)
 
 PHP library for console applications. It supports formatting of messages and tables as well input handling with
 choices.
