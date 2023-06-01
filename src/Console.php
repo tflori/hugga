@@ -10,6 +10,7 @@ use Hugga\Input\Readline;
 use Hugga\Output\File as OutputHandler;
 use Hugga\Output\Tty;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 class Console
 {
@@ -27,6 +28,15 @@ class Console
         self::WEIGHT_LOWER,
         self::WEIGHT_LOW,
         self::WEIGHT_DEBUG,
+    ];
+
+    const LOG_LEVEL = [
+        self::WEIGHT_DEBUG => LogLevel::DEBUG,
+        self::WEIGHT_LOW => LogLevel::INFO,
+        self::WEIGHT_LOWER => LogLevel::INFO,
+        self::WEIGHT_NORMAL => LogLevel::INFO,
+        self::WEIGHT_HIGHER => LogLevel::NOTICE,
+        self::WEIGHT_HIGH => LogLevel::NOTICE,
     ];
 
     /** @var LoggerInterface */
@@ -582,7 +592,10 @@ class Console
             return;
         }
 
-        $this->logger->log($weight, trim($this->formatter->stripFormatting($message)));
+        $this->logger->log(
+            self::LOG_LEVEL[$weight] ?? LogLevel::NOTICE,
+            trim($this->formatter->stripFormatting($message))
+        );
     }
 
     /**

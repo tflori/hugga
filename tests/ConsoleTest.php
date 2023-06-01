@@ -10,6 +10,7 @@ use Hugga\InteractiveOutputInterface;
 use Hugga\Output\File as OutputHandler;
 use Mockery as m;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 class ConsoleTest extends TestCase
 {
@@ -44,7 +45,7 @@ class ConsoleTest extends TestCase
         $message = 'foo bar';
         /** @var m\mock|LoggerInterface $logger */
         $logger = m::mock(LoggerInterface::class);
-        $logger->shouldReceive('log')->with(Console::WEIGHT_NORMAL, $message)->once();
+        $logger->shouldReceive('log')->with(LogLevel::INFO, $message)->once();
 
         $this->console->setLogger($logger);
         $this->console->write($message);
@@ -59,7 +60,7 @@ class ConsoleTest extends TestCase
             ->once()->andReturn($result);
         /** @var m\mock|LoggerInterface $logger */
         $logger = m::mock(LoggerInterface::class);
-        $logger->shouldReceive('log')->with(Console::WEIGHT_NORMAL, $result)->once();
+        $logger->shouldReceive('log')->with(LogLevel::INFO, $result)->once();
 
         $this->console->setLogger($logger);
         $this->console->write($message);
@@ -108,7 +109,7 @@ class ConsoleTest extends TestCase
         $message = 'foo bar';
         /** @var m\mock|LoggerInterface $logger */
         $logger = m::mock(LoggerInterface::class);
-        $logger->shouldReceive('log')->with(Console::WEIGHT_HIGH, $message)->once();
+        $logger->shouldReceive('log')->with(LogLevel::NOTICE, $message)->once();
 
         $this->console->setLogger($logger);
         $this->console->writeError($message);
