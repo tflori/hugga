@@ -50,12 +50,12 @@ jobs:
         run: |
           php -dzend_extension=xdebug.so -dxdebug.mode=coverage vendor/bin/phpunit \
             -c phpunit.xml \
-            --coverage-clover=coverage/clover.xml \
+            --coverage-clover=coverage/clover-${{ matrix.php_version }}.xml \
             --coverage-text \
             --color=always
       - name: Format Coverage
         run: |
-          cc-test-reporter format-coverage -t clover -o coverage/cc-${{ matrix.php_version }}.json coverage/clover.xml
+          cc-test-reporter format-coverage -t clover -o coverage/cc-${{ matrix.php_version }}.json coverage/clover-${{ matrix.php_version }}.xml
       - name: Store Coverage Result
         uses: actions/upload-artifact@v3
         with:
