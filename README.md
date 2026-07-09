@@ -30,7 +30,7 @@ $console->line('${fg:white;bg:white;bold}Nice to meet you ' . $name . '!');
 $console->line('You will see this', Hugga\Console::WEIGHT_NORMAL);
 $console->line('You will not see this', Hugga\Console::WEIGHT_LOWER);
 $console->increaseVerbosity();
-$console->line('No you can see this', Hugga\Console::WEIGHT_LOWER);
+$console->line('Now you can see this', Hugga\Console::WEIGHT_LOWER);
 $console->line('But this is just a debug message', Hugga\Console::WEIGHT_DEBUG);
 //$console->setVerbosity(Hugga\Console::WEIGHT_DEBUG);
 //$console->debug(
@@ -39,13 +39,183 @@ $console->line('But this is just a debug message', Hugga\Console::WEIGHT_DEBUG);
 // );
 ```
 
-## Documentation
+## Usage
 
-There is no documentation yet except this [api reference](reference.md). For some examples also have a look at
-[examples/test.php](examples/test.php) and try them yourself with `php vendor/tflori/hugga/examples/test.php`.
+Create a `Console` instance and use it throughout your application. All input and output goes through this object.
 
-Also, there is an example how to create a paginated table with existing features in 
-[examples/paginated-table.php'](examples/paginated-table.php).
+```php
+$console = new Hugga\Console;
+```
+
+### Writing output
+
+`line()` writes a message followed by a newline. `write()` writes without a newline. Both accept an optional weight
+(verbosity level) as the second argument — output below the current verbosity threshold is silently dropped.
+
+```php
+$console->line('Hello world');
+$console->write('no newline here');
+$console->line('extra detail', Hugga\Console::WEIGHT_LOWER);   // hidden at normal verbosity
+$console->increaseVerbosity();                                  // lower threshold — now WEIGHT_LOWER is visible
+$console->line('debug dump',   Hugga\Console::WEIGHT_DEBUG);   // still hidden; needs another increaseVerbosity()
+```
+
+Convenience methods apply a predefined style and write to the appropriate stream:
+
+```php
+$console->info('Operation complete');    // informational, stdout
+$console->warn('Disk almost full');      // warning, stderr
+$console->error('File not found');       // error, stderr
+```
+
+### Formatting
+
+Embed format tags using `${...}` syntax anywhere in a string. Reset all formatting with `${r}` or `${reset}`.
+
+```php
+$console->line('${bold;cyan}Section header');
+$console->line('${red}Error:${r} something went wrong');
+$console->line('${fg:blue;bg:white}Blue on white');
+$console->line('${u}underlined${r} and ${bold}bold${r}');
+```
+
+Available attributes: color names (`red`, `green`, `cyan`, `yellow`, `blue`, `magenta`, `white`, `grey`, …),
+`bold` / `b`, `underline` / `u`, `fg:<color>`, `bg:<color>`.
+
+### Deleting output
+
+Remove recently written text without leaving a blank line:
+
+```php
+$console->write('Processing … ${yellow}in progress');
+// ... do work ...
+$console->delete('in progress');   // removes that exact string
+$console->line('${green}done');
+
+$console->write('Loading…');
+$console->deleteLine();            // removes the entire current line
+```
+
+### Asking questions
+
+Pass a string for a free-text prompt (optional default value as second argument):
+
+```php
+$name = $console->ask('What is your name?', 'Anonymous');
+```
+
+Use `Confirmation` for yes/no questions — returns `true` or `false`:
+
+```php
+if ($console->ask(new Hugga\Input\Question\Confirmation('Are you sure?'))) {
+    // confirmed
+}
+```
+
+Use `Choice` to let the user pick from a list. With an associative array the key is returned by default:
+
+```php
+$role = $console->ask(new Hugga\Input\Question\Choice(
+    ['admin' => 'Administrator', 'guest' => 'Guest'],
+    'Select a role:',
+    'guest'   // default
+));
+// $role === 'admin' or 'guest'
+```
+
+In an interactive terminal the choice is navigated with cursor keys. Chain methods to customise behaviour:
+
+```php
+$console->ask(
+    (new Hugga\Input\Question\Choice($options, 'Pick one:'))
+        ->limit(10)        // show at most 10 options at a time
+        ->returnValue()    // return the value instead of the key
+);
+```
+
+### Tables
+
+Pass the data rows and an optional header row to `Table`, then call `draw()`:
+
+```php
+$table = new Hugga\Output\Drawing\Table($console, [
+    ['1', 'Alice', 'alice@example.com'],
+    ['2', 'Bob',   'bob@example.com'],
+], ['ID', 'Name', 'E-Mail']);
+
+$table->draw();
+```
+
+Chain options to customise the appearance before drawing:
+
+```php
+$table
+    ->borders(true)
+    ->bordersInside(true)
+    ->padding(2)
+    ->repeatHeaders(20)
+    ->headerStyle('${bold;cyan}')
+    ->column(0, ['align' => 'center'])
+    ->draw();
+```
+
+### Progress bars
+
+Provide the total number of steps (or `null` for an indeterminate spinner) and call `start()`. Call `advance()` inside
+your loop and `finish()` when done:
+
+```php
+$bar = new Hugga\Output\Drawing\ProgressBar($console, 100, 'Importing', 'rows');
+$bar->start();
+foreach ($rows as $row) {
+    process($row);
+    $bar->advance();
+}
+$bar->finish();
+```
+
+Multiple progress bars can run concurrently — each one stays pinned to the bottom of the output while regular log
+lines scroll above it. Pass `null` as the total for an indeterminate throbber:
+
+```php
+$spinner = new Hugga\Output\Drawing\ProgressBar($console, null, 'Waiting for server');
+$spinner->start();
+// ... poll until done ...
+$spinner->template('{title} ${green}done')->finish();
+```
+
+### Reading raw input
+
+```php
+$line  = $console->readLine('$ ');   // prompt + readline with history support
+$chars = $console->read(3);          // read exactly 3 characters (multibyte-safe)
+$text  = $console->readUntil("\n.\n"); // read until a sentinel string appears
+```
+
+### Observing keyboard input
+
+`getInputObserver()` gives direct, non-echoed access to individual key presses:
+
+```php
+$observer = $console->getInputObserver();
+$observer->on("\e", function ($event) use ($observer) {
+    $observer->stop();
+});
+$observer->addHandler(function ($event) {
+    echo 'key: ' . $event->char . PHP_EOL;
+});
+$observer->start();
+```
+
+### Full reference
+
+See the [API reference](reference.md) for the complete method list, or run the bundled demo:
+
+```console
+$ php vendor/tflori/hugga/examples/test.php
+```
+
+A paginated-table example is in [examples/paginated-table.php](examples/paginated-table.php).
 
 ## Features
 
