@@ -123,7 +123,7 @@ class Table implements DrawingInterface
      * @param iterable $data
      * @param array|null $headers
      */
-    public function __construct(Console $console, iterable $data, array $headers = null)
+    public function __construct(Console $console, iterable $data, ?array $headers = null)
     {
         $this->console = $console;
         $this->data = $data;

@@ -17,7 +17,7 @@ class Editline extends Readline
         return false;
     }
 
-    protected function readConditional(callable $conditionMet, string $prompt = null): string
+    protected function readConditional(callable $conditionMet, ?string $prompt = null): string
     {
         $this->console->write($prompt ?? ' ');
         $buffer = '';

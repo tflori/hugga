@@ -6,14 +6,14 @@ class File extends AbstractInput
 {
     const BUFFER_SIZE = 4096;
 
-    public function readLine(string $prompt = null): string
+    public function readLine(?string $prompt = null): string
     {
         // reset the position to read new lines
         fseek($this->resource, ftell($this->resource));
         return rtrim(fgets($this->resource));
     }
 
-    public function read(int $count = 1, string $prompt = null): string
+    public function read(int $count = 1, ?string $prompt = null): string
     {
         $currentPos = ftell($this->resource);
         // reset the position to read new lines
@@ -27,7 +27,7 @@ class File extends AbstractInput
         return $str;
     }
 
-    public function readUntil(string $sequence, string $prompt = null): string
+    public function readUntil(string $sequence, ?string $prompt = null): string
     {
         $currentPos = ftell($this->resource);
         // reset the position to read new lines

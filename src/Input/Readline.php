@@ -18,12 +18,12 @@ class Readline extends AbstractInput implements InteractiveInputInterface
         return false;
     }
 
-    public function readLine(string $prompt = null): string
+    public function readLine(?string $prompt = null): string
     {
         return $this->phpReadline('', $prompt ?? ' ');
     }
 
-    public function read(int $count = 1, string $prompt = null): string
+    public function read(int $count = 1, ?string $prompt = null): string
     {
         $str = $this->readConditional(function ($str) use ($count) {
             return mb_strlen($str) >= $count;
@@ -31,7 +31,7 @@ class Readline extends AbstractInput implements InteractiveInputInterface
         return $str;
     }
 
-    public function readUntil(string $sequence, string $prompt = null): string
+    public function readUntil(string $sequence, ?string $prompt = null): string
     {
         $seqLen = strlen($sequence);
         $str = $this->readConditional(function ($str) use ($sequence, $seqLen) {
@@ -51,7 +51,7 @@ class Readline extends AbstractInput implements InteractiveInputInterface
         return self::phpReadline('info', 'library_version') === 'EditLine wrapper';
     }
 
-    protected function readConditional(callable $conditionMet, string $prompt = null): string
+    protected function readConditional(callable $conditionMet, ?string $prompt = null): string
     {
         $str = $previous = '';
         $this->phpReadline('callback_handler_install', $prompt ?? ' ', function ($str) use (&$previous) {
